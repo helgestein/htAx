@@ -1,6 +1,6 @@
 % creates a ternary diagram from compositions of A, B, and (implied) C,
 % given by arrays compA and compB
-
+% comment test for push
 function [] = plotTernary(compA, compB)
 
 % plot settings
