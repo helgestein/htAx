@@ -1,12 +1,9 @@
 %importXRDFile imports numeric data from a text file as column vectors.
-%   [angle, intensity] = importXRDFile(FILENAME) Reads data from text file
+%   [angle, intensity] = importXRDFile(filename) Reads data from text file
 %   FILENAME for the default selection.
 %
-%   [VARNAME1,VARNAME2] = IMPORTFILE(FILENAME, STARTROW, ENDROW) Reads data
-%   from rows STARTROW through ENDROW of text file FILENAME.
-%
 % Example:
-%   [VarName1,VarName2] = importfile('55_1-11_Helge batch_-40.50_-4.50_2.xy',1, 1752);
+%   [VarName1,VarName2] = importXRDFile('55_1-11_Helge batch_-40.50_-4.50_2.xy',1, 1752);
 %
 %    See also TEXTSCAN.
 
