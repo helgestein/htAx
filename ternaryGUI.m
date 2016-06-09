@@ -9,7 +9,10 @@ f = figure('Visible','off','Position',[360, 500, 800, 285]);
 constType = 0; % constant = 0 for A, 1 for B, 2 for C
 width = 0;
 constPercent = 0;
-scaled = 0;
+
+% precalculate to save time
+sqrt3Half = sqrt(3) / 2;
+sqrt3Inv = 1 / sqrt(3);
 
 % test folder
 folder = '/Users/sjiao/Documents/summer_2016/data/CoFeMnO-mapcorr';
@@ -46,10 +49,22 @@ hbuttonB = uicontrol('Style', 'pushbutton', 'String', 'B', ...
 hbuttonC = uicontrol('Style', 'pushbutton', 'String', 'C', ...
     'Position', [315, 135, 40, 25], ...
     'Callback', {@buttonCCallback});
-hbuttonScale = uicontrol('Style', 'pushbutton', ...
-    'String', 'adjust intensity contrast', ...
-    'Position', [650, 135, 100, 100], ...
-    'Callback', {@buttonScaleCallback});
+hbuttonScaleSqrt = uicontrol('Style', 'pushbutton', ...
+    'String', 'scale sqrt', ...
+    'Position', [650, 135, 100, 30], ...
+    'Callback', {@buttonScaleSqrtCallback});
+hbuttonScaleLog = uicontrol('Style', 'pushbutton', ...
+    'String', 'scale log', ...
+    'Position', [650, 100, 100, 30], ...
+    'Callback', {@buttonScaleLogCallback});
+hbuttonScaleDef = uicontrol('Style', 'pushbutton', ...
+    'String', 'no scale', ...
+    'Position', [650, 160, 100, 30], ...
+    'Callback', {@buttonScaleDefCallback});
+hbuttonSelection = uicontrol('Style', 'pushbutton', ...
+    'String', 'select line', ...
+    'Position', [650, 60, 100, 30], ...
+    'Callback', {@buttonSelectionCallback});
 htextConst = uicontrol('Style', 'text', 'String', 'Const. %', ...
     'Position', [325, 110, 60, 10]);
 heditConst = uicontrol('Style', 'edit', ...
@@ -78,41 +93,38 @@ f.Visible = 'on';
 
     function buttonACallback(hbuttonA, eventdata, handles)
         constType = 0;
-        plotSpecData();
-        %specPlotData = getSpecData(constType, lower, upper, A, B, data);
-        %plotSpecData(specPlotData);
+        plotSpecData(1);
     end
 
     function buttonBCallback(hbuttonB, eventdata, handles)
         constType = 1;
-        plotSpecData();
-        %specPlotData = getSpecData(constType, lower, upper, B, C, data);
-        %plotSpecData(specPlotData);
+        plotSpecData(1);
     end
 
     function buttonCCallback(hbuttonC, eventdata, handles)
         constType = 2;
-        plotSpecData();
-        %specPlotData = getSpecData(constType, lower, upper, C, A, data);
-        %plotSpecData(specPlotData);
+        plotSpecData(1);
     end
 
-    function buttonScaleCallback(hbuttonScale, eventdata, handles)
-        numPoints = length(data(1, :)) / 2;
-        if scaled == 0
-            for i = 1:numPoints
-                data(:, 2 * i) = sqrt(data(:, 2 * i));
-            end
-            scaled = 1;
-        else
-            for i = 1:numPoints
-                data(:, 2 * i) = data(:, 2 * i) .* data(:, 2 * i);
-            end
-            scaled = 0;
-            
-        end
-        
-        plotSpecData();
+    function buttonScaleSqrtCallback(hbuttonScaleSqrt, eventdata, handles)
+        plotSpecData(2);
+    end
+    
+    function buttonScaleLogCallback(hbuttonScaleLog, eventdata, handles)
+        plotSpecData(3);
+    end
+
+    function buttonScaleDefCallback(hbuttonScaledDef, eventdata, handles)
+        plotSpecData(1);
+    end
+
+    function buttonSelectionCallback(hbuttonSelection, eventdata, handles)
+        [xClick, yClick] = ginput(1);
+        [compA, compB, compC] = getComp(yClick);
+        [xTernCoord, yTernCoord] = getTernCoord(compA, compB, sqrt3Half, sqrt3Inv);
+        hold on;
+        scatter(ha1, xTernCoord, yTernCoord, 30, 'r', 'filled');
+        hold off;
     end
 
     function editConstCallback(heditConst, eventdata, handles)
@@ -123,7 +135,9 @@ f.Visible = 'on';
         width = str2double(get(heditWidth, 'String')) / 100;
     end
 
-    function plotSpecData()
+    function plotSpecData(scaling)
+        
+        % get the correct set of composition data
         if constType == 0
             ids = getSpecIDs(constPercent, width, A);
             ySpec = B(ids);
@@ -136,11 +150,24 @@ f.Visible = 'on';
         end
         
         ids = ids .* 2;
-        imagesc(data(:, 1), ySpec, data(:, ids));
+        binaryPlot(data(:, 1), data(:, ids), ySpec, scaling);
     end
-        
-% make UI visible
-f.Visible = 'on';
+
+    function [compA, compB, compC] = getComp(yClick)
+        if constType == 0
+            compA = constPercent;
+            compB = yClick;
+            compC = 1 - compA - compB;
+        elseif constType == 1
+            compB = constPercent;
+            compC = yClick;
+            compA = 1 - compB - compC;
+        else
+            compC = constPercent;
+            compA = yClick;
+            compB = 1 - compA - compC;
+        end
+    end
 
 end
 

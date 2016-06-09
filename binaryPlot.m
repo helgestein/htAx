@@ -17,7 +17,7 @@ function [ output_args ] = binaryPlot( xAxis, yAxis, composition,scaling)
     end 
     
     surf(x,y,yAxis(:,ID).')%plot the data
-    xlabel('Anlge'); ylabel('Composition');
+    xlabel('Angle'); ylabel('Composition');
     shading interp; axis tight; %this is to make it look good 
     view(2); %this is so ensure the correct view
 end

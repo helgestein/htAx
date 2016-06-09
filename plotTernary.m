@@ -39,7 +39,7 @@ for i = 1:numPoints
     fracA = compA(i);
     fracB = compB(i);
     [xCoord, yCoord] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv);
-    scatter(xCoord, yCoord, 30, 'filled', 'r');
+    scatter(xCoord, yCoord, 30, [153/255 204/255 255/255], 'filled');
 end
 
 end
