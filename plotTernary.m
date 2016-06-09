@@ -2,7 +2,7 @@
 % given by arrays compA and compB
 % comment test for push
 %this is a commit over the GUI interface from helge
-function [] = plotTernary(compA, compB)
+function [] = plotTernary(compA, compB, vals, handle)
 
 % plot settings
 numTicks = 5;
@@ -35,12 +35,17 @@ end
     
 % get rectangular coordinates from compositions and plot points
 numPoints = length(compA);
+xCoord = zeros(numPoints, 1);
+yCoord = zeros(numPoints, 1);
 for i = 1:numPoints
     fracA = compA(i);
     fracB = compB(i);
-    [xCoord, yCoord] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv);
-    scatter(xCoord, yCoord, 30, [153/255 204/255 255/255], 'filled');
+    [xCoord(i), yCoord(i)] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv);
+    %scatter(xCoord, yCoord, 30, [153/255 204/255 255/255], 'filled');
 end
+
+scatter(handle, xCoord, yCoord, 30, vals, 'filled');
+shading interp;
 
 end
 
