@@ -2,7 +2,7 @@
 % given by arrays compA and compB
 % comment test for push
 %this is a commit over the GUI interface from helge
-function [] = plotTernary(compA, compB)
+function [] = plotTernary(compA, compB, vals, handle)
 
 % plot settings
 numTicks = 5;
@@ -14,7 +14,7 @@ sqrt3Inv = 1 / sqrt(3);
 % plot triangle
 plot([0 1 0.5 0], [0 0 sqrt3Half 0], 'k');
 
-hold on;
+%hold on;
 
 % plot gridlines
 tickBottom = linspace(0, 1, numTicks + 1);
@@ -25,19 +25,27 @@ for i = 1:numTicks
 end
 for i = 2:numTicks
     partnerTick = numTicks - i + 2;
-    plot([tickBottom(i) xTickRight(partnerTick)], [0 yTickRight(partnerTick)], 'k'); % constant A
-    plot([xTickLeft(i) xTickRight(partnerTick)], [yTickLeft(i) yTickRight(partnerTick)], 'k'); % constant B
-    plot([xTickLeft(i) tickBottom(partnerTick)], [yTickLeft(i) 0], 'k'); % constant C
+    guidelines1 = plot([tickBottom(i) xTickRight(partnerTick)], [0 yTickRight(partnerTick)], 'k'); % constant A
+    guidelines2 = plot([xTickLeft(i) xTickRight(partnerTick)], [yTickLeft(i) yTickRight(partnerTick)], 'k'); % constant B
+    guidelines3 = plot([xTickLeft(i) tickBottom(partnerTick)], [yTickLeft(i) 0], 'k'); % constant C
+    set(guidelines1, 'color', [0.5 0.5 0.5]);
+    set(guidelines2, 'color', [0.5 0.5 0.5]);
+    set(guidelines3, 'color', [0.5 0.5 0.5]);
 end
     
 % get rectangular coordinates from compositions and plot points
 numPoints = length(compA);
+xCoord = zeros(numPoints, 1);
+yCoord = zeros(numPoints, 1);
 for i = 1:numPoints
     fracA = compA(i);
     fracB = compB(i);
-    [xCoord, yCoord] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv);
-    scatter(xCoord, yCoord, 30, 'filled');
+    [xCoord(i), yCoord(i)] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv);
+    %scatter(xCoord, yCoord, 30, [153/255 204/255 255/255], 'filled');
 end
+
+scatter(handle, xCoord, yCoord, 30, vals, 'filled');
+shading interp;
 
 end
 

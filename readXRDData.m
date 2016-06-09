@@ -15,10 +15,10 @@ fileNames = dir(fileEnding);
 cd(codeDir);
 
 % initialize arrays
-xCoord = zeros(maxPoints, 1);
-yCoord = zeros(maxPoints, 1);
+xCoord = zeros(1, maxPoints);
+yCoord = zeros(1, maxPoints);
 xrdData = zeros(maxAngles, length(fileNames));
-numAngles = zeros(maxPoints, 1);
+numAngles = zeros(1, maxPoints);
 
 numPoints = 0;
 for k = 1:length(fileNames)
