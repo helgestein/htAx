@@ -20,7 +20,6 @@ function [ output_args ] = binaryPlot( xAxis, yAxis, composition,scaling, axesHa
     ylabel(axesHandle, 'Composition');
     shading(axesHandle, 'interp'); 
     axis(axesHandle, 'tight'); %this is to make it look good 
-    view(axesHandle, 2);
-    %view(2); %this is so ensure the correct view
+    view(axesHandle, 2); %this is so ensure the correct view
 end
 
