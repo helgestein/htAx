@@ -2,7 +2,7 @@
 % ternary diagram
 
 function [xCoord, yCoord] = getTernCoord(fracA, fracB, sqrt3Half, sqrt3Inv)
-    yCoord = fracB * sqrt3Half;
-    xCoord = fracA + yCoord * sqrt3Inv;
+    yCoord = sqrt3Half .* fracB;
+    xCoord = fracA + (sqrt3Inv .* yCoord);
 end
 
