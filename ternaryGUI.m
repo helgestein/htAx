@@ -16,18 +16,28 @@ set(gcf, 'color', 'w');
 
 % UI parameters
 constType = 0; % constant = 0 for A, 1 for B, 2 for C
+
+constPercent = 0; % bound composition for the spec. graph
 width = 0;
-constPercent = 0;
-xIndex = 1;
-axesSet = 0;
-ternPlotType = 0;
-zMax = 1000;
+
+xIndex = 1; % index of angle closest to horizontal slider position
+
+axesSet = 0; % = 1 if axes labels have been set on spec. plot
+ternPlotType = 0; % = 0 for scatter plot and = 1 for surface plot
+
+zMax = 1000; % large z-value for plotting points above surface plot
+
+% setting positions for the graphs
 graphHeightFrac = 0.8;
 graphVertPosFrac = 0.15;
 graphHorPosFrac = 0.07;
 graphWidthFrac = 0.6;
 sliderWidthFrac = 0.02;
-maxComp = 0;
+sliderVertWidthFrac = 0.01;
+
+maxComp = 0; % max composition value
+
+% positions of vertical sliders
 sliderVert1Val = 0;
 sliderVert2Val = 0;
 
@@ -80,6 +90,8 @@ for i = 1:numTernPoints
 end
 
 %% GUI components
+
+% figure 1
 hbuttonA = uicontrol(f1, 'Style', 'pushbutton', 'String', 'A', ...
     'Position', [315, 220, 40, 25], ...
     'Callback', {@buttonACallback});
@@ -96,6 +108,18 @@ hbuttonScatter = uicontrol(f1, 'Style', 'pushbutton', ...
 hbuttonSurf = uicontrol(f1, 'Style', 'pushbutton', 'String', 'surface', ...
     'Position', [315, 270, 70, 25], ...
     'Callback', {@buttonSurfCallback});
+htextConst = uicontrol(f1, 'Style', 'text', 'String', 'Const. %', ...
+    'Position', [325, 110, 60, 10]);
+heditConst = uicontrol(f1, 'Style', 'edit', ...
+    'Position', [325, 90, 60, 20], ...
+    'Callback', {@editConstCallback}); 
+htextWidth = uicontrol(f1, 'Style', 'text', 'String', 'Width', ...
+    'Position', [325, 70, 60, 10]);
+heditWidth = uicontrol(f1, 'Style', 'edit', ...
+    'Position', [300, 50, 60, 20], ...
+    'Callback', {@editWidthCallback});
+
+% figure 2
 hbuttonScaleSqrt = uicontrol(f2, 'Style', 'pushbutton', ...
     'String', 'scale sqrt', ...
     'Position', [450, 135, 100, 30], ...
@@ -108,24 +132,10 @@ hbuttonScaleDef = uicontrol(f2, 'Style', 'pushbutton', ...
     'String', 'no scale', ...
     'Position', [450, 160, 100, 30], ...
     'Callback', {@buttonScaleDefCallback});
-hbuttonSelection = uicontrol(f2, 'Style', 'pushbutton', ...
-    'String', 'select line', ...
-    'Position', [450, 60, 100, 30], ...
-    'Callback', {@buttonSelectionCallback});
 hbuttonSaveSelect = uicontrol(f2, 'Style', 'pushbutton', ...
     'String', 'save points', ...
     'Position', [450, 190, 100, 30], ...
     'Callback', {@buttonSaveSelectCallback});
-htextConst = uicontrol(f1, 'Style', 'text', 'String', 'Const. %', ...
-    'Position', [325, 110, 60, 10]);
-heditConst = uicontrol(f1, 'Style', 'edit', ...
-    'Position', [325, 90, 60, 20], ...
-    'Callback', {@editConstCallback}); 
-htextWidth = uicontrol(f1, 'Style', 'text', 'String', 'Width', ...
-    'Position', [325, 70, 60, 10]);
-heditWidth = uicontrol(f1, 'Style', 'edit', ...
-    'Position', [300, 50, 60, 20], ...
-    'Callback', {@editWidthCallback});
 
 %% initial figure 1 display
 
@@ -142,65 +152,60 @@ plotTernData(0);
 hold off;
 
 %% make UI visible
+
 f1.Visible = 'on';
 f2.Visible = 'on';
 
     %% callback functions
     
+    % figure 1 (ternary diagram) callbacks
+    
+    % pick constant composition
     function buttonACallback(hbuttonA, eventdata, handles)
         constType = 0;
         plotSpecData(1);
     end
-
     function buttonBCallback(hbuttonB, eventdata, handles)
         constType = 1;
         plotSpecData(1);
     end
-
     function buttonCCallback(hbuttonC, eventdata, handles)
         constType = 2;
         plotSpecData(1);
     end
 
-    function buttonScaleSqrtCallback(hbuttonScaleSqrt, eventdata, handles)
-        plotSpecData(2);
-    end
-    
-    function buttonScaleLogCallback(hbuttonScaleLog, eventdata, handles)
-        plotSpecData(3);
-    end
-
-    function buttonScaleDefCallback(hbuttonScaledDef, eventdata, handles)
-        plotSpecData(1);
-    end
-
+    % type of plot (scatter or surface)
     function buttonScatterCallback(hbuttonScatter, eventdata, handles)
         ternPlotType = 0;
         plotTernData(ternPlotType);
     end
-
     function buttonSurfCallback(hbuttonSurf, eventdata, handles)
         ternPlotType = 1;
         plotTernData(ternPlotType);
     end
 
-    function buttonSelectionCallback(hbuttonSelection, eventdata, handles)
-        % save user-selected point
-        numSelected = numSelected + 1;
-        [xClick, yClick] = ginput(1);
-        [compA, compB, compC] = getComp(yClick);
-        [xTernCoord, yTernCoord] = ...
-            getTernCoord(compA, compB, sqrt3Half, sqrt3Inv);
-        xSelected(numSelected) = xTernCoord;
-        ySelected(numSelected) = yTernCoord;
-        
-        % plot user-selected point
-        figure(f1);
-        hold on;
-        scatter3(ha1, xTernCoord, yTernCoord, zMax, 30, 'r', 'filled');
-        hold off;
+    % choose range of compositions
+    function editConstCallback(heditConst, eventdata, handles)
+        constPercent = str2double(get(heditConst, 'String')) / 100;
+    end
+    function editWidthCallback(heditWidth, eventdata, handles)
+        width = str2double(get(heditWidth, 'String')) / 100;
     end
 
+    % figure 2 (spec. data) callbacks
+
+    % scaling data (none, square root, or log)
+    function buttonScaleSqrtCallback(hbuttonScaleSqrt, eventdata, handles)
+        plotSpecData(2);
+    end
+    function buttonScaleLogCallback(hbuttonScaleLog, eventdata, handles)
+        plotSpecData(3);
+    end
+    function buttonScaleDefCallback(hbuttonScaledDef, eventdata, handles)
+        plotSpecData(1);
+    end
+   
+    % save a selected line
     function buttonSaveSelectCallback(hbuttonSaveSelect, eventdata, handles)
         % save user-selected line
         numSelected = numSelected + 2;
@@ -230,21 +235,15 @@ f2.Visible = 'on';
         hold off;
     end
 
-    function editConstCallback(heditConst, eventdata, handles)
-        constPercent = str2double(get(heditConst, 'String')) / 100;
-    end
-
-    function editWidthCallback(heditWidth, eventdata, handles)
-        width = str2double(get(heditWidth, 'String')) / 100;
-    end
-
     %% helper functions
     
     %% plots ternary data
+    
     function plotTernData(plotType)
+        
         % plot gridlines
         figure(f1);
-        hold off;
+        hold off; % clear previous figure
         plotTernBase(ha1, sqrt3Half, sqrt3Inv);
         hold on;
         
@@ -273,6 +272,7 @@ f2.Visible = 'on';
     end
 
     %% plots spec data
+    
     function plotSpecData(scaling)
         % get the correct set of composition data
         if constType == 0
@@ -287,10 +287,11 @@ f2.Visible = 'on';
         end
         
         ids = ids .* 2;      
-        sliderBinary(data(:, 1), data(:, ids), ySpec, scaling);
+        plotSpecSliders(data(:, 1), data(:, ids), ySpec, scaling);
     end
 
-    %% gets the composition of a click
+    %% gets the composition of a point on spec. plot
+    
     function [compA, compB, compC] = getComp(yClick)
         if constType == 0
             compA = constPercent;
@@ -307,20 +308,19 @@ f2.Visible = 'on';
         end
     end
 
-    %% creates slider on spec. graph
-    function sb = sliderBinary(xAxis, yAxis, composition,scaling)
+    %% creates slider and spec. plot
+    
+    function sb = plotSpecSliders(xAxis, yAxis, composition,scaling)
 
         % setup; partially copied from CombiView
         
         hold off; % clear previous graph
         figure(f2);
-        %hold off;
         sb.SBFigure = f2;
-        sb.plotwindow = 1;
         
         % set up the axes
         
-        % position_rectangle = [left, bottom, width, height];
+        % rectangle position defined by [left, bottom, width, height];
         sb.DataAxes = axes(...
                   'Units', 'Normalized',...
                   'Position',[graphHorPosFrac graphVertPosFrac ...
@@ -337,12 +337,11 @@ f2.Visible = 'on';
                   'YLim',[0 1], ...
                   'Box','on');
         Range.X = [min(xAxis) max(xAxis)];
-        %Range.Y = [min(yAxis(:)) max(yAxis(:))]; 
          sb.SliderAxesVert = axes(...
                     'Units', 'Normalized', ...
                    'Position', [(graphHorPosFrac + graphWidthFrac) ...
                    graphVertPosFrac ...
-                   sliderWidthFrac graphHeightFrac], ...
+                   sliderVertWidthFrac graphHeightFrac], ...
                    'XTick', [], ...
                    'YTick', [], ...
                    'XLim', [0 1], ...
@@ -354,33 +353,33 @@ f2.Visible = 'on';
         % plot the data
        
         % sort data according to composition
-       [sComposition,ID] = sort(composition); 
+        [sComposition,ID] = sort(composition); 
        
-       % create what is nessesary for surf plot
-       [x,y] = meshgrid(xAxis, sComposition); 
+        % create what is nessesary for surf plot
+        [x,y] = meshgrid(xAxis, sComposition); 
 
-       % select the scaling function
-       if (scaling == 2)
-           yAxis = sqrt(yAxis);
-       end 
-       if (scaling == 3)
-           yAxis = log10(yAxis);
-       end 
+        % select the scaling function
+        if (scaling == 2)
+            yAxis = sqrt(yAxis);
+        end 
+        if (scaling == 3)
+            yAxis = log10(yAxis);
+        end 
        
-       figure(f2);
-       sb.DataPlots = surf(x, y, yAxis(:,ID).');
+        figure(f2);
+        sb.DataPlots = surf(x, y, yAxis(:,ID).');
        
-       % remove multiple axes labels
-       if axesSet ~= 0
-           set(sb.DataAxes, 'XTick', [], 'YTick', []);
-       end
-       axes(sb.DataAxes);
+        % remove multiple axes labels
+        if axesSet ~= 0
+            set(sb.DataAxes, 'XTick', [], 'YTick', []);
+        end
+        axes(sb.DataAxes);
        
-       if axesSet == 0
-           xlabel('Angle'); 
-           ylabel('Composition');
-           axesSet = 1;
-       end
+        if axesSet == 0
+            xlabel('Angle'); 
+            ylabel('Composition');
+            axesSet = 1;
+        end
        
        % make plot look good
        shading('interp');
@@ -398,34 +397,27 @@ f2.Visible = 'on';
 
         % Create a "slider" to select angle
         
+        % horizontal slider    
         axes(sb.SliderAxes);
         set(sb.SliderAxes,'XLim',Range.X);
-        %set(sb.SliderAxesVert, 'YLim', Range.Y);
-
         hold on;
         sb.SliderLine = plot(Range.X,[.5 .5],'-r');      
         sb.SliderMarker = plot(Range.X(1),.5,'rv','MarkerFaceColor','r');
-        
-        axes(sb.DataAxes);
-        
+        axes(sb.DataAxes);        
         hold on;
         sb.AngleMarker = ...
             plot([Range.X(1) Range.X(1)],get(sb.DataAxes,'YLim'),'r');
-        %hold off;
 
+        % vertical sliders
         hold on;
         axes(sb.SliderAxesVert);
         set(sb.SliderAxesVert, 'YLim', Range.Y);
         hold on;
         sb.SliderLineVert = plot([.5 .5], Range.Y, '-r');
-        %Range.Y
-        sb.SliderMarkerVert = plot(.5, Range.Y(1), 'rv','MarkerFaceColor','r');
+        sb.SliderMarkerVert = plot(.5, Range.Y(1), '<','MarkerFaceColor','r');
         sliderVert1Val = Range.Y(1);
-        sb.SliderMarkerVert2 = plot(.5, Range.Y(2), 'rv', 'MarkerFaceColor', 'r');
+        sb.SliderMarkerVert2 = plot(.5, Range.Y(2), '<', 'MarkerFaceColor', 'r');
         sliderVert2Val = Range.Y(2);
-        %sb.SliderMarkerVert = plot(Range.Y(1), .5, 'rv', 'MarkerFaceColor', 'r');
-        %hold off;
-
         axes(sb.DataAxes);
         hold on;
         sb.CompMarker = ...
@@ -433,16 +425,17 @@ f2.Visible = 'on';
         sb.CompMarker2 = ...
             plot(get(sb.DataAxes, 'XLim'), [Range.Y(2) Range.Y(2)], 'r');
 
+        % bring slider axes to the front
         uistack(sb.SliderAxes,'top');
         uistack(sb.SliderAxesVert, 'top');
         
+        % set callback functions for sliders
         set(sb.SliderAxes,'ButtonDownFcn', ...
             {@buttondownfcn, sb.SliderAxes});
         set(sb.SliderLine,'ButtonDownFcn', ...
             {@buttondownfcn, sb.SliderAxes});
         set(sb.SliderMarker,'ButtonDownFcn', ...
-            {@buttondownfcn, sb.SliderAxes});
-        
+            {@buttondownfcn, sb.SliderAxes});        
         set(sb.SliderAxesVert, 'ButtonDownFcn', ...
             {@sliderVertCallback, sb.SliderAxesVert});
         set(sb.SliderLineVert, 'ButtonDownFcn', ...
@@ -451,12 +444,9 @@ f2.Visible = 'on';
             {@sliderVertCallback, sb.SliderAxesVert});
         set(sb.SliderMarkerVert2, 'ButtonDownFcn', ...
             {@sliderVertCallback, sb.SliderAxesVert});
-
-        %{
-        set(sb.DataPlots, 'ButtonDownFcn', ...
-            {@buttondownfcn2, sb.SliderAxes});
-        %}
-        %% determine where slider is
+        
+        %% determine where horizontal slider is and adjust ternary plot
+        
         function sliderClick(src,evt,parentfig)          
             selected = get(sb.SliderAxes,'CurrentPoint');
             sliderVal = selected(1,1); % changed xNew to sliderVal for readability
@@ -464,21 +454,21 @@ f2.Visible = 'on';
             % find index of closest x value to the slider position
             [xApproxVal, xIndex] = min(abs(xAxis - sliderVal));
 
-            % plot the ternary diagram again
-            
+            % plot the ternary diagram again           
             plotTernData(ternPlotType);
             
             set(sb.SliderMarker,'XData',sliderVal);
             set(sb.AngleMarker,'XData',[sliderVal sliderVal]);      
         end
+        
         %% determine where vertical slider is
+        
         function sliderClickVert(src, evt, parentfig)
             selected = get(sb.SliderAxesVert, 'CurrentPoint');
             sliderVal = selected(1, 2);
             
             if sliderVal >= 0
                 if sliderVal <= maxComp
-                    %sliderVal
                     sliderNum = closerSlider(sliderVal);
                     if sliderNum == 1
                         set(sb.SliderMarkerVert, 'YData', sliderVal);
@@ -492,7 +482,9 @@ f2.Visible = 'on';
                 end
             end
         end
+        
         %% determine which vertical slider is closer
+        
         function [numCloser] = closerSlider(sliderVal)
             if abs(sliderVal - sliderVert1Val) < abs(sliderVal - sliderVert2Val)
                 numCloser = 1;
@@ -500,20 +492,9 @@ f2.Visible = 'on';
                 numCloser = 2;
             end
         end
-        %% determine where in graph click occurred
-        % can delete
-        function graphClick()
-            selected = get(0, 'PointerLocation');            
-            figureVertPos = get(f2, 'OuterPosition');
-            figureVertPos = figureVertPos(2);
-            figureHeight = get(f2, 'OuterPosition');
-            figureHeight = figureHeight(4);
-            graphHeight = figureHeight * graphHeightFrac;
-            ySelectedPoint = selected(2) - figureHeight * graphVertPosFrac...
-                - figureVertPos;
-            ySelectedPoint = ySelectedPoint / graphHeight * (constPercent + width);
-        end
+        
         %% sliderVertCallback
+        
         function sliderVertCallback(src, evt, sb)
             parentfig = get(sb, 'Parent');
             if parentfig ~= 0
@@ -523,17 +504,9 @@ f2.Visible = 'on';
                 sliderClickVert(src, evt,  parentfig);
             end
         end
-        %% sliderVertLineCallback
-        function sliderVertLineCallback(src, evt, sb)
-            parentfig = get(sb, 'Parent');
-            if parentfig ~= 0
-                set(parentfig, ...
-                    'WindowButtonMotionFcn', {@sliderClickVert, parentfig}, ...
-                    'WindowButtonUpFcn', {@buttonupfcnVert, parentfig});
-                sliderClickVert(src, evt, parentfig);
-            end
-        end
+        
         %% buttondownfcn
+        
         function buttondownfcn (src, evt, sb)
             parentfig = get(sb,'Parent');
             if parentfig ~= 0
@@ -543,19 +516,19 @@ f2.Visible = 'on';
                 sliderClick(src,evt,parentfig);
             end
         end
+        
         %% windowbuttonupfcn
+        
         function buttonupfcn (src, evt, sb)
             set(sb, 'WindowButtonMotionFcn', [])
         end
+        
         %% buttonupfcnVert
+        
         function buttonupfcnVert(src, evt, sb)
             set(sb, 'WindowButtonMotionFcn', [])
         end
-        %% buttondownfcn2
-        function buttondownfcn2 (src, evt, sb)
-            %parentfig = get(sb, 'Parent');
-            graphClick();
-        end
+        
     end
 end
 
