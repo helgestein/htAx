@@ -327,8 +327,12 @@ fTernDiagram.Visible = 'on';
     function buttonCloseCallback(hbuttonClose, eventdata, handles)
         close(fButtons);
         close(fTernDiagram);
-        close(fSpecButtons);
-        close(fSpecPlot);
+        if ishandle(fSpecButtons) ~= 0
+            close(fSpecButtons);
+        end
+        if ishandle(fSpecPlot) ~= 0
+            close(fSpecPlot);
+        end
     end
 
     function buttonSaveCloseCallback(hbuttonSaveClose, eventdata, handles)

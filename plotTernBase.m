@@ -41,5 +41,15 @@ for i = 2:numTicks
 
 end
 
+text(-0.03, -0.01, 'C', 'FontSize', 12, 'Rotation', 300);
+text(0.49, sqrt3Half + 0.02, 'B', 'FontSize', 12);
+text(1.03, -0.02, 'A', 'FontSize', 12, 'Rotation', 60);
+
+for i = 2:numTicks
+    text(xTickRight(i) + 0.02, yTickRight(i), num2str((i - 1) * 100 / numTicks), 'FontSize', 12);
+    text(tickBottom(i), -0.05, num2str((i - 1) * 100 / numTicks), 'Fontsize', 12, 'Rotation', 60);
+    text(xTickLeft(i) - 0.05, yTickLeft(i), num2str((i - 1) * 100 / numTicks), 'FontSize', 12, 'Rotation', 300);
+end
+
 end
 
