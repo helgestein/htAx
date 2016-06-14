@@ -10,12 +10,12 @@ constType = 0; % 0 for A, 1 for B, 2 for C
 xIndex = 1;
 specFigsOpen = 0; % 0 for unopen, 1 for open
 scaleType = 1; % 1 for none, 2 for sqrt, 3 for log
-%global fSpecPlot;
-fSpecPlot = figure('Visible', 'off', ...
-    'Units', 'Normalized', ...
-    'Position', [0.52 0.03 0.45 0.45]);
-figure(fSpecPlot);
-set(gcf, 'color', 'w');
+global fSpecPlot;
+%fSpecPlot = figure('Visible', 'off', ...
+%    'Units', 'Normalized', ...
+%    'Position', [0.52 0.03 0.45 0.45]);
+%figure(fSpecPlot);
+%set(gcf, 'color', 'w');
 
 figButtonsLeft = 200;
 figButtonsBottom = 500;
@@ -165,7 +165,7 @@ A = A ./ 100;
 B = B ./ 100;
 C = C ./ 100;
 
-% FOR THIS TEST FILE ONLY remove first five rows of EDX data
+% FOR TEST FILE ONLY remove first five rows of EDX data
 rowsToRemove = 5;
 lengthNew = length(A) - rowsToRemove;
 ATemp = zeros(lengthNew);
@@ -194,6 +194,7 @@ end
 figure(fTernDiagram);
 axesTernary = axes('Units','Normalized','Position',[0.1, 0.1, 0.8, 0.8]); 
 hold on;
+figure(fTernDiagram);
 plotTernData(0);
 hold off;
 
@@ -201,7 +202,7 @@ hold off;
 
 fButtons.Visible = 'on';
 fTernDiagram.Visible = 'on';
-fSpecPlot.Visible = 'on';
+%fSpecPlot.Visible = 'on';
 
 %% callbacks
 
@@ -214,11 +215,14 @@ fSpecPlot.Visible = 'on';
     end
     function buttonACallback(hbuttonA, eventdata, handles)
         constType = 0;
+
         if specFigsOpen == 0
             [hbuttonScaleSqrt, hbuttonScaleLog, ...
                 hbuttonScaleNone, hbuttonSave, ...
-                fSpecButtons] = openSpecFigs();
+                fSpecButtons, fSpecPlot] = openSpecFigs();
+
             setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
+
             specFigsOpen = 1;
         end
         plotSpecData(scaleType);
@@ -228,7 +232,7 @@ fSpecPlot.Visible = 'on';
         if specFigsOpen == 0
             [hbuttonScaleSqrt, hbuttonScaleLog, ...
                 hbuttonScaleNone, hbuttonSave, ...
-                fSpecButtons] = openSpecFigs();
+                fSpecButtons, fSpecPlot] = openSpecFigs();
             setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
             specFigsOpen = 1;
         end
@@ -239,7 +243,7 @@ fSpecPlot.Visible = 'on';
         if specFigsOpen == 0
             [hbuttonScaleSqrt, hbuttonScaleLog, ...
                 hbuttonScaleNone, hbuttonSave, ...
-                fSpecButtons] = openSpecFigs();
+                fSpecButtons, fSpecPlot] = openSpecFigs();
             setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
             specFigsOpen = 1;
         end
@@ -298,6 +302,7 @@ fSpecPlot.Visible = 'on';
         plotTernBase(axesTernary, sqrt3Half, sqrt3Inv);
         hold on;
         
+        %figure(fTernDiagram);
         if ternPlotType == 0
             plotTernScatter(xTernCoordAll, yTernCoordAll, ...
                 data(xIndex, 2 .* (1:numTernPoints)), axesTernary);
@@ -306,6 +311,7 @@ fSpecPlot.Visible = 'on';
                 data(xIndex, 2 .* (1:numTernPoints)));
         end
         
+        %figure(fTernDiagram);
         if numSelected ~= 0
             zVals = zMax * ones(numSelected, 1);
             scatter3(axesTernary, xSelected, ySelected, zVals, 30, 'r', 'filled');
@@ -337,22 +343,31 @@ fSpecPlot.Visible = 'on';
             ySpec = A(ids);
         end
         
-        ids = ids .* 2;      
-        plotSpecSliders(data(:, 1), data(:, ids), ySpec, scaling);
+        ids = ids .* 2;     
+        plotSpecSliders(data(:, 1), data(:, ids), ySpec, scaling); 
+
     end
 
 %% creates slider and spec. plot
     
     function sb = plotSpecSliders(xAxis, yAxis, composition,scaling)
-
+        %print(fSpecPlot, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSaveB', '-djpeg');
+ 
         % setup; partially copied from CombiView
-        
-        hold off; % clear previous graph
         figure(fSpecPlot);
+
+        %hold off; 
+        % clear previous graph
+
+        %figure(fSpecPlot); 
         sb.SBFigure = fSpecPlot;
-        hold off;
-        % set up the axes
         
+        %hold off;
+        % set up the axes
+        %print(fSpecPlot, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSaveA', '-djpeg');
+      
+        %print(sb.SBFigure, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSave', '-djpeg');
+         
         % rectangle position defined by [left, bottom, width, height];
         sb.DataAxes = axes(...
                   'Units', 'Normalized',...
@@ -370,7 +385,7 @@ fSpecPlot.Visible = 'on';
                   'YLim',[0 1], ...
                   'Box','on');
         Range.X = [min(xAxis) max(xAxis)];
-         sb.SliderAxesVert = axes(...
+        sb.SliderAxesVert = axes(...
                     'Units', 'Normalized', ...
                    'Position', [(graphHorPosFrac + graphWidthFrac) ...
                    graphVertPosFrac ...
@@ -381,13 +396,14 @@ fSpecPlot.Visible = 'on';
                    'Box', 'on');
         Range.Y = [min(composition) max(composition)];
         maxComp = max(composition);
+        
         axes(sb.DataAxes);
        
         % plot the data
        
         % sort data according to composition
         [sComposition,ID] = sort(composition); 
-       
+      
         % create what is nessesary for surf plot
         [x,y] = meshgrid(xAxis, sComposition); 
 
@@ -400,10 +416,11 @@ fSpecPlot.Visible = 'on';
         end 
        
         figure(fSpecPlot);
+
         hold off;
 
         sb.DataPlots = surf(x, y, yAxis(:,ID).');
-       %hold on;
+        %hold on;
         % remove multiple axes labels
         if axesSet ~= 0
             set(sb.DataAxes, 'XTick', [], 'YTick', []);
@@ -418,11 +435,14 @@ fSpecPlot.Visible = 'on';
             ylabel('Composition');
             axesSet = 1;
         end
+      
        %figure(fSpecPlot);
        % make plot look good
        shading('interp');
        axis('tight');
        view(2);
+print(sb.SBFigure, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSave2', '-djpeg');
+      
        hold on;
        set(sb.SliderAxes, 'ButtonDownFcn', {@buttondownfcn, sb.SliderAxes});
        set(sb.SliderAxesVert, 'ButtonDownFcn', {@sliderVertCallback, sb.SliderAxesVert});

@@ -1,19 +1,19 @@
-function [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpecButtons] = openSpecFigs()
+function [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpecButtons, fSpecPlot] = openSpecFigs()
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 
 fSpecButtons = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
     'Position', [0.03 0.03 0.45 0.45]);
-%fSpecPlot = figure('Visible', 'off', ...
-%    'Units', 'Normalized', ...
-%    'Position', [0.52 0.03 0.45 0.45]);
+fSpecPlot = figure('Visible', 'off', ...
+    'Units', 'Normalized', ...
+    'Position', [0.52 0.03 0.45 0.45]);
 
 % set background to white
 figure(fSpecButtons);
 set(gcf, 'color', 'w');
-%figure(fSpecPlot);
-%set(gcf, 'color', 'w');
+figure(fSpecPlot);
+set(gcf, 'color', 'w');
 
 % set tabs in button window
 tabsSpec = uitabgroup('Parent', fSpecButtons);
@@ -57,7 +57,7 @@ hbuttonSave = uicontrol('Parent', tabSelect, ...
 %% make windows visible
 
 fSpecButtons.Visible = 'on';
-%fSpecPlot.Visible = 'on';
+fSpecPlot.Visible = 'on';
 
 end
 
