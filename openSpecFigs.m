@@ -2,6 +2,7 @@ function [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpe
 %UNTITLED6 Summary of this function goes here
 %   Detailed explanation goes here
 
+% create spec. windows
 fSpecButtons = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
     'Position', [0.5 0.7 0.4 0.2]);
@@ -20,10 +21,7 @@ tabsSpec = uitabgroup('Parent', fSpecButtons);
 tabStyle = uitab('Parent', tabsSpec, 'Title', 'Plot style');
 tabSelect = uitab('Parent', tabsSpec, 'Title', 'Select points');
 
-
-
 %% components
-
 
 topRowOffset = 0.7;
 buttonWidth = 0.5;
@@ -48,7 +46,6 @@ hbuttonScaleNone = uicontrol('Parent', tabStyle, ...
     'Units', 'Normalized', ...
     'Position', [leftColOffset (topRowOffset - 2 * textSpacingVert) ...
     buttonWidth buttonHeight]);
-
 hbuttonSave = uicontrol('Parent', tabSelect, ...
     'Style', 'pushbutton', ...
     'String', 'Save points', ...
