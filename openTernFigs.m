@@ -384,7 +384,7 @@ fTernDiagram.Visible = 'on';
         info.C = C;
         info.numSelected = numSelected;
         info.pointInfo = pointInfo;
-        save('/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.mat', '-struct', 'info');
+        save(saveFile, '-struct', 'info');
     end
 
 %% helper functions
@@ -473,6 +473,12 @@ fTernDiagram.Visible = 'on';
     %% plots spec data
     
     function plotSpecData(scaling)
+        if specFigsOpen == 0
+            [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpecButtons, fSpecPlot] = openSpecFigs();
+            setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
+            specFigsOpen = 1;   
+        end
+        
         % get the correct set of composition data
         if constType == 0
             ids = getSpecIDs(constPercent, width, A);

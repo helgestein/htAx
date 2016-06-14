@@ -1,4 +1,4 @@
-function [ output_args ] = beginNewAnalysis(XRDFolder, EDXFile, saveFile)
+function [ output_args ] = beginAnalysis(XRDFolder, EDXFile, saveFile)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
 
