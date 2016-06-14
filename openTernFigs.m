@@ -8,14 +8,12 @@ constPercent = 0;
 width = 0;
 constType = 0; % 0 for A, 1 for B, 2 for C
 xIndex = 1;
+%yIndex = 1;
 specFigsOpen = 0; % 0 for unopen, 1 for open
 scaleType = 1; % 1 for none, 2 for sqrt, 3 for log
 global fSpecPlot;
-%fSpecPlot = figure('Visible', 'off', ...
-%    'Units', 'Normalized', ...
-%    'Position', [0.52 0.03 0.45 0.45]);
-%figure(fSpecPlot);
-%set(gcf, 'color', 'w');
+global ySpecComp2;
+global ySpec;
 
 figButtonsLeft = 200;
 figButtonsBottom = 500;
@@ -30,6 +28,7 @@ sqrt3Inv = 1 / sqrt(3);
 numSelected = 0;
 xSelected = zeros(1, 1);
 ySelected = zeros(1, 1);
+pointInfo = zeros(1, 3)
 
 axesSet = 0;
 
@@ -56,17 +55,12 @@ figTernDiagramBottom = figButtonsBottom;
 figTernDiagramWidth = figButtonsWidth;
 figTernDiagramHeight = figButtonsHeight;
 
-%fButtons = figure('Visible', 'off', ...
-%    'Position', [figButtonsLeft figButtonsBottom figButtonsWidth figButtonsHeight]);
 fButtons = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
-    'Position', [0.03 0.52 0.45 0.45]);
-%fTernDiagram = figure('Visible', 'off', ...
-%    'Position', [figTernDiagramLeft figTernDiagramBottom ...
-%    figTernDiagramWidth figTernDiagramHeight]);
+    'Position', [0 0.7 0.4 0.2]);
 fTernDiagram = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
-    'Position', [0.52 0.52 0.45 0.45]);
+    'Position', [0 0 0.4 0.45]);
 
 % set background to white
 figure(fButtons);
@@ -87,9 +81,9 @@ tabPostProcess = uitab('Parent', tabsTern, 'Title', 'Post-process');
 leftColOffset = 0.05;
 topRowOffset = 0.7;
 textWidth = 0.1;
-textHeight = 0.05;
-textSpacingVert = 0.1;
-colSpacing = 0.15;
+textHeight = 0.15;
+textSpacingVert = 0.25;
+colSpacing = 0.1;
 
 htextConst = uicontrol('Parent', tabComp, 'Style', 'text', ...
     'String', 'Comp.', ...
@@ -136,10 +130,10 @@ hbuttonC = uicontrol('Parent', tabComp, 'Style', 'pushbutton', ...
 % components in style tab
 
 buttonWidth = 0.2;
-buttonHeight = 0.05;
+buttonHeight = textHeight;
 middleHor = 0.5 - buttonWidth / 2;
 topRowOffset = 0.7;
-rowSpace = 0.1;
+rowSpace = 0.2;
 
 hbuttonScatter = uicontrol('Parent', tabStyle, 'Style', 'pushbutton', ...
     'String', 'Scatter', ...
@@ -202,7 +196,6 @@ hold off;
 
 fButtons.Visible = 'on';
 fTernDiagram.Visible = 'on';
-%fSpecPlot.Visible = 'on';
 
 %% callbacks
 
@@ -278,7 +271,31 @@ fTernDiagram.Visible = 'on';
     end
 
     function buttonSaveCallback(hbuttonSave, eventdata, handles)
-        'callback set - save'
+        numSelected = numSelected + 2;
+        [compA1, compB1, compC1] = getComp(sliderVert1Val);
+        [compA2, compB2, compC2] = getComp(sliderVert2Val);
+        [xTernCoord1, yTernCoord1] = ...
+            getTernCoord(compA1, compB1, sqrt3Half, sqrt3Inv);
+        [xTernCoord2, yTernCoord2] = ...
+            getTernCoord(compA2, compB2, sqrt3Half, sqrt3Inv);
+        xSelected(numSelected - 1) = xTernCoord1;
+        ySelected(numSelected - 1) = yTernCoord1;
+        xSelected(numSelected) = xTernCoord2;
+        ySelected(numSelected) = yTernCoord2;
+        
+        % plot user-selected points
+        figure(fTernDiagram);
+        hold on;
+        scatter3(axesTernary, xTernCoord1, yTernCoord1, zMax, 30, 'r', 'filled');
+        scatter3(axesTernary, xTernCoord2, yTernCoord2, zMax, 30, 'r', 'filled');
+        hold off;
+        
+        % plot user-selected line
+        figure(fTernDiagram);
+        hold on;
+        plot3(axesTernary, [xTernCoord1 xTernCoord2], [yTernCoord1 yTernCoord2], ...
+            [zMax zMax], 'r');
+        hold off;
     end
 
 %% helper functions
@@ -289,6 +306,26 @@ fTernDiagram.Visible = 'on';
         set(hbuttonScaleLog, 'Callback', {@buttonScaleLogCallback});
         set(hbuttonScaleNone, 'Callback', {@buttonScaleNoneCallback});
         set(hbuttonSave, 'Callback', {@buttonSaveCallback});
+    end
+
+    %% gets the composition of a point on spec. plot
+    
+    function [compA, compB, compC] = getComp(yClick)
+        [nearestVal, yIndex] = min(abs(ySpec - yClick));
+        
+        if constType == 0
+            compA = ySpecComp2(yIndex);
+            compB = ySpec(yIndex);
+            compC = 1 - compA - compB;
+        elseif constType == 1
+            compB = ySpecComp2(yIndex);
+            compC = ySpec(yIndex);
+            compA = 1 - compB - compC;
+        else
+            compC = ySpecComp2(yIndex);
+            compA = ySpec(yIndex);
+            compB = 1 - compA - compC;
+        end
     end
         
 
@@ -302,7 +339,6 @@ fTernDiagram.Visible = 'on';
         plotTernBase(axesTernary, sqrt3Half, sqrt3Inv);
         hold on;
         
-        %figure(fTernDiagram);
         if ternPlotType == 0
             plotTernScatter(xTernCoordAll, yTernCoordAll, ...
                 data(xIndex, 2 .* (1:numTernPoints)), axesTernary);
@@ -311,7 +347,6 @@ fTernDiagram.Visible = 'on';
                 data(xIndex, 2 .* (1:numTernPoints)));
         end
         
-        %figure(fTernDiagram);
         if numSelected ~= 0
             zVals = zMax * ones(numSelected, 1);
             scatter3(axesTernary, xSelected, ySelected, zVals, 30, 'r', 'filled');
@@ -335,12 +370,15 @@ fTernDiagram.Visible = 'on';
         if constType == 0
             ids = getSpecIDs(constPercent, width, A);
             ySpec = B(ids);
+            ySpecComp2 = A(ids);
         elseif constType == 1
             ids = getSpecIDs(constPercent, width, B);
             ySpec = C(ids);
+            ySpecComp2 = B(ids);
         else
             ids = getSpecIDs(constPercent, width, C);
             ySpec = A(ids);
+            ySpecComp2 = C(ids);
         end
         
         ids = ids .* 2;     
@@ -351,23 +389,13 @@ fTernDiagram.Visible = 'on';
 %% creates slider and spec. plot
     
     function sb = plotSpecSliders(xAxis, yAxis, composition,scaling)
-        %print(fSpecPlot, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSaveB', '-djpeg');
- 
+        
         % setup; partially copied from CombiView
         figure(fSpecPlot);
-
-        %hold off; 
-        % clear previous graph
-
-        %figure(fSpecPlot); 
         sb.SBFigure = fSpecPlot;
-        
-        %hold off;
+
         % set up the axes
-        %print(fSpecPlot, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSaveA', '-djpeg');
-      
-        %print(sb.SBFigure, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSave', '-djpeg');
-         
+
         % rectangle position defined by [left, bottom, width, height];
         sb.DataAxes = axes(...
                   'Units', 'Normalized',...
@@ -426,23 +454,18 @@ fTernDiagram.Visible = 'on';
             set(sb.DataAxes, 'XTick', [], 'YTick', []);
         end
         axes(sb.DataAxes);
-       %figure(fSpecPlot);
-       %print('/Users/sjiao/Documents/summer_2016/code/testFiles/figureSave', '-djpeg');
-       
+
         if axesSet == 0
-            %'I am here'
             xlabel('Angle'); 
             ylabel('Composition');
             axesSet = 1;
         end
-      
-       %figure(fSpecPlot);
+
        % make plot look good
        shading('interp');
        axis('tight');
        view(2);
-print(sb.SBFigure, '/Users/sjiao/Documents/summer_2016/code/testFiles/figureSave2', '-djpeg');
-      
+     
        hold on;
        set(sb.SliderAxes, 'ButtonDownFcn', {@buttondownfcn, sb.SliderAxes});
        set(sb.SliderAxesVert, 'ButtonDownFcn', {@sliderVertCallback, sb.SliderAxesVert});

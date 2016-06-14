@@ -4,7 +4,7 @@ function [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpe
 
 fSpecButtons = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
-    'Position', [0.03 0.03 0.45 0.45]);
+    'Position', [0.5 0.7 0.4 0.2]);
 fSpecPlot = figure('Visible', 'off', ...
     'Units', 'Normalized', ...
     'Position', [0.52 0.03 0.45 0.45]);
@@ -24,11 +24,12 @@ tabSelect = uitab('Parent', tabsSpec, 'Title', 'Select points');
 
 %% components
 
-leftColOffset = 0.05;
+
 topRowOffset = 0.7;
-buttonWidth = 0.2;
-buttonHeight = 0.05;
-textSpacingVert = 0.1;
+buttonWidth = 0.5;
+buttonHeight = 0.2;
+textSpacingVert = 0.2;
+leftColOffset = 0.5 - buttonWidth / 2;
 
 hbuttonScaleSqrt = uicontrol('Parent', tabStyle, ...
     'Style', 'pushbutton', ...
