@@ -1,13 +1,13 @@
-function [VarName1,VarName2,VarName3] = importEDXFile(filename, startRow, endRow)
-%IMPORTFILE Import numeric data from a text file as column vectors.
-%   [VARNAME1,VARNAME2,VARNAME3] = IMPORTFILE(FILENAME) Reads data from
+function [compA, compB, compC] = importEDXFile(filename, startRow, endRow)
+%IMPORTEDXFILE Import EDX data from a text file as column vectors.
+%   [COMPA, COMPB, COMPC] = IMPORTEDXFILE(FILENAME) Reads data from
 %   text file FILENAME for the default selection.
 %
-%   [VARNAME1,VARNAME2,VARNAME3] = IMPORTFILE(FILENAME, STARTROW, ENDROW)
+%   [COMPA, COMPB, COMPC] = IMPORTEDXFILE(FILENAME, STARTROW, ENDROW)
 %   Reads data from rows STARTROW through ENDROW of text file FILENAME.
 %
 % Example:
-%   [VarName1,VarName2,VarName3] = importfile('MnFeCoO-EDX',1, 342);
+%   [compA, compB, compC] = importfile('MnFeCoO-EDX',1, 342);
 %
 %    See also TEXTSCAN.
 
@@ -34,10 +34,17 @@ fileID = fopen(filename,'r');
 % This call is based on the structure of the file used to generate this
 % code. If an error occurs for a different file, try regenerating the code
 % from the Import Tool.
-dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(1)-1, 'ReturnOnError', false);
+dataArray = textscan(fileID, formatSpec, endRow(1)-startRow(1)+1, ...
+    'Delimiter', delimiter, ...
+    'HeaderLines', startRow(1)-1, ...
+    'ReturnOnError', false);
 for block=2:length(startRow)
     frewind(fileID);
-    dataArrayBlock = textscan(fileID, formatSpec, endRow(block)-startRow(block)+1, 'Delimiter', delimiter, 'HeaderLines', startRow(block)-1, 'ReturnOnError', false);
+    dataArrayBlock = textscan(fileID, formatSpec, ...
+        endRow(block)-startRow(block)+1, ...
+        'Delimiter', delimiter, ...
+        'HeaderLines', startRow(block)-1, ...
+        'ReturnOnError', false);
     for col=1:length(dataArray)
         dataArray{col} = [dataArray{col};dataArrayBlock{col}];
     end
@@ -46,15 +53,9 @@ end
 %% Close the text file.
 fclose(fileID);
 
-%% Post processing for unimportable data.
-% No unimportable data rules were applied during the import, so no post
-% processing code is included. To generate code which works for
-% unimportable data, select unimportable cells in a file and regenerate the
-% script.
-
 %% Allocate imported array to column variable names
-VarName1 = dataArray{:, 1};
-VarName2 = dataArray{:, 2};
-VarName3 = dataArray{:, 3};
+compA = dataArray{:, 1};
+compB = dataArray{:, 2};
+compC = dataArray{:, 3};
 
 

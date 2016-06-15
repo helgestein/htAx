@@ -1,6 +1,11 @@
-function [ output_args ] = beginAnalysis(XRDFolder, EDXFile, saveFile)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [] = beginAnalysis(XRDFolder, EDXFile, saveFile)
+%BEGINANALYSIS takes in the name of a folder that contains XRD data, the
+%name of a file with EDX data, and the name of a file to which the analysis
+%can be saved and begins a new analysis session with the data
+%   example call:
+%   beginAnalysis('/Users/sjiao/Documents/summer_2016/data/CoFeMnO-mapcorr',
+%   '/Users/sjiao/Documents/summer_2016/data/MnFeCoO-EDX',
+%   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
 
 % import and read XRD and EDX data
 [xCoord, yCoord, data] = readXRDData(XRDFolder);

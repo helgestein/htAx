@@ -1,7 +1,5 @@
 function [ output_args ] = plotTernBase(axesHandle, sqrt3Half, sqrt3Inv)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
-
+%PLOTTERNBASE plots the base features of a ternary plot (e.g. guidelines)
 % plot settings
 numTicks = 5;
 zMax = [1000 1000]; % so that guidelines are shown above the plot

@@ -1,6 +1,6 @@
-    function [] = openTernFigs(saveFile, data, A, B, C, numSelected, pointInfo)
-    %UNTITLED5 Summary of this function goes here
-    %   Detailed explanation goes here
+    function [] = openTernFigs(saveFile, data, A, B, C, ...
+        numSelected, pointInfo)
+    %OPENTERNFIGS opens the ternary diagram and its settings window
 
     %% parameters
 
@@ -36,12 +36,15 @@
 
     %% create tern windows
 
-    fButtons = figure('Visible', 'off', ...
+    fButtons = figure(...
+        'Visible', 'off', ...
         'Units', 'Normalized', ...
-        'Position', [0 0.7 0.4 0.2]);
+        'Position', [0 0.7 0.4 0.2], ...
+        'Name', 'Ternary Plot Settings');
     fTernDiagram = figure('Visible', 'off', ...
         'Units', 'Normalized', ...
-        'Position', [0 0 0.4 0.45]);
+        'Position', [0 0 0.4 0.45], ...
+        'Name', 'Ternary Plot');
 
     % set background to white
     figure(fButtons);
@@ -82,18 +85,21 @@
         'Callback', {@editConstCallback});
     heditWidth = uicontrol('Parent', tabComp, 'Style', 'edit', ...
         'Units', 'Normalized', ...
-        'Position', [(leftColOffset + colSpacing) (topRowOffset - textSpacingVert) ...
+        'Position', [(leftColOffset + colSpacing) ...
+        (topRowOffset - textSpacingVert) ...
         textWidth textHeight], ...
         'Callback', {@editWidthCallback});
 
-    buttonColOffset = leftColOffset + textWidth + colSpacing + textWidth + 0.2;
+    buttonColOffset = ...
+        leftColOffset + textWidth + colSpacing + textWidth + 0.2;
     buttonWidth = textWidth;
     buttonHeight = textHeight;
 
     hbuttonA = uicontrol('Parent', tabComp, 'Style', 'pushbutton', ...
         'String', 'A', ...
         'Units', 'Normalized', ...
-        'Position', [buttonColOffset topRowOffset buttonWidth buttonHeight], ...
+        'Position', [buttonColOffset topRowOffset ...
+        buttonWidth buttonHeight], ...
         'Callback', {@buttonACallback});
     hbuttonB = uicontrol('Parent', tabComp, 'Style', 'pushbutton', ...
         'String', 'B', ...
@@ -104,7 +110,8 @@
     hbuttonC = uicontrol('Parent', tabComp, 'Style', 'pushbutton', ...
         'String', 'C', ...
         'Units', 'Normalized', ...
-        'Position', [buttonColOffset (topRowOffset - textSpacingVert * 2) ...
+        'Position', [buttonColOffset ...
+        (topRowOffset - textSpacingVert * 2) ...
         buttonWidth buttonHeight], ...
         'Callback', {@buttonCCallback});
 
@@ -120,22 +127,27 @@
     textWidth = 0.1;
     textHeight = 0.15;
     
-    hbuttonScatter = uicontrol('Parent', tabStyle, 'Style', 'pushbutton', ...
+    hbuttonScatter = uicontrol('Parent', tabStyle, ...
+        'Style', 'pushbutton', ...
         'String', 'Scatter', ...
         'Units', 'Normalized', ...
-        'Position', [leftColOffset topRowOffset buttonWidth buttonHeight], ...
+        'Position', [leftColOffset topRowOffset ...
+        buttonWidth buttonHeight], ...
         'Callback', {@buttonScatterCallback});
-    hbuttonSurf = uicontrol('Parent', tabStyle, 'Style', 'pushbutton', ...
+    hbuttonSurf = uicontrol('Parent', tabStyle, ...
+        'Style', 'pushbutton', ...
         'String', 'Surface', ...
         'Units', 'Normalized', ...
         'Position', [leftColOffset (topRowOffset - rowSpace) ...
         buttonWidth buttonHeight], ...
         'Callback', {@buttonSurfCallback});
-    htextSize = uicontrol('Parent', tabStyle, 'Style', 'text', ...
+    htextSize = uicontrol('Parent', tabStyle, ...
+        'Style', 'text', ...
         'String', 'Dot size', ...
         'Units', 'Normalized', ...
         'Position', [rightColOffset topRowOffset textWidth textHeight]);
-    heditSize = uicontrol('Parent', tabStyle, 'Style', 'edit', ...
+    heditSize = uicontrol('Parent', tabStyle, ...
+        'Style', 'edit', ...
         'Units', 'Normalized', ...
         'Position', [rightColOffset (topRowOffset - rowSpace) ...
         textWidth textHeight], ...
@@ -155,7 +167,8 @@
         'Style', 'pushbutton', ...
         'String', 'Restore settings', ...
         'Units', 'Normalized', ...
-        'Position', [leftColOffset topRowOffset buttonWidth buttonHeight], ...
+        'Position', [leftColOffset topRowOffset ...
+        buttonWidth buttonHeight], ...
         'Callback', {@buttonPointCallback});
     hbuttonDelete = uicontrol('Parent', tabPostProcess, ...
         'Style', 'pushbutton', ...
@@ -192,14 +205,17 @@
     numTernPoints = length(A);
     xTernCoordAll = zeros(numTernPoints, 1);
     yTernCoordAll = zeros(numTernPoints, 1);
-    for i = 1:numTernPoints
-        [xTernCoordAll(i), yTernCoordAll(i)] = ...
-            getTernCoord(A(i), B(i), sqrt3Half, sqrt3Inv);
+    for index = 1:numTernPoints
+        [xTernCoordAll(index), yTernCoordAll(index)] = ...
+            getTernCoord(A(index), B(index), sqrt3Half, sqrt3Inv);
     end
 
     figure(fTernDiagram);
-    axesTernary = axes('Units','Normalized','Position',[0.1, 0.1, 0.8, 0.8]);
-    htextAngle = uicontrol(fTernDiagram, 'Style', 'text', ...
+    axesTernary = axes(...
+        'Units', 'Normalized', ...
+        'Position',[0.1, 0.1, 0.8, 0.8]);
+    htextAngle = uicontrol(fTernDiagram, ...
+        'Style', 'text', ...
         'String', strcat({'Angle: '}, num2str(data(xIndex, 1))), ...
         'Units', 'Normalized', ...
         'Position', [0.05 0.9 0.2 0.05]);
@@ -216,16 +232,6 @@
     %% callbacks
 
         %% tern composition tab
-        
-        function resetConstPercent()
-            constPercent = 0;
-            set(heditConst, 'String', '0');
-        end
-
-        function resetWidth()
-            width = 0;
-            set(heditWidth, 'String', '0');
-        end
 
         function editConstCallback(heditConst, eventdata, handles)
             constPercent = str2double(get(heditConst, 'String')) / 100;
@@ -269,45 +275,16 @@
 
         function buttonACallback(hbuttonA, eventdata, handles)
             constType = 0;
-            %{
-            if specFigsOpen == 0
-                [hbuttonScaleSqrt, hbuttonScaleLog, ...
-                    hbuttonScaleNone, hbuttonSave, ...
-                    fSpecButtons, fSpecPlot] = openSpecFigs();
-
-                setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
-
-                specFigsOpen = 1;
-            end
-            %}
             plotSpecData(scaleType);
         end
 
         function buttonBCallback(hbuttonB, eventdata, handles)
             constType = 1;
-            %{
-            if specFigsOpen == 0
-                [hbuttonScaleSqrt, hbuttonScaleLog, ...
-                    hbuttonScaleNone, hbuttonSave, ...
-                    fSpecButtons, fSpecPlot] = openSpecFigs();
-                setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
-                specFigsOpen = 1;
-            end
-            %}
             plotSpecData(scaleType);
         end
 
         function buttonCCallback(hbuttonC, eventdata, handles)
             constType = 2;
-            %{
-            if specFigsOpen == 0
-                [hbuttonScaleSqrt, hbuttonScaleLog, ...
-                    hbuttonScaleNone, hbuttonSave, ...
-                    fSpecButtons, fSpecPlot] = openSpecFigs();
-                setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
-                specFigsOpen = 1;
-            end
-            %}
             plotSpecData(scaleType);
         end
 
@@ -321,11 +298,6 @@
         function buttonSurfCallback(hbuttonSurf, eventdata, handles)
             ternPlotType = 1;
             plotTernData(ternPlotType);
-        end
-    
-        function resetDotSize()
-            dotSize = 30;
-            set(heditSize, 'String', '30');
         end
     
         function editSizeCallback(heditSize, eventdata, handles)
@@ -364,7 +336,8 @@
             sliderVal = data(pointInfo(indexPoint, 6), 1);
             set(sliderPlot.SliderMarker,'XData',sliderVal);
             set(sliderPlot.AngleMarker,'XData',[sliderVal sliderVal]);
-            set(htextAngle, 'String', strcat({'Angle: '}, num2str(data(xIndex, 1))));
+            set(htextAngle, ...
+                'String', strcat({'Angle: '}, num2str(data(xIndex, 1))));
 
             % set vertical slider
 
@@ -415,7 +388,8 @@
             end
         end
 
-        function buttonSaveCloseCallback(hbuttonSaveClose, eventdata, handles)
+        function buttonSaveCloseCallback(hbuttonSaveClose, ...
+                eventdata, handles)
             buttonSaveAllCallback();
             buttonCloseCallback();
         end
@@ -440,17 +414,20 @@
 
         %% spec style tab
 
-        function buttonScaleSqrtCallback(hbuttonScaleSqrt, eventdata, handles)
+        function buttonScaleSqrtCallback(hbuttonScaleSqrt, ...
+                eventdata, handles)
             scaleType = 2;
             plotSpecData(scaleType);
         end
 
-        function buttonScaleLogCallback(hbuttonScaleLog, eventdata, handles)
+        function buttonScaleLogCallback(hbuttonScaleLog, ...
+                eventdata, handles)
             scaleType = 3;
             plotSpecData(scaleType);
         end
 
-        function buttonScaleNoneCallback(hbuttonScaleNone, eventdata, handles)
+        function buttonScaleNoneCallback(hbuttonScaleNone, ...
+                eventdata, handles)
             scaleType = 1;
             plotSpecData(scaleType);
         end
@@ -465,29 +442,51 @@
                 getTernCoord(compA1, compB1, sqrt3Half, sqrt3Inv);
             [xTernCoord2, yTernCoord2] = ...
                 getTernCoord(compA2, compB2, sqrt3Half, sqrt3Inv);
-            %xSelected(numSelected - 1) = xTernCoord1;
-            %ySelected(numSelected - 1) = yTernCoord1;
-            pointInfo(numSelected - 1, :) = [xTernCoord1 yTernCoord1 compA1 compB1 compC1 xIndex constPercent width constType ternPlotType scaleType];
-            %xSelected(numSelected) = xTernCoord2;
-            %ySelected(numSelected) = yTernCoord2;
-            pointInfo(numSelected, :) = [xTernCoord2 yTernCoord2 compA2 compB2 compC2 xIndex constPercent width constType ternPlotType scaleType];
+            pointInfo(numSelected - 1, :) = ...
+                [xTernCoord1 yTernCoord1 compA1 compB1 compC1 ...
+                xIndex constPercent width ...
+                constType ternPlotType scaleType];
+            pointInfo(numSelected, :) = ...
+                [xTernCoord2 yTernCoord2 compA2 compB2 compC2 ...
+                xIndex constPercent width ...
+                constType ternPlotType scaleType];
 
             % plot user-selected points
             figure(fTernDiagram);
             hold on;
-            scatter3(axesTernary, xTernCoord1, yTernCoord1, zMax, 30, 'r', 'filled');
-            scatter3(axesTernary, xTernCoord2, yTernCoord2, zMax, 30, 'r', 'filled');
+            scatter3(axesTernary, xTernCoord1, yTernCoord1, zMax, ...
+                30, 'r', 'filled');
+            scatter3(axesTernary, xTernCoord2, yTernCoord2, zMax, ...
+                30, 'r', 'filled');
             hold off;
 
             % plot user-selected line
             figure(fTernDiagram);
             hold on;
-            plot3(axesTernary, [xTernCoord1 xTernCoord2], [yTernCoord1 yTernCoord2], ...
+            plot3(axesTernary, [xTernCoord1 xTernCoord2], ...
+                [yTernCoord1 yTernCoord2], ...
                 [zMax zMax], 'r');
             hold off;
         end
 
     %% helper functions
+    
+        %% error handling
+            
+        function resetConstPercent()
+            constPercent = 0;
+            set(heditConst, 'String', '0');
+        end
+
+        function resetWidth()
+            width = 0;
+            set(heditWidth, 'String', '0');
+        end
+    
+        function resetDotSize()
+            dotSize = 30;
+            set(heditSize, 'String', '30');
+        end
 
         %% returns distance between two points
 
@@ -501,7 +500,8 @@
             minDist = realmax;
             minIndex = 1;
             for indexSearch = 1:numSelected
-                distTemp = squareDistance(xSelect, ySelect, pointInfo(indexSearch, 1), pointInfo(indexSearch, 2));
+                distTemp = squareDistance(xSelect, ySelect, ...
+                    pointInfo(indexSearch, 1), pointInfo(indexSearch, 2));
                 if distTemp < minDist
                     minDist = distTemp;
                     minIndex = indexSearch;
@@ -511,7 +511,8 @@
 
         %% sets callbacks for spec. buttons
 
-        function setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave)
+        function setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, ...
+                hbuttonScaleNone, hbuttonSave)
             set(hbuttonScaleSqrt, 'Callback', {@buttonScaleSqrtCallback});
             set(hbuttonScaleLog, 'Callback', {@buttonScaleLogCallback});
             set(hbuttonScaleNone, 'Callback', {@buttonScaleNoneCallback});
@@ -561,12 +562,14 @@
 
             if numSelected ~= 0
                 zVals = zMax * ones(numSelected, 1);
-                scatter3(axesTernary, pointInfo(:, 1), pointInfo(:, 2), zVals, 30, 'r', 'filled');
+                scatter3(axesTernary, pointInfo(:, 1), pointInfo(:, 2), ...
+                    zVals, 30, 'r', 'filled');
                 i = 1;
                 hold on;
                 while i <= numSelected - 1
                     hold on;
-                    plot3(axesTernary, [pointInfo(i, 1) pointInfo(i + 1, 1)], ...
+                    plot3(axesTernary, ...
+                        [pointInfo(i, 1) pointInfo(i + 1, 1)], ...
                         [pointInfo(i, 2) pointInfo(i + 1, 2)], ...
                         [zMax zMax], 'r');
                     i = i + 2;
@@ -599,11 +602,15 @@
             else
                 ids = ids .* 2;   
                 if specFigsOpen == 0
-                    [hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave, fSpecButtons, fSpecPlot] = openSpecFigs();
-                    setSpecCallbacks(hbuttonScaleSqrt, hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
+                    [hbuttonScaleSqrt, hbuttonScaleLog, ...
+                        hbuttonScaleNone, hbuttonSave, ...
+                        fSpecButtons, fSpecPlot] = openSpecFigs();
+                    setSpecCallbacks(hbuttonScaleSqrt, ...
+                        hbuttonScaleLog, hbuttonScaleNone, hbuttonSave);
                     specFigsOpen = 1;   
                 end
-                sliderPlot = plotSpecSliders(data(:, 1), data(:, ids), ySpec, scaling);
+                sliderPlot = plotSpecSliders(data(:, 1), data(:, ids), ...
+                    ySpec, scaling);
             end
 
         end
@@ -620,20 +627,32 @@
             upper = constPercent + width;
             lower = constPercent - width;
             if constType == 0
-                [x(1), y(1)] = getTernCoord(upper, 1 - upper, sqrt3Half, sqrt3Inv);
-                [x(2), y(2)] = getTernCoord(lower, 1 - lower, sqrt3Half, sqrt3Inv);
-                [x(3), y(3)] = getTernCoord(lower, 0, sqrt3Half, sqrt3Inv);
-                [x(4), y(4)] = getTernCoord(upper, 0, sqrt3Half, sqrt3Inv);
+                [x(1), y(1)] = ...
+                    getTernCoord(upper, 1 - upper, sqrt3Half, sqrt3Inv);
+                [x(2), y(2)] = ...
+                    getTernCoord(lower, 1 - lower, sqrt3Half, sqrt3Inv);
+                [x(3), y(3)] = ...
+                    getTernCoord(lower, 0, sqrt3Half, sqrt3Inv);
+                [x(4), y(4)] = ...
+                    getTernCoord(upper, 0, sqrt3Half, sqrt3Inv);
             elseif constType == 1
-                [x(1), y(1)] = getTernCoord(0, upper, sqrt3Half, sqrt3Inv);
-                [x(2), y(2)] = getTernCoord(0, lower, sqrt3Half, sqrt3Inv);
-                [x(3), y(3)] = getTernCoord(1 - lower, lower, sqrt3Half, sqrt3Inv);
-                [x(4), y(4)] = getTernCoord(1 - upper, upper, sqrt3Half, sqrt3Inv);
+                [x(1), y(1)] = ...
+                    getTernCoord(0, upper, sqrt3Half, sqrt3Inv);
+                [x(2), y(2)] = ...
+                    getTernCoord(0, lower, sqrt3Half, sqrt3Inv);
+                [x(3), y(3)] = ...
+                    getTernCoord(1 - lower, lower, sqrt3Half, sqrt3Inv);
+                [x(4), y(4)] = ...
+                    getTernCoord(1 - upper, upper, sqrt3Half, sqrt3Inv);
             else
-                [x(1), y(1)] = getTernCoord(1 - upper, 0, sqrt3Half, sqrt3Inv);
-                [x(2), y(2)] = getTernCoord(1 - lower, 0, sqrt3Half, sqrt3Inv);
-                [x(3), y(3)] = getTernCoord(0, 1 - lower, sqrt3Half, sqrt3Inv);
-                [x(4), y(4)] = getTernCoord(0, 1 - upper, sqrt3Half, sqrt3Inv);
+                [x(1), y(1)] = ...
+                    getTernCoord(1 - upper, 0, sqrt3Half, sqrt3Inv);
+                [x(2), y(2)] = ...
+                    getTernCoord(1 - lower, 0, sqrt3Half, sqrt3Inv);
+                [x(3), y(3)] = ...
+                    getTernCoord(0, 1 - lower, sqrt3Half, sqrt3Inv);
+                [x(4), y(4)] = ...
+                    getTernCoord(0, 1 - upper, sqrt3Half, sqrt3Inv);
             end
             z = [zMax zMax zMax zMax];
             figure(fTernDiagram);
@@ -736,8 +755,10 @@
            view(2);
 
            hold on;
-           set(sb.SliderAxes, 'ButtonDownFcn', {@buttondownfcn, sb.SliderAxes});
-           set(sb.SliderAxesVert, 'ButtonDownFcn', {@sliderVertCallback, sb.SliderAxesVert});
+           set(sb.SliderAxes, ...
+               'ButtonDownFcn', {@buttondownfcn, sb.SliderAxes});
+           set(sb.SliderAxesVert, ...
+               'ButtonDownFcn', {@sliderVertCallback, sb.SliderAxesVert});
 
            set(sb.DataAxes,'XLim',Range.X);
            set(sb.DataAxes, 'YLim', Range.Y);
@@ -751,7 +772,8 @@
             set(sb.SliderAxes,'XLim',Range.X);
             hold on;
             sb.SliderLine = plot(Range.X,[.5 .5],'-r');      
-            sb.SliderMarker = plot(Range.X(1),.5,'rv','MarkerFaceColor','r');
+            sb.SliderMarker = ...
+                plot(Range.X(1),.5,'rv','MarkerFaceColor','r');
             axes(sb.DataAxes);        
             hold on;
             sb.AngleMarker = ...
@@ -763,16 +785,20 @@
             set(sb.SliderAxesVert, 'YLim', Range.Y);
             hold on;
             sb.SliderLineVert = plot([.5 .5], Range.Y, '-r');
-            sb.SliderMarkerVert = plot(.5, Range.Y(1), '<','MarkerFaceColor','r');
+            sb.SliderMarkerVert = plot(.5, Range.Y(1), '<', ...
+                'MarkerFaceColor','r');
             sliderVert1Val = Range.Y(1);
-            sb.SliderMarkerVert2 = plot(.5, Range.Y(2), '<', 'MarkerFaceColor', 'r');
+            sb.SliderMarkerVert2 = plot(.5, Range.Y(2), '<', ...
+                'MarkerFaceColor', 'r');
             sliderVert2Val = Range.Y(2);
             axes(sb.DataAxes);
             hold on;
             sb.CompMarker = ...
-                plot(get(sb.DataAxes, 'XLim'), [Range.Y(1) Range.Y(1)], 'r');
+                plot(get(sb.DataAxes, 'XLim'), ...
+                [Range.Y(1) Range.Y(1)], 'r');
             sb.CompMarker2 = ...
-                plot(get(sb.DataAxes, 'XLim'), [Range.Y(2) Range.Y(2)], 'r');
+                plot(get(sb.DataAxes, 'XLim'), ...
+                [Range.Y(2) Range.Y(2)], 'r');
 
             % bring slider axes to the front
             uistack(sb.SliderAxes,'top');
@@ -794,11 +820,11 @@
             set(sb.SliderMarkerVert2, 'ButtonDownFcn', ...
                 {@sliderVertCallback, sb.SliderAxesVert});
 
-            %% determine where horizontal slider is and adjust ternary plot
+            %% determine where horizontal slider is; adjust ternary plot
 
             function sliderClick(src,evt,parentfig)          
                 selected = get(sb.SliderAxes,'CurrentPoint');
-                sliderVal = selected(1,1); % changed xNew to sliderVal for readability
+                sliderVal = selected(1,1);
 
                 % find index of closest x value to the slider position
                 [xApproxVal, xIndex] = min(abs(xAxis - sliderVal));
@@ -808,7 +834,9 @@
 
                 set(sb.SliderMarker,'XData',sliderVal);
                 set(sb.AngleMarker,'XData',[sliderVal sliderVal]);    
-                set(htextAngle, 'String', strcat({'Angle: '}, num2str(data(xIndex, 1))));
+                set(htextAngle, ...
+                    'String', strcat({'Angle: '}, ...
+                    num2str(data(xIndex, 1))));
             end
 
             %% determine where vertical slider is
@@ -822,11 +850,13 @@
                         sliderNum = closerSlider(sliderVal);
                         if sliderNum == 1
                             set(sb.SliderMarkerVert, 'YData', sliderVal);
-                            set(sb.CompMarker, 'YData', [sliderVal sliderVal]);
+                            set(sb.CompMarker, ...
+                                'YData', [sliderVal sliderVal]);
                             sliderVert1Val = sliderVal;
                         else
                             set(sb.SliderMarkerVert2, 'YData', sliderVal);
-                            set(sb.CompMarker2, 'YData', [sliderVal sliderVal]);
+                            set(sb.CompMarker2, ...
+                                'YData', [sliderVal sliderVal]);
                             sliderVert2Val = sliderVal;
                         end
                     end
@@ -836,7 +866,8 @@
             %% determine which vertical slider is closer
 
             function [numCloser] = closerSlider(sliderVal)
-                if abs(sliderVal - sliderVert1Val) < abs(sliderVal - sliderVert2Val)
+                if abs(sliderVal - sliderVert1Val) < ...
+                        abs(sliderVal - sliderVert2Val)
                     numCloser = 1;
                 else
                     numCloser = 2;
@@ -849,8 +880,10 @@
                 parentfig = get(sb, 'Parent');
                 if parentfig ~= 0
                     set(parentfig, ...
-                        'WindowButtonMotionFcn', {@sliderClickVert, parentfig}, ...
-                        'WindowButtonUpFcn', {@buttonupfcnVert, parentfig});
+                        'WindowButtonMotionFcn', ...
+                        {@sliderClickVert, parentfig}, ...
+                        'WindowButtonUpFcn', ...
+                        {@buttonupfcnVert, parentfig});
                     sliderClickVert(src, evt,  parentfig);
                 end
             end
@@ -861,7 +894,8 @@
                 parentfig = get(sb,'Parent');
                 if parentfig ~= 0
                     set(parentfig, ...
-                        'WindowButtonMotionFcn', {@sliderClick, parentfig}, ...
+                        'WindowButtonMotionFcn', ...
+                        {@sliderClick, parentfig}, ...
                         'WindowButtonUpFcn', {@buttonupfcn, parentfig});  
                     sliderClick(src,evt,parentfig);
                 end

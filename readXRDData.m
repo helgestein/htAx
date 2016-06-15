@@ -1,8 +1,5 @@
-% reads in all XRD data files from folder; if there are files with the same
-% x and y coordinate, will merge them together; returns the x coordinate, y
-% coordinate, and associated data at each point in parallel arrays
-
 function [xCoord, yCoord, xrdData] = readXRDData(folder)
+%READXRDDATA reads in all the XRD data files from the folder
 
 maxPoints = 342;
 maxAngles = 2300;
@@ -42,7 +39,8 @@ for k = 1:length(fileNames)
     end
     
     % get data
-    [angle, intensity] = importXRDFile(strcat(folder, '/', fileNames(k).name));
+    [angle, intensity] = ...
+        importXRDFile(strcat(folder, '/', fileNames(k).name));
     
     % merge data if duplicate; if not, make new data point
     if duplicate == 1

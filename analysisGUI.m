@@ -1,6 +1,5 @@
 function [] = analysisGUI()
-%ANALYSISGUI Summary of this function goes here
-%   Detailed explanation goes here
+%ANALYSISGUI opens the analysis GUI program
 
 openReadInFig();
 

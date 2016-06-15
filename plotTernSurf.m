@@ -1,6 +1,5 @@
 function [] = plotTernSurf(xCoord, yCoord, vals)
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+%PLOTTERNSURF plots a ternary plot as a surface plot
 
 tri = delaunay(xCoord, yCoord);
 trisurf(tri, xCoord, yCoord, vals);
