@@ -1,9 +1,6 @@
-function [] = plotTernScatter(xCoord, yCoord, vals, axesHandle)
+function [] = plotTernScatter(xCoord, yCoord, vals, axesHandle, dotSize)
 %PLOTTERNSCATTER Summary of this function goes here
 %   Detailed explanation goes here
-
-% plot settings
-dotSize = 30;
 
 scatter(axesHandle, xCoord, yCoord, dotSize, vals, 'filled'); 
 
