@@ -10,6 +10,7 @@
     constType = 0; % 0 for A, 1 for B, 2 for C
     xIndex = 1;
     specFigsOpen = 0; % 0 for unopen, 1 for open
+    ECFigsOpen = 0; % 0 for unopen, 1 for open
     scaleType = 1; % 1 for none, 2 for sqrt, 3 for log
     global fSpecButtons;
     global fSpecPlot;
@@ -18,7 +19,11 @@
     global sliderPlot;
     regionHighlighted = 0;
     global highlighted;
+    global fECButtons;
+    global fECPlot;
     dotSize = 30;
+    cv1 = importECFile('/Users/sjiao/Documents/summer_2016/data/OER-random.mat');
+    ECData = cv1;
 
     % precalculate to save time
     sqrt3Half = sqrt(3) / 2;
@@ -600,7 +605,9 @@
             if isempty(ids) == 1
                 errordlg('No points selected');
             else
-                ids = ids .* 2;   
+                ids = ids .* 2;
+                
+                % spec. data plot
                 if specFigsOpen == 0
                     [hbuttonScaleSqrt, hbuttonScaleLog, ...
                         hbuttonScaleNone, hbuttonSave, ...
@@ -611,10 +618,68 @@
                 end
                 sliderPlot = plotSpecSliders(data(:, 1), data(:, ids), ...
                     ySpec, scaling);
+                
+                % EC data plot
+                if ECFigsOpen == 0
+                    [fECButtons, fECPlot] = openECFigs();
+                end
+                idsEC = [51 53 17 31];
+                idsEC = idsEC .* 2;
+                ECPlot = plotECWaterfall(...
+                    ECData(:, idsEC - 1), ECData(:, idsEC), ...
+                    ySpec);
             end
 
         end
 
+        %% plot EC data on waterfall plot
+        
+        function waterfallPlot = plotECWaterfall(potential, current, ...
+                composition)
+            waterfallPlot = 0;
+            numPlots = length(potential(1, :));
+            figure(fECPlot);
+            hold on;
+            offset = 1;
+            useDecrease = [0 1 1 0]; % -1 decrease only; 0 both; 1 increase only
+            for plotIndex = 1:numPlots
+                if useDecrease(plotIndex) ~= 0
+                    %maxPotentialIndex = findMaxPot(potential(:, plotIndex));
+                    [maxPot, maxPotentialIndex] = max(potential(:, plotIndex));
+                    if useDecrease(plotIndex) == 1
+                        plot(potential(1:maxPotentialIndex, plotIndex), ...
+                            log10(current(1:maxPotentialIndex, plotIndex)) ...
+                            + offset * (plotIndex - 1));
+                    else
+                        lastIndex = length(potential(:, plotIndex));
+                        plot(potential(maxPotentialIndex:lastIndex, plotIndex), ...
+                            log10(current(maxPotentialIndex:lastIndex, plotIndex)) ...
+                            + offset * (plotIndex - 1));
+                    end
+                            
+                else
+                    plot(potential(:, plotIndex), ...
+                        log10(current(:, plotIndex)) + ...
+                        offset * (plotIndex - 1));
+                end
+            end
+            xlabel('Potential');
+            ylabel('log(Current)');
+        end
+        
+        %% find index of maximum potential
+        function maxPotIndex = findMaxPot(potentials)
+            numPoints = length(potentials);
+            maxPot = 0;
+            maxPotIndex = 1;
+            for pointIndex = 1:numPoints
+                if potentials(pointIndex) > maxPot
+                    maxPot = potentials(pointIndex);
+                    maxPotIndex = pointIndex;
+                end
+            end
+        end
+    
         %% plot selected region on the ternary diagram
 
         function highlightTernRegion()
@@ -666,7 +731,7 @@
 
         %% creates slider and spec. plot
 
-        function sb = plotSpecSliders(xAxis, yAxis, composition,scaling)
+        function sb = plotSpecSliders(xAxis, yAxis, composition, scaling)
 
             highlightTernRegion();
 
