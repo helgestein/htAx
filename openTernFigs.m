@@ -26,11 +26,13 @@
     global sECID;
     global ECSelectedIndex;
     global ECSelectedIndexUnsort;
+    global offset;
     selectedECPlot = 1;
     dotSize = 30;
     %cv1 = importECFile('/Users/sjiao/Documents/summer_2016/data/OER-random.mat');
     %ECData = cv1;
     useDecrease = zeros(342, 1);
+    offset = 1;
 
     % precalculate to save time
     sqrt3Half = sqrt(3) / 2;
@@ -504,6 +506,13 @@
             useDecrease(ECSelectedIndexUnsort) = 0;
             plotECData();
         end
+    
+        %% EC style tab
+        
+        function editOffsetCallback(heditOffset, eventdata, handles)
+            offset = str2double(get(heditOffset, 'String'));
+            plotECData();
+        end
 
     %% helper functions
     
@@ -584,11 +593,12 @@
         %% set callbacks for EC buttons
         
         function setECCallbacks(heditSelect, hbuttonIncrease, ...
-                hbuttonDecrease, hbuttonBoth)
+                hbuttonDecrease, hbuttonBoth, heditOffset)
             set(heditSelect, 'Callback', {@editSelectCallback});
             set(hbuttonIncrease, 'Callback', {@buttonIncreaseCallback});
             set(hbuttonDecrease, 'Callback', {@buttonDecreaseCallback});
-            set(hbuttonBoth, 'Callback', {@buttonBothCallback});
+            set(hbuttonBoth, 'Callback', {@buttonBothCallback})
+            set(heditOffset, 'Callback', {@editOffsetCallback});
         end
 
         %% gets the composition of a point on spec. plot
@@ -678,9 +688,10 @@
                  % EC data plot
                 if ECFigsOpen == 0
                     [heditSelect, hbuttonIncrease, hbuttonDecrease, ...
-                        hbuttonBoth, fECButtons, fECPlot] = openECFigs();
+                        hbuttonBoth, heditOffset, ...
+                        fECButtons, fECPlot] = openECFigs();
                     setECCallbacks(heditSelect, hbuttonIncrease, ...
-                        hbuttonDecrease, hbuttonBoth);
+                        hbuttonDecrease, hbuttonBoth, heditOffset);
                     ECFigsOpen = 1;
                 end
                 idsEC = ids;
@@ -756,7 +767,6 @@
             figure(fECPlot);
             clf;
             hold on;
-            offset = 1;
             [sComposition, sID] = sort(composition);
             sECComp = sComposition;
             sECID = sID;
@@ -771,24 +781,23 @@
                     plotColor = [0.3 0.5 composition(sID(plotIndex))];
                 end
                 
-                decrease
                 if decrease(sID(plotIndex)) ~= 0
                     %maxPotentialIndex = findMaxPot(potential(:, plotIndex));
                     [maxPot, maxPotentialIndex] = max(potential(:, sID(plotIndex)));
                     if decrease(sID(plotIndex)) == 1
                         plot(potential(1:maxPotentialIndex, sID(plotIndex)), ...
-                            log10(current(1:maxPotentialIndex, sID(plotIndex))) ...
+                            real(log10(current(1:maxPotentialIndex, sID(plotIndex)))) ...
                             + offset * (plotIndex - 1), 'Color', plotColor);
                     else
                         lastIndex = length(potential(:, sID(plotIndex)));
                         plot(potential(maxPotentialIndex:lastIndex, sID(plotIndex)), ...
-                            log10(current(maxPotentialIndex:lastIndex, sID(plotIndex))) ...
+                            real(log10(current(maxPotentialIndex:lastIndex, sID(plotIndex)))) ...
                             + offset * (plotIndex - 1), 'Color', plotColor);
                     end
                             
                 else
                     plot(potential(:, sID(plotIndex)), ...
-                        log10(current(:, sID(plotIndex))) + ...
+                        real(log10(current(:, sID(plotIndex)))) + ...
                         offset * (plotIndex - 1), 'Color', plotColor);
                 end
                 
