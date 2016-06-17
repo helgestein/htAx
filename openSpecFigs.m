@@ -28,7 +28,7 @@ tabSelect = uitab('Parent', tabsSpec, 'Title', 'Select points');
 %% components
 
 topRowOffset = 0.7;
-buttonWidth = 0.5;
+buttonWidth = 0.3;
 buttonHeight = 0.2;
 textSpacingVert = 0.2;
 leftColOffset = 0.5 - buttonWidth / 2;
