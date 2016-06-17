@@ -41,8 +41,10 @@ ECData = readECData(ECFolder1, ECFolder2, ECFolder3, xCoord, yCoord);
 
 pointInfo = zeros(1, 11);
 numSelected = 0;
+useDecrease = zeros(342, 1);
 
-openTernFigs(saveFile, data, A, B, C, numSelected, pointInfo, ECData);
+openFigs(saveFile, data, A, B, C, numSelected, pointInfo, ECData, ...
+    useDecrease);
 
 end
 
