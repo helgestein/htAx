@@ -1,13 +1,13 @@
-function Untitled = importECFile(filename, startRow, endRow)
-%IMPORTFILE Import numeric data from a text file as a matrix.
-%   UNTITLED = IMPORTFILE(FILENAME) Reads data from text file FILENAME for
+function ECData = importECFile(filename, startRow, endRow)
+%IMPORTECFILE Import numeric data from a text file as a matrix.
+%   ECDATA = IMPORTECFILE(FILENAME) Reads data from text file FILENAME for
 %   the default selection.
 %
-%   UNTITLED = IMPORTFILE(FILENAME, STARTROW, ENDROW) Reads data from rows
+%   ECDATA = IMPORTECFILE(FILENAME, STARTROW, ENDROW) Reads data from rows
 %   STARTROW through ENDROW of text file FILENAME.
 %
 % Example:
-%   Untitled = importfile('-004500.x004500.x000024.-Joao_CV_OER.dat', 16, 1192);
+%   ECData = importECFile('-004500.x004500.x000024.-Joao_CV_OER.dat', 16, 1192);
 %
 %    See also TEXTSCAN.
 
@@ -47,11 +47,5 @@ end
 %% Close the text file.
 fclose(fileID);
 
-%% Post processing for unimportable data.
-% No unimportable data rules were applied during the import, so no post
-% processing code is included. To generate code which works for
-% unimportable data, select unimportable cells in a file and regenerate the
-% script.
-
 %% Create output variable
-Untitled = [dataArray{1:end-1}];
+ECData = [dataArray{1:end-1}];
