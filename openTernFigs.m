@@ -1,5 +1,5 @@
     function [] = openTernFigs(saveFile, data, A, B, C, ...
-        numSelected, pointInfo)
+        numSelected, pointInfo, ECData)
     %OPENTERNFIGS opens the ternary diagram and its settings window
 
     %% parameters
@@ -21,9 +21,16 @@
     global highlighted;
     global fECButtons;
     global fECPlot;
+    global selectedECPlot;
+    global sECComp;
+    global sECID;
+    global ECSelectedIndex;
+    global ECSelectedIndexUnsort;
+    selectedECPlot = 1;
     dotSize = 30;
-    cv1 = importECFile('/Users/sjiao/Documents/summer_2016/data/OER-random.mat');
-    ECData = cv1;
+    %cv1 = importECFile('/Users/sjiao/Documents/summer_2016/data/OER-random.mat');
+    %ECData = cv1;
+    useDecrease = zeros(342, 1);
 
     % precalculate to save time
     sqrt3Half = sqrt(3) / 2;
@@ -473,8 +480,58 @@
                 [zMax zMax], 'r');
             hold off;
         end
+    
+        %% EC select tab
+        
+        function editSelectCallback(heditSelect, eventdata, handles)
+            comp = str2double(get(heditSelect, 'String')) / 100;
+            ECSelectedIndex = findECID(comp);
+            ECSelectedIndexUnsort = findECIDUnsort(sECComp(ECSelectedIndex));
+            plotECData();
+        end
+    
+        function buttonIncreaseCallback(hbuttonIncrease, eventdata, handles)
+            useDecrease(ECSelectedIndexUnsort) = 1;
+            plotECData();
+        end
+    
+        function buttonDecreaseCallback(hbuttonDecrease, eventdata, handles)
+            useDecrease(ECSelectedIndexUnsort) = -1;
+            plotECData();
+        end
+    
+        function buttonBothCallback(hbuttonBoth, eventdata, handles)
+            useDecrease(ECSelectedIndexUnsort) = 0;
+            plotECData();
+        end
 
     %% helper functions
+    
+        %% find index of nearest composition (index in all unsorted compositions)
+        function id = findECIDUnsort(composition)
+            
+            
+            if constType == 0
+                findIn = B;
+            elseif constType == 1
+                findIn = C;
+            else 
+                findIn = A;
+            end
+            
+            [minVal, id] = min(abs(findIn - composition));
+            
+        end
+    
+        %% find index of nearest plotted composition (index in sorted compositions)
+        
+        function id = findECID(composition)
+            %sECComp
+            [minVal, id] = min(abs(sECComp - composition));
+            %minVal
+            %minIndex
+            %id = sECID(minIndex);
+        end
     
         %% error handling
             
@@ -522,6 +579,16 @@
             set(hbuttonScaleLog, 'Callback', {@buttonScaleLogCallback});
             set(hbuttonScaleNone, 'Callback', {@buttonScaleNoneCallback});
             set(hbuttonSave, 'Callback', {@buttonSaveCallback});
+        end
+    
+        %% set callbacks for EC buttons
+        
+        function setECCallbacks(heditSelect, hbuttonIncrease, ...
+                hbuttonDecrease, hbuttonBoth)
+            set(heditSelect, 'Callback', {@editSelectCallback});
+            set(hbuttonIncrease, 'Callback', {@buttonIncreaseCallback});
+            set(hbuttonDecrease, 'Callback', {@buttonDecreaseCallback});
+            set(hbuttonBoth, 'Callback', {@buttonBothCallback});
         end
 
         %% gets the composition of a point on spec. plot
@@ -583,6 +650,47 @@
             end
         end
 
+        %% plots EC data
+        
+        function plotECData()
+            
+            % get the correct set of composition data
+            if constType == 0
+                ids = getSpecIDs(constPercent, width, A);
+                ySpec = B(ids);
+                ySpecComp2 = A(ids);
+            elseif constType == 1
+                ids = getSpecIDs(constPercent, width, B);
+                ySpec = C(ids);
+                ySpecComp2 = B(ids);
+            else
+                ids = getSpecIDs(constPercent, width, C);
+                ySpec = A(ids);
+                ySpecComp2 = C(ids);
+            end
+            
+            if isempty(ids) == 1
+                errordlg('No points selected');
+            else
+                idsOrig = ids;
+                ids = ids .* 2;
+                
+                 % EC data plot
+                if ECFigsOpen == 0
+                    [heditSelect, hbuttonIncrease, hbuttonDecrease, ...
+                        hbuttonBoth, fECButtons, fECPlot] = openECFigs();
+                    setECCallbacks(heditSelect, hbuttonIncrease, ...
+                        hbuttonDecrease, hbuttonBoth);
+                    ECFigsOpen = 1;
+                end
+                idsEC = ids;
+                %idsEC = idsEC .* 2;
+                ECPlot = plotECWaterfall(...
+                    ECData(:, idsEC - 1), ECData(:, idsEC), ...
+                    ySpec, useDecrease(idsOrig));
+            end
+        end
+    
         %% plots spec data
 
         function plotSpecData(scaling)
@@ -619,15 +727,22 @@
                 sliderPlot = plotSpecSliders(data(:, 1), data(:, ids), ...
                     ySpec, scaling);
                 
+                plotECData();
+                
+                %{
                 % EC data plot
                 if ECFigsOpen == 0
-                    [fECButtons, fECPlot] = openECFigs();
+                    [heditSelect, hbuttonIncrease, hbuttonDecrease, ...
+                        hbuttonBoth, fECButtons, fECPlot] = openECFigs();
+                    setECCallbacks(heditSelect, hbuttonIncrease, ...
+                        hbuttonDecrease, hbuttonBoth);
                 end
-                idsEC = [51 53 17 31];
-                idsEC = idsEC .* 2;
+                idsEC = ids;
+                %idsEC = idsEC .* 2;
                 ECPlot = plotECWaterfall(...
                     ECData(:, idsEC - 1), ECData(:, idsEC), ...
                     ySpec);
+                    %}
             end
 
         end
@@ -635,33 +750,54 @@
         %% plot EC data on waterfall plot
         
         function waterfallPlot = plotECWaterfall(potential, current, ...
-                composition)
+                composition, decrease)
             waterfallPlot = 0;
             numPlots = length(potential(1, :));
             figure(fECPlot);
+            clf;
             hold on;
             offset = 1;
-            useDecrease = [0 1 1 0]; % -1 decrease only; 0 both; 1 increase only
+            [sComposition, sID] = sort(composition);
+            sECComp = sComposition;
+            sECID = sID;
+            %useDecrease = [0 1 1 0]; % -1 decrease only; 0 both; 1 increase only
             for plotIndex = 1:numPlots
-                if useDecrease(plotIndex) ~= 0
+                
+                if plotIndex == ECSelectedIndex
+                    
+                    plotColor = 'r';
+                else 
+                    
+                    plotColor = [0.3 0.5 composition(sID(plotIndex))];
+                end
+                
+                decrease
+                if decrease(sID(plotIndex)) ~= 0
                     %maxPotentialIndex = findMaxPot(potential(:, plotIndex));
-                    [maxPot, maxPotentialIndex] = max(potential(:, plotIndex));
-                    if useDecrease(plotIndex) == 1
-                        plot(potential(1:maxPotentialIndex, plotIndex), ...
-                            log10(current(1:maxPotentialIndex, plotIndex)) ...
-                            + offset * (plotIndex - 1));
+                    [maxPot, maxPotentialIndex] = max(potential(:, sID(plotIndex)));
+                    if decrease(sID(plotIndex)) == 1
+                        plot(potential(1:maxPotentialIndex, sID(plotIndex)), ...
+                            log10(current(1:maxPotentialIndex, sID(plotIndex))) ...
+                            + offset * (plotIndex - 1), 'Color', plotColor);
                     else
-                        lastIndex = length(potential(:, plotIndex));
-                        plot(potential(maxPotentialIndex:lastIndex, plotIndex), ...
-                            log10(current(maxPotentialIndex:lastIndex, plotIndex)) ...
-                            + offset * (plotIndex - 1));
+                        lastIndex = length(potential(:, sID(plotIndex)));
+                        plot(potential(maxPotentialIndex:lastIndex, sID(plotIndex)), ...
+                            log10(current(maxPotentialIndex:lastIndex, sID(plotIndex))) ...
+                            + offset * (plotIndex - 1), 'Color', plotColor);
                     end
                             
                 else
-                    plot(potential(:, plotIndex), ...
-                        log10(current(:, plotIndex)) + ...
-                        offset * (plotIndex - 1));
+                    plot(potential(:, sID(plotIndex)), ...
+                        log10(current(:, sID(plotIndex))) + ...
+                        offset * (plotIndex - 1), 'Color', plotColor);
                 end
+                
+
+                
+                text(potential(1, sID(plotIndex)), ...
+                    log10(current(1, sID(plotIndex))) ...
+                            + offset * (plotIndex - 1), ...
+                            strcat({'Composition: '}, num2str(composition(sID(plotIndex)))));
             end
             xlabel('Potential');
             ylabel('log(Current)');
