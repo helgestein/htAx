@@ -33,6 +33,8 @@ for k = 1:length(fileNames)
 
         % get data
         imported = importECFile(strcat(folder1, '/', fileNames(k).name));
+        imported = ...
+            removerows(imported, 'ind', find(imported(:, 1) < -200));
         potential = imported(:, 1);
         current = imported(:, 2);
         numPotential = length(potential);
@@ -69,6 +71,8 @@ for k = 1:length(fileNames)
 
         % get data
         imported = importECFile(strcat(folder2, '/', fileNames(k).name));
+        imported = ...
+            removerows(imported, 'ind', find(imported(:, 1) < -200));
         potential = imported(:, 1);
         current = imported(:, 2);
         numPotential = length(potential);
@@ -106,6 +110,8 @@ for k = 1:length(fileNames)
 
         % get data
         imported = importECFile(strcat(folder3, '/', fileNames(k).name));
+        imported = ...
+            removerows(imported, 'ind', find(imported(:, 1) < -200));
         potential = imported(:, 1);
         current = imported(:, 2);
         numPotential = length(potential);
