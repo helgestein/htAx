@@ -28,7 +28,6 @@ global ECSelectedIndexUnsort;
 global offset;
 global heditSelect;
 global heditOffset;
-global minIndices;
 global htextLowerSlope;
 global htextHigherSlope;
 global htextTafel;
@@ -542,11 +541,12 @@ fTernDiagram.Visible = 'on';
             plotTernSurf(xTernCoordAll, yTernCoordAll, ...
                 XRDData(xIndex, 2 .* (1:numTernPoints)));
         else
+            toPlot = zeros(1, numTernPoints);
             for indexEC = 1:numTernPoints
-                minIndices(indexEC) = findClosestPot(sliderECHorVal, ...
+                minIndex = findClosestPot(sliderECHorVal, ...
                     ECData(:, 2 * indexEC - 1));
                 toPlot(indexEC) = ...
-                    ECData(minIndices(indexEC), 2.* indexEC);
+                    ECData(minIndex, 2.* indexEC);
             end
             if ternPlotType == 2
                 plotTernScatter(xTernCoordAll, yTernCoordAll, ...
@@ -902,13 +902,13 @@ fTernDiagram.Visible = 'on';
         %% buttonUpHor
 
         function buttonUpHor(src, evt, sb)
-            set(sb, 'WindowButtonMotionFcn', [])
+            set(sb, 'WindowButtonMotionFcn', []);
         end
 
         %% buttonUpVert
 
         function buttonUpVert(src, evt, sb)
-            set(sb, 'WindowButtonMotionFcn', [])
+            set(sb, 'WindowButtonMotionFcn', []);
         end
     end
 
