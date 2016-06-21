@@ -32,6 +32,7 @@ global minIndices;
 global htextLowerSlope;
 global htextHigherSlope;
 global htextTafel;
+global ECPlotFull;
 global htextOnsetPot;
 ECSelectedIndex = 0;
 dotSize = 30;
@@ -53,6 +54,8 @@ sliderVert2Val = 0;
 sliderECVert1Val = 0;
 sliderECVert2Val = 0;
 sliderECHorVal = 0;
+sliderECFit1Val = 0;
+sliderECFit2Val = 0;
 
 %% ternary windows
 
@@ -146,19 +149,19 @@ fTernDiagram.Visible = 'on';
     function buttonACallback(obj, evt)
         constType = 0;
         plotSpecData(scaleType);
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     function buttonBCallback(obj, evt)
         constType = 1;
         plotSpecData(scaleType);
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     function buttonCCallback(obj, evt)
         constType = 2;
         plotSpecData(scaleType);
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     %% tern style tab
@@ -211,7 +214,7 @@ fTernDiagram.Visible = 'on';
         % plot with restored settings
         plotTernData(ternPlotType);
         plotSpecData(scaleType);
-        plotECData();
+        ECPlotFull = plotECData();
 
         set(heditConst, 'String', constPercent * 100);
         set(heditWidth, 'String', width * 100);
@@ -370,22 +373,22 @@ fTernDiagram.Visible = 'on';
         end
         [~, ECSelectedIndex] = min(abs(sECComp - comp));
         ECSelectedIndexUnsort = findECIDUnsort(sECComp(ECSelectedIndex));
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     function buttonIncreaseCallback(obj, evt)
         useDecrease(ECSelectedIndexUnsort) = 1;
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     function buttonDecreaseCallback(obj, evt)
         useDecrease(ECSelectedIndexUnsort) = -1;
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     function buttonBothCallback(obj, evt)
         useDecrease(ECSelectedIndexUnsort) = 0;
-        plotECData();
+        ECPlotFull = plotECData();
     end
 
     %% EC style tab
@@ -406,6 +409,11 @@ fTernDiagram.Visible = 'on';
     
     function buttonLowerSlopeCallback(obj, evt)
         [slope, intercept] = getFit();
+        xPoints = [-200 800];
+        yPoints = xPoints * slope + intercept;
+        figure(fECPlot);
+        hold on;
+        plot(ECPlotFull.dataAxes, xPoints, yPoints, 'k');
         ECPlotInfo(ECSelectedIndexUnsort, 4) = slope;
         ECPlotInfo(ECSelectedIndexUnsort, 5) = intercept;
         set(htextLowerSlope, 'String', strcat({'y = '}, num2str(slope), ...
@@ -414,6 +422,11 @@ fTernDiagram.Visible = 'on';
 
     function buttonHigherSlopeCallback(obj, evt)
         [slope, intercept] = getFit();
+        xPoints = [-200 800];
+        yPoints = xPoints * slope + intercept;
+        figure(fECPlot);
+        hold on;
+        plot(ECPlotFull.dataAxes, xPoints, yPoints, 'k');
         ECPlotInfo(ECSelectedIndexUnsort, 6) = slope;
         ECPlotInfo(ECSelectedIndexUnsort, 7) = intercept;
         set(htextHigherSlope, 'String', strcat({'y = '}, num2str(slope), ...
@@ -450,34 +463,16 @@ fTernDiagram.Visible = 'on';
     function [slope, intercept] = getFit()
         
         selectPot = ECData(:, ECSelectedIndexUnsort * 2 - 1);
-        selectCurrent = real(log10(ECData(:, ECSelectedIndexUnsort * 2))) + offset * (ECSelectedIndex - 1);
-        startIndex = 1;
+        selectCurrent = ...
+            real(log10(abs(ECData(:, ECSelectedIndexUnsort * 2)))) + ...
+            offset * (ECSelectedIndex - 1);
         
-        % find nearest index of first potential
-        for indexPot = 1:length(selectPot)
-            if selectPot(indexPot) > sliderECHorVal
-                startIndex = indexPot;
-                break
-            end
-        end
-        
-        lowIndex = startIndex;
-        highIndex = startIndex;
-        
-        if sliderECVert1Val < sliderECVert2Val
-            lowerSlider = sliderECVert1Val;
-            higherSlider = sliderECVert2Val;
+        if sliderECFit1Val < sliderECFit2Val
+            lowIndex = findClosestPot(sliderECFit1Val, selectPot);
+            highIndex = findClosestPot(sliderECFit2Val, selectPot);
         else
-            lowerSlider = sliderECVert2Val;
-            higherSlider = sliderECVert1Val;
-        end
-        
-        while selectCurrent(lowIndex) > lowerSlider
-            lowIndex = lowIndex - 1;
-        end
-        
-        while selectCurrent(highIndex) < higherSlider
-            highIndex = highIndex + 1;
+            lowIndex = findClosestPot(sliderECFit2Val, selectPot);
+            highIndex = findClosestPot(sliderECFit1Val, selectPot);
         end
         
         coef = polyfit(selectPot(lowIndex:highIndex), ...
@@ -486,6 +481,11 @@ fTernDiagram.Visible = 'on';
         slope = coef(1);
         intercept = coef(2);
         
+    end
+
+    function indexClosest = findClosestPot(value, selectPot)
+        [~, maxPotIndex] = max(selectPot);
+        [~, indexClosest] = min(abs(selectPot(1:maxPotIndex) - value));
     end
 
 %% helper functions
@@ -908,7 +908,7 @@ fTernDiagram.Visible = 'on';
 
     %% plots EC data
 
-    function plotECData()
+    function ECPlotFull = plotECData()
 
         % get the correct set of composition data
         if constType == 0
@@ -947,7 +947,7 @@ fTernDiagram.Visible = 'on';
                 ECFigsOpen = 1;
             end
             idsEC = ids;
-            plotECWaterfall(...
+            ECPlotFull = plotECWaterfall(...
                 ECData(:, idsEC - 1), ECData(:, idsEC), ...
                 ySpec, useDecrease(idsOrig));
         end
@@ -964,13 +964,14 @@ fTernDiagram.Visible = 'on';
         
         % set up axes
         graphHeightFrac = 0.8;
-        graphVertPosFrac = 0.15;
+        graphVertPosFrac = 0.10;
         graphHorPosFrac = 0.07;
         graphWidthFrac = 0.8;
         sliderWidthFrac = 0.02;
         sliderVertWidthFrac = 0.01;        
 
         numPlots = length(potential(1, :));
+
         % rectangle position defined by [left, bottom, width, height];
         ECPlot.dataAxes = axes(...
                   'Units', 'Normalized',...
@@ -988,6 +989,15 @@ fTernDiagram.Visible = 'on';
                   'YLim',[0 1], ...
                   'Box','on');
         Range.X = [min(min(potential)) max(max(potential))];
+        ECPlot.sliderAxesFit = axes(...
+            'Units', 'Normalized', ...
+            'Position', [graphHorPosFrac ...
+            (graphVertPosFrac + graphHeightFrac + sliderWidthFrac) ...
+            graphWidthFrac sliderWidthFrac], ...
+            'XTick', [], ...
+            'YTick', [], ...
+            'YLim', [0 1], ...
+            'Box', 'on');
         ECPlot.sliderAxesVert = axes(...
                     'Units', 'Normalized', ...
                    'Position', [(graphHorPosFrac + graphWidthFrac) ...
@@ -997,9 +1007,15 @@ fTernDiagram.Visible = 'on';
                    'YTick', [], ...
                    'XLim', [0 1], ...
                    'Box', 'on');
+        %Range.X = [min(min(potential)) max(max(potential))];
         %Range.Y = [min(min(real(log10(current)))) ...
         %    max(max(real(log10(current)))) + offset * numPlots];
-        Range.Y = [0 max(max(real(log10(current)))) + offset * numPlots];
+        maxRaw = max(max(real(log10(abs(current))))) + offset * numPlots;
+        minRaw = min(min(real(log10(abs(current)))));
+        %Range.Y = [-1 * (maxRaw + offset * numPlots) ...
+        %    maxRaw + offset * numPlots];
+        %Range.Y = [-1 * maxRaw maxRaw + offset * numPlots];
+        Range.Y = [minRaw maxRaw];
         maxComp = max(composition);
         
         axes(ECPlot.dataAxes);
@@ -1032,8 +1048,8 @@ fTernDiagram.Visible = 'on';
                     plot(...
                         potential(1:maxPotentialIndex, ...
                         sID(plotIndex)), ...
-                        real(log10(current(1:maxPotentialIndex, ...
-                        sID(plotIndex)))) ...
+                        real(log10(abs(current(1:maxPotentialIndex, ...
+                        sID(plotIndex))))) ...
                         + offset * (plotIndex - 1), ...
                         'Color', plotColor);
 
@@ -1044,8 +1060,8 @@ fTernDiagram.Visible = 'on';
                     plot(...
                         potential(maxPotentialIndex:lastIndex, ...
                         sID(plotIndex)), ...
-                        real(log10(current(maxPotentialIndex:lastIndex,...
-                        sID(plotIndex)))) ...
+                        real(log10(abs(current(maxPotentialIndex:lastIndex,...
+                        sID(plotIndex))))) ...
                         + offset * (plotIndex - 1), ...
                         'Color', plotColor);
                 end
@@ -1054,7 +1070,7 @@ fTernDiagram.Visible = 'on';
 
                 % use both increasing and decreasing potentials
                 plot(potential(:, sID(plotIndex)), ...
-                    real(log10(current(:, sID(plotIndex)))) + ...
+                    real(log10(abs(current(:, sID(plotIndex))))) + ...
                     offset * (plotIndex - 1), 'Color', plotColor);
             end
             
@@ -1066,12 +1082,23 @@ fTernDiagram.Visible = 'on';
                         num2str(composition(sID(plotIndex)))));
         end
 
+        %axis('tight');
+        
         % axes labels
+        axes(ECPlot.dataAxes);
+        limits = axis;
         xlabel('Potential');
         ylabel('log(Current)');
+        set(ECPlot.dataAxes, 'XTick', [-200, 0, 200, 400, 600, 800]);
+        yTickVals = floor(((0:(numPlots + 4)) / (numPlots + 4)) * ...
+            (limits(4) - limits(3))) + limits(3);
+        set(ECPlot.dataAxes, 'YTick', yTickVals);
+        Range.Y = [limits(3) limits(4)];
         
         set(ECPlot.sliderAxes, ...
             'ButtonDownFcn', {@sliderECHorCallback, ECPlot.sliderAxes});
+        set(ECPlot.sliderAxesFit, ...
+            'ButtonDownFcn', {@sliderECFitCallback, ECPlot.sliderAxesFit});
         set(ECPlot.sliderAxesVert, ...
             'ButtonDownFcn', ...
             {@sliderECVertCallback, ECPlot.sliderAxesVert});
@@ -1082,6 +1109,7 @@ fTernDiagram.Visible = 'on';
         setappdata(ECPlot.figure, 'forcedclose', '0');
         
         % horizontal slider
+
         axes(ECPlot.sliderAxes);
         set(ECPlot.sliderAxes, 'XLim', Range.X);
         hold on;
@@ -1093,6 +1121,28 @@ fTernDiagram.Visible = 'on';
         ECPlot.potentialMarker = ...
             plot([Range.X(1) Range.X(1)], ...
             get(ECPlot.dataAxes, 'YLim'), 'r');
+        
+                        
+        axes(ECPlot.sliderAxesFit);
+        set(ECPlot.sliderAxesFit, 'XLim', Range.X);
+        hold on;
+        ECPlot.sliderECFitLine = plot(Range.X, [.5 .5], '-c');
+        ECPlot.sliderECFitMarker1 = ...
+            plot(Range.X(1), .5, 'rv', 'MarkerFaceColor', 'c');
+        sliderECFit1Val = Range.X(1);
+        ECPlot.sliderECFitMarker2 = ...
+            plot(Range.X(2), .5, 'rv', 'MarkerFaceColor', 'c');
+        sliderECFit2Val = Range.X(2);
+        axes(ECPlot.dataAxes);
+        hold on;
+
+        ECPlot.potentialFitMarker1 = ...
+            plot([Range.X(1) Range.X(1)], ...
+            get(ECPlot.dataAxes, 'YLim'), 'c');
+        ECPlot.potentialFitMarker2 = ...
+            plot([Range.X(2) Range.X(2)], ...
+            get(ECPlot.dataAxes, 'YLim'), 'c');
+        
         
         % vertical slider
         hold on;
@@ -1118,6 +1168,7 @@ fTernDiagram.Visible = 'on';
         % bring slider axes to the front
         uistack(ECPlot.sliderAxes, 'top');
         uistack(ECPlot.sliderAxesVert, 'top');
+        uistack(ECPlot.sliderAxesFit, 'top');
         
         % set callback functions for sliders
         set(ECPlot.sliderAxes, 'ButtonDownFcn', ...
@@ -1134,6 +1185,14 @@ fTernDiagram.Visible = 'on';
             {@sliderECVertCallback, ECPlot.sliderAxesVert});
         set(ECPlot.sliderMarkerVert2, 'ButtonDownFcn', ...
             {@sliderECVertCallback, ECPlot.sliderAxesVert});
+        set(ECPlot.sliderAxesFit, 'ButtonDownFcn', ...
+            {@sliderECFitCallback, ECPlot.sliderAxesFit});
+        set(ECPlot.sliderECFitLine, 'ButtonDownFcn', ...
+            {@sliderECFitCallback, ECPlot.sliderAxesFit});
+        set(ECPlot.sliderECFitMarker1, 'ButtonDownFcn', ...
+            {@sliderECFitCallback, ECPlot.sliderAxesFit});
+        set(ECPlot.sliderECFitMarker2, 'ButtonDownFcn', ...
+            {@sliderECFitCallback, ECPlot.sliderAxesFit});
         
         %% determine where horizontal slider is; adjust ternary plot
         
@@ -1148,6 +1207,36 @@ fTernDiagram.Visible = 'on';
             
             set(ECPlot.sliderMarker, 'XData', sliderVal);
             set(ECPlot.potentialMarker, 'XData', [sliderVal sliderVal]);
+        end
+        
+        %% determine where fit horizontal sliders are
+        
+        function sliderECFitClick(src, evt, parentfig)
+            selected = get(ECPlot.sliderAxesFit, 'CurrentPoint');
+            sliderVal = selected(1, 1);
+            
+            sliderNum = closerFitSlider(sliderVal);
+            
+            if sliderNum == 1
+                set(ECPlot.sliderECFitMarker1, 'XData', sliderVal);
+                set(ECPlot.potentialFitMarker1, ...
+                    'XData', [sliderVal sliderVal]);
+                sliderECFit1Val = sliderVal;
+            else
+                set(ECPlot.sliderECFitMarker2, 'XData', sliderVal);
+                set(ECPlot.potentialFitMarker2, ...
+                    'XData', [sliderVal sliderVal]);
+                sliderECFit2Val = sliderVal;
+            end
+        end
+        
+        function [numCloser] = closerFitSlider(sliderVal)
+            if abs(sliderVal - sliderECFit1Val) < ...
+                    abs(sliderVal - sliderECFit2Val)
+                numCloser = 1;
+            else
+                numCloser = 2;
+            end
         end
         
         %% determine where vertical slider is
@@ -1179,6 +1268,21 @@ fTernDiagram.Visible = 'on';
             else
                 numCloser = 2;
             end
+        end
+        
+        function sliderECFitCallback(src, evt, sb)
+            parentfig = get(sb, 'Parent');
+            if parentfig ~= 0
+                set(parentfig, ...
+                    'WindowButtonMotionFcn', ...
+                    {@sliderECFitClick, parentfig}, ...
+                    'WindowButtonUpFcn', {@buttonUpECFit, parentfig});
+                sliderECFitClick(src, evt, parentfig);
+            end
+        end
+        
+        function buttonUpECFit(src, evt, sb)
+            set(sb, 'WindowButtonMotionFcn', []);
         end
         
         %% sliderECHorCallback
