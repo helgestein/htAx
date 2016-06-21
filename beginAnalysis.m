@@ -9,7 +9,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
 %   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
 
 % import and read XRD and EDX data
-[xCoord, yCoord, data] = readXRDData(XRDFolder);
+[xCoord, yCoord, XRDData] = readXRDData(XRDFolder);
 [A, B, C] = ...
     importEDXFile(EDXFile);
 
@@ -43,7 +43,7 @@ pointInfo = zeros(1, 11);
 numSelected = 0;
 ECPlotInfo = zeros(342, 4);
 
-openFigs(saveFile, data, A, B, C, numSelected, pointInfo, ECData, ...
+openFigs(saveFile, XRDData, A, B, C, numSelected, pointInfo, ECData, ...
     ECPlotInfo);
 
 end

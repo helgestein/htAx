@@ -1,4 +1,4 @@
-function [] = openFigs(saveFile, data, A, B, C, ...
+function [] = openFigs(saveFile, XRDData, A, B, C, ...
     numSelected, pointInfo, ECData, ECPlotInfo)
 %OPENFIGS opens the figures needed to begin the analysis
 
@@ -90,7 +90,7 @@ axesTernary = axes(...
     'Position',[0.1, 0.1, 0.8, 0.8]);
 htextAngle = uicontrol(fTernDiagram, ...
     'Style', 'text', ...
-    'String', strcat({'Angle: '}, num2str(data(xIndex, 1))), ...
+    'String', strcat({'Angle: '}, num2str(XRDData(xIndex, 1))), ...
     'Units', 'Normalized', ...
     'Position', [0.05 0.9 0.2 0.05]);
 hold on;
@@ -221,11 +221,11 @@ fTernDiagram.Visible = 'on';
         set(heditWidth, 'String', width * 100);
 
         % set horizontal slider
-        sliderVal = data(pointInfo(indexPoint, 6), 1);
+        sliderVal = XRDData(pointInfo(indexPoint, 6), 1);
         set(sliderPlot.SliderMarker,'XData',sliderVal);
         set(sliderPlot.AngleMarker,'XData',[sliderVal sliderVal]);
         set(htextAngle, ...
-            'String', strcat({'Angle: '}, num2str(data(xIndex, 1))));
+            'String', strcat({'Angle: '}, num2str(XRDData(xIndex, 1))));
 
         % set vertical slider
 
@@ -256,7 +256,7 @@ fTernDiagram.Visible = 'on';
     end
 
     function buttonSaveAllCallback(obj, evt)
-        info.data = data;
+        info.XRDData = XRDData;
         info.A = A;
         info.B = B;
         info.C = C;
@@ -378,6 +378,8 @@ fTernDiagram.Visible = 'on';
         [~, ECSelectedIndex] = min(abs(sECComp - comp));
         ECSelectedIndexUnsort = findECIDUnsort(sECComp(ECSelectedIndex));
         ECPlotFull = plotECData();
+        set(htextTafel, 'String', num2str(ECPlotInfo(ECSelectedIndexUnsort, 1)));
+        set(htextOnsetPot, 'String', num2str(ECPlotInfo(ECSelectedIndexUnsort, 2)));
     end
 
     function buttonIncreaseCallback(obj, evt)
@@ -421,13 +423,6 @@ fTernDiagram.Visible = 'on';
         end
         lowLobf = ...
             plotLobf(ECPlotFull.dataAxes, fECPlot, slope, intercept);
-        %{
-        xPoints = [-200 800];
-        yPoints = xPoints * slope + intercept;
-        figure(fECPlot);
-        hold on;
-        plot(ECPlotFull.dataAxes, xPoints, yPoints, 'k');
-        %}
         lobfData(ECSelectedIndexUnsort, 1) = slope;
         lobfData(ECSelectedIndexUnsort, 2) = intercept;
         set(htextLowerSlope, 'String', strcat({'y = '}, num2str(slope), ...
@@ -442,13 +437,6 @@ fTernDiagram.Visible = 'on';
         end
         highLobf = ...
             plotLobf(ECPlotFull.dataAxes, fECPlot, slope, intercept);
-        %{
-        xPoints = [-200 800];
-        yPoints = xPoints * slope + intercept;
-        figure(fECPlot);
-        hold on;
-        plot(ECPlotFull.dataAxes, xPoints, yPoints, 'k');
-        %}
         lobfData(ECSelectedIndexUnsort, 3) = slope;
         lobfData(ECSelectedIndexUnsort, 4) = intercept;
         set(htextHigherSlope, 'String', strcat({'y = '}, num2str(slope), ...
@@ -464,8 +452,8 @@ fTernDiagram.Visible = 'on';
 
     function buttonOnsetPotCallback(obj, evt)
         a1 = lobfData(ECSelectedIndexUnsort, 1);
-        a2 = lobfData(ECSelectedIndexUnsort, 2);
-        b1 = lobfData(ECSelectedIndexUnsort, 3);
+        a2 = lobfData(ECSelectedIndexUnsort, 3);
+        b1 = lobfData(ECSelectedIndexUnsort, 2);
         b2 = lobfData(ECSelectedIndexUnsort, 4);
         onsetPot = (b2 - b1) / (a1 - a2);
         set(htextOnsetPot, 'String', num2str(onsetPot));
@@ -549,10 +537,10 @@ fTernDiagram.Visible = 'on';
 
         if ternPlotType == 0
             plotTernScatter(xTernCoordAll, yTernCoordAll, ...
-                data(xIndex, 2 .* (1:numTernPoints)), axesTernary, dotSize);
+                XRDData(xIndex, 2 .* (1:numTernPoints)), axesTernary, dotSize);
         elseif ternPlotType == 1
             plotTernSurf(xTernCoordAll, yTernCoordAll, ...
-                data(xIndex, 2 .* (1:numTernPoints)));
+                XRDData(xIndex, 2 .* (1:numTernPoints)));
         else
             [~, minIndices] = ...
                 min(abs(ECData(:, 2 .* (1:numTernPoints) - 1) - sliderECHorVal));
@@ -664,7 +652,7 @@ fTernDiagram.Visible = 'on';
                 specFigsOpen = 1;   
             end
 
-            sliderPlot = plotSpecSliders(data(:, 1), data(:, ids), ...
+            sliderPlot = plotSpecSliders(XRDData(:, 1), XRDData(:, ids), ...
                 ySpec, scaling);
 
         end
@@ -762,10 +750,6 @@ fTernDiagram.Visible = 'on';
        view(2);
 
        hold on;
-       set(sb.SliderAxes, ...
-           'ButtonDownFcn', {@sliderHorCallback, sb.SliderAxes});
-       set(sb.SliderAxesVert, ...
-           'ButtonDownFcn', {@sliderVertCallback, sb.SliderAxesVert});
 
        set(sb.DataAxes,'XLim',Range.X);
        set(sb.DataAxes, 'YLim', Range.Y);
@@ -841,10 +825,16 @@ fTernDiagram.Visible = 'on';
             plotTernData(ternPlotType);
 
             set(sb.SliderMarker,'XData',sliderVal);
-            set(sb.AngleMarker,'XData',[sliderVal sliderVal]);    
-            set(htextAngle, ...
-                'String', strcat({'Angle: '}, ...
-                num2str(data(xIndex, 1))));
+            set(sb.AngleMarker,'XData',[sliderVal sliderVal]);
+            if ternPlotType == 0
+                set(htextAngle, ...
+                    'String', strcat({'Angle: '}, ...
+                    num2str(XRDData(xIndex, 1))));
+            elseif ternPlotType == 1
+                set(htextAngle, ...
+                    'String', strcat({'Angle: '}, ...
+                    num2str(XRDData(xIndex, 1))));
+            end
         end
 
         %% determine where vertical slider is
@@ -1121,10 +1111,6 @@ fTernDiagram.Visible = 'on';
             'YTickMode', 'auto', 'YTickLabelMode', 'auto');
         Range.Y = [limits(3) limits(4)];
         
-        set(ECPlot.sliderAxes, ...
-            'ButtonDownFcn', {@sliderECHorCallback, ECPlot.sliderAxes});
-        set(ECPlot.sliderAxesFit, ...
-            'ButtonDownFcn', {@sliderECFitCallback, ECPlot.sliderAxesFit});      
         set(ECPlot.dataAxes, 'XLim', Range.X);
         set(ECPlot.dataAxes, 'YLim', Range.Y);
         set(ECPlot.figure, 'BusyAction', 'cancel');
@@ -1200,6 +1186,17 @@ fTernDiagram.Visible = 'on';
             
             set(ECPlot.sliderMarker, 'XData', sliderVal);
             set(ECPlot.potentialMarker, 'XData', [sliderVal sliderVal]);
+            
+            if ternPlotType == 2
+                set(htextAngle, ...
+                    'String', strcat({'Potential: '}, ...
+                    num2str(sliderVal)));
+            elseif ternPlotType == 3
+                set(htextAngle, ...
+                    'String', strcat({'Potential: '}, ...
+                    num2str(sliderVal)));
+            end
+            
         end
         
         %% determine where fit horizontal sliders are
