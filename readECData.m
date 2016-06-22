@@ -10,6 +10,13 @@ fileEnding = '*OER.dat';
 ECData = zeros(maxPotentials, maxPoints * 2);
 dataTaken = zeros(maxPoints, 1);
 
+% these values used to confirm that coordinates were sorted correctly
+%numChemPoints = 0;
+%chemXPoints = zeros(1, 1);
+%chemYPoints = zeros(1, 1);
+%chemXPointsTrans = zeros(1, 1);
+%chemYPointsTrans = zeros(1, 1);
+
 %% read in folder1 data
 
 % navigate to folder1
@@ -20,13 +27,22 @@ cd(codeDir);
 
 for k = 1:length(fileNames)
 
+    %numChemPoints = numChemPoints + 1;
+    
     % get x and y coordinates
     nameComponents = strsplit(fileNames(k).name, 'x');
     xCoord = str2double(nameComponents(1));
     yCoord = str2double(nameComponents(2));
+    
+    %chemXPoints(numChemPoints) = xCoord;
+    %chemYPoints(numChemPoints) = yCoord;
 
     % get index of corresponding WDM coordinates point
     [xTransCoord, yTransCoord] = toWDMCoord(xCoord, yCoord);
+    
+    %chemXPointsTrans(numChemPoints) = xTransCoord;
+    %chemYPointsTrans(numChemPoints) = yTransCoord;
+    
     wdmIndex = findWDMIndex(xTransCoord, yTransCoord);
     if wdmIndex ~= 0
         dataTaken(wdmIndex) = 1;
@@ -54,6 +70,8 @@ cd(codeDir);
 
 for k = 1:length(fileNames)
 
+    %numChemPoints = numChemPoints + 1;
+    
     % get x and y coordinates
     nameComponents = strsplit(fileNames(k).name, '.x');
     xCoord = str2double(nameComponents(1));
@@ -62,9 +80,16 @@ for k = 1:length(fileNames)
     % transform x and y coordinates to account for different starting point
     xCoord = xCoord - 27000;
     yCoord = yCoord + 27000;
+    
+    %chemXPoints(numChemPoints) = xCoord;
+    %chemYPoints(numChemPoints) = yCoord;
 
     % get index of corresponding WDM coordinates point
     [xTransCoord, yTransCoord] = toWDMCoord(xCoord, yCoord);
+    
+    %chemXPointsTrans(numChemPoints) = xTransCoord;
+    %chemYPointsTrans(numChemPoints) = yTransCoord;
+    
     wdmIndex = findWDMIndex(xTransCoord, yTransCoord);
     if wdmIndex ~= 0
         dataTaken(wdmIndex) = 1;
@@ -92,6 +117,8 @@ fileNames = dir(fileEnding);
 cd(codeDir);
 
 for k = 1:length(fileNames)
+    
+    %numChemPoints = numChemPoints + 1;
 
     % get x and y coordinates
     nameComponents = strsplit(fileNames(k).name, '.x');
@@ -101,9 +128,16 @@ for k = 1:length(fileNames)
     % transform x and y coordinates to account for different starting point
     xCoord = xCoord - 13500;
     yCoord = yCoord + 27000;
+    
+    %chemXPoints(numChemPoints) = xCoord;
+    %chemYPoints(numChemPoints) = yCoord;
 
     % get index of corresponding WDM coordinates point
     [xTransCoord, yTransCoord] = toWDMCoord(xCoord, yCoord);
+    
+    %chemXPointsTrans(numChemPoints) = xTransCoord;
+    %chemYPointsTrans(numChemPoints) = yTransCoord;
+    
     wdmIndex = findWDMIndex(xTransCoord, yTransCoord);
     if wdmIndex ~= 0
         dataTaken(wdmIndex) = 1;
@@ -118,8 +152,16 @@ for k = 1:length(fileNames)
         ECData(1:numPotential, wdmIndex * 2 - 1) = potential;
         ECData(1:numPotential, wdmIndex * 2) = current;
     end
-
 end
+
+%figure;
+%scatter(chemXPoints, chemYPoints);
+%figure;
+%zVals = ones(1, length(chemXPointsTrans));
+%scatter3(chemXPointsTrans, chemYPointsTrans, zVals, 'b');
+%hold on
+%zVals2 = 2 * ones(1, length(wdmX));
+%scatter3(wdmX, wdmY, zVals2, 'r');
 
 %% helper functions
 

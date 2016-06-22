@@ -35,9 +35,12 @@ global ECPlotFull;
 global htextOnsetPot;
 global lowLobf;
 global highLobf;
+global fTernTafel;
+global fTernOnset;
 ECSelectedIndex = 0;
 dotSize = 30;
 offset = 1;
+numPointsTafel = 0;
 
 % precalculate to save time
 sqrt3Half = sqrt(3) / 2;
@@ -55,6 +58,9 @@ sliderVert2Val = 0;
 sliderECHorVal = 0;
 sliderECFit1Val = 0;
 sliderECFit2Val = 0;
+
+global tafelPlotData;
+global onsetPlotData;
 
 %% ternary windows
 
@@ -447,6 +453,11 @@ fTernDiagram.Visible = 'on';
         tafelSlope = 1 / lobfData(ECSelectedIndexUnsort, 3);
         ECPlotInfo(ECSelectedIndexUnsort, 1) = tafelSlope;
         set(htextTafel, 'String', num2str(tafelSlope));
+        numPointsTafel = numPointsTafel + 1;
+        tafelPlotData(numPointsTafel, 1) = A(ECSelectedIndexUnsort);
+        tafelPlotData(numPointsTafel, 2) = B(ECSelectedIndexUnsort);
+        tafelPlotData(numPointsTafel, 3) = C(ECSelectedIndexUnsort);
+        tafelPlotData(numPointsTafel, 4) = tafelSlope;
     end
 
     function buttonOnsetPotCallback(obj, evt)
@@ -462,6 +473,90 @@ fTernDiagram.Visible = 'on';
         % find nearest index of first potential
         ECPlotInfo(ECSelectedIndexUnsort, 3) = ...
             findClosestPot(onsetPot, selectPot);
+        
+        onsetPlotData(numPointsTafel, 1) = A(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsTafel, 2) = B(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsTafel, 3) = C(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsTafel, 4) = onsetPot;
+        onsetPlotData(numPointsTafel, 5) = findClosestPot(onsetPot, selectPot);
+    end
+
+    %% EC post-process tab
+    
+    function buttonPrintCallback(obj, evt)
+        
+        [saveFilePrint, savePath] = uigetfile;
+        saveFilePrint = strcat(savePath, saveFilePrint);
+        
+        fileID = fopen(saveFilePrint, 'w');
+        
+        for indexEC = 1:numTernPoints
+            fprintf(fileID, ...
+                'Compositions: %f, %f, %f \t Tafel slope: %f \t Onset potential: %f \n', ...
+                A(indexEC), B(indexEC), C(indexEC), ...
+                ECPlotInfo(indexEC, 1), ECPlotInfo(indexEC, 2));
+        end
+        
+        fclose(fileID);
+        
+    end
+
+    function buttonPlotTernCallback(obj, evt)
+        
+        if ishandle(fTernTafel) == 1
+            figure(fTernTafel);
+            clf;
+        else fTernTafel = figure;
+        end
+        axesTernTafel = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plotTernBase(axesTernTafel, sqrt3Half, sqrt3Inv);
+        pointsToPlot = zeros(1, 1);
+        binPoints = zeros(1, 1);
+        numBinPoints = 0;
+        numPointsToPlot = 0;
+        for i = 1:numTernPoints
+            if ECPlotInfo(i, 1) ~= 0
+                numPointsToPlot = numPointsToPlot + 1;
+                [pointsToPlot(numPointsToPlot, 1), ...
+                    pointsToPlot(numPointsToPlot, 2)] = ...
+                    getTernCoord(A(i), B(i), sqrt3Half, sqrt3Inv);
+                pointsToPlot(numPointsToPlot, 3) = ECPlotInfo(i, 1);
+                pointsToPlot(numPointsToPlot, 4) = ECPlotInfo(i, 2);
+                
+                if A(i) < 0.01
+                   numBinPoints = numBinPoints + 1;
+                   binPoints(numBinPoints, 1) = B(i);
+                   binPoints(numBinPoints, 2) = ECPlotInfo(i, 1);
+                   binPoints(numBinPoints, 3) = ECPlotInfo(i, 2);
+                end
+            end
+        end
+        %plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 3), ...
+        %    axesTernTafel, 30);
+        plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 3));
+        colorbar;
+        
+        if ishandle(fTernOnset) == 1
+            figure(fTernOnset);
+            clf;
+        else fTernOnset = figure;
+        end
+        axesTernOnset = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plotTernBase(axesTernOnset, sqrt3Half, sqrt3Inv);
+        %plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4), ...
+        %    axesTernOnset, 30);
+        plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4));
+        colorbar;
+        
+        binPoints = sortrows(binPoints);
+        figure;
+        plot(binPoints(:, 1), binPoints(:, 2), 'r');
+        hold on;
+        plot(binPoints(:, 1), binPoints(:, 3), 'b');
     end
 
     %% plotLobf
@@ -787,10 +882,10 @@ fTernDiagram.Visible = 'on';
         hold on;
         sb.CompMarker = ...
             plot(get(sb.DataAxes, 'XLim'), ...
-            [Range.Y(1) Range.Y(1)], 'r');
+            [Range.Y(1) Range.Y(1)], 'r', 'LineWidth', 2);
         sb.CompMarker2 = ...
             plot(get(sb.DataAxes, 'XLim'), ...
-            [Range.Y(2) Range.Y(2)], 'r');
+            [Range.Y(2) Range.Y(2)], 'r', 'LineWidth', 2);
 
         % bring slider axes to the front
         uistack(sb.SliderAxes,'top');
@@ -958,12 +1053,14 @@ fTernDiagram.Visible = 'on';
                     hbuttonHigherSlope, htextHigherSlope, ...
                     hbuttonTafel, htextTafel, ...
                     hbuttonOnsetPot, htextOnsetPot, ...
-                    hbuttonBoth, heditOffset, ...
+                    hbuttonBoth, heditOffset, hbuttonPrint, ...
+                    hbuttonPlotTern, ...
                     fECButtons, fECPlot] = openECFigs();
                 setECCallbacks(heditSelect, hbuttonIncrease, ...
                     hbuttonLowerSlope, hbuttonHigherSlope, ...
                     hbuttonTafel, hbuttonOnsetPot, ...
-                    hbuttonDecrease, hbuttonBoth, heditOffset);
+                    hbuttonDecrease, hbuttonBoth, heditOffset, ...
+                    hbuttonPrint, hbuttonPlotTern);
                 ECFigsOpen = 1;
             end
             idsEC = ids;
@@ -1309,7 +1406,8 @@ fTernDiagram.Visible = 'on';
     function setECCallbacks(heditSelect, hbuttonIncrease, ...
             hbuttonLowerSlope, hbuttonHigherSlope, ...
             hbuttonTafel, hbuttonOnsetPot, ...
-            hbuttonDecrease, hbuttonBoth, heditOffset)
+            hbuttonDecrease, hbuttonBoth, heditOffset, ...
+            hbuttonPrint, hbuttonPlotTern)
         set(heditSelect, 'Callback', {@editSelectCallback});
         set(hbuttonIncrease, 'Callback', {@buttonIncreaseCallback});
         set(hbuttonDecrease, 'Callback', {@buttonDecreaseCallback});
@@ -1319,6 +1417,8 @@ fTernDiagram.Visible = 'on';
         set(hbuttonOnsetPot, 'Callback', {@buttonOnsetPotCallback});
         set(hbuttonBoth, 'Callback', {@buttonBothCallback})
         set(heditOffset, 'Callback', {@editOffsetCallback});
+        set(hbuttonPrint, 'Callback', {@buttonPrintCallback});
+        set(hbuttonPlotTern, 'Callback', {@buttonPlotTernCallback});
     end
 
     %% error handling
