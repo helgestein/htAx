@@ -37,6 +37,8 @@ global lowLobf;
 global highLobf;
 global fTernTafel;
 global fTernOnset;
+global fTernTafelScatter;
+global fTernOnsetScatter;
 ECSelectedIndex = 0;
 dotSize = 30;
 offset = 1;
@@ -45,8 +47,6 @@ numPointsTafel = 0;
 % precalculate to save time
 sqrt3Half = sqrt(3) / 2;
 sqrt3Inv = 1 / sqrt(3);
-
-axesSet = 0;
 
 zMax = 1000; % large z-value for plotting points above surface plot
 
@@ -114,60 +114,46 @@ fTernDiagram.Visible = 'on';
 
     function editConstCallback(heditConst, evt)
         constPercent = str2double(get(heditConst, 'String')) / 100;
-        if isnan(constPercent)
-            errordlg('not a number');
-            resetConstPercent();
-        elseif constPercent < 0
-            errordlg('invalid composition percent');
-            resetConstPercent();
-        elseif constPercent > 1
-            errordlg('invalid composition percent');
-            resetConstPercent();
-        elseif (constPercent + width) > 1
-            errordlg('invalid width-percent combination');
-            resetConstPercent();
-        elseif (constPercent - width) < 0
-            errordlg('invalid width-percent combination');
-            resetConstPercent();
-        end
     end
 
     function editWidthCallback(heditWidth, evt)
         width = str2double(get(heditWidth, 'String')) / 100;
-        if isnan(width)
-            errordlg('not a number');
-            resetWidth();
-        elseif width < 0
-            errordlg('invalid width');
-            resetWidth();
-        elseif width > 1
-            errordlg('invalid width');
-            resetWidth();
-        elseif (constPercent + width) > 1
-            errordlg('invalid width-percent combination');
-            resetWidth();
-        elseif (constPercent - width) < 0
-            errordlg('invalid width-percent combination');
-            resetWidth();
-        end
     end
 
     function buttonACallback(obj, evt)
         constType = 0;
-        plotSpecData(scaleType);
-        ECPlotFull = plotECData();
+        
+        if checkInputErrorComp(constPercent, width) == 1
+            resetConstPercent();
+            resetWidth();
+        else
+            plotSpecData(scaleType);
+            ECPlotFull = plotECData();
+        end
     end
 
     function buttonBCallback(obj, evt)
         constType = 1;
-        plotSpecData(scaleType);
-        ECPlotFull = plotECData();
+        
+        if checkInputErrorComp(constPercent, width) == 1
+            resetConstPercent();
+            resetWidth();
+        else
+            plotSpecData(scaleType);
+            ECPlotFull = plotECData();
+        end
     end
 
     function buttonCCallback(obj, evt)
         constType = 2;
-        plotSpecData(scaleType);
-        ECPlotFull = plotECData();
+        
+        if checkInputErrorComp(constPercent, width) == 1
+            resetConstPercent();
+            resetWidth();
+        else
+            plotSpecData(scaleType);
+            ECPlotFull = plotECData();
+        end
     end
 
     %% tern style tab
@@ -506,7 +492,10 @@ fTernDiagram.Visible = 'on';
         if ishandle(fTernTafel) == 1
             figure(fTernTafel);
             clf;
-        else fTernTafel = figure;
+        else
+            fTernTafel = figure;
+            set(gcf, 'color', 'w');
+            set(fTernTafel, 'Name', 'Tafel Slope - Surf Plot');
         end
         axesTernTafel = axes(...
             'Units', 'Normalized', ...
@@ -541,22 +530,61 @@ fTernDiagram.Visible = 'on';
         if ishandle(fTernOnset) == 1
             figure(fTernOnset);
             clf;
-        else fTernOnset = figure;
+        else
+            fTernOnset = figure;
+            set(gcf, 'color', 'w');
+            set(fTernOnset, 'Name', 'Onset Potential - Surf Plot');
         end
         axesTernOnset = axes(...
             'Units', 'Normalized', ...
             'Position',[0.1, 0.1, 0.8, 0.8]);
         plotTernBase(axesTernOnset, sqrt3Half, sqrt3Inv);
-        %plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4), ...
-        %    axesTernOnset, 30);
+        
         plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4));
         colorbar;
         
+        if ishandle(fTernTafelScatter) == 1
+            figure(fTernTafelScatter);
+            clf;
+        else
+            fTernTafelScatter = figure;
+            set(gcf, 'color', 'w');
+            set(fTernTafelScatter, 'Name', 'Tafel Slope - Scatter Plot');
+        end
+        %set(gcf, 'color', 'w');
+        axesTernTafelScatter = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plotTernBase(axesTernTafelScatter, sqrt3Half, sqrt3Inv);
+        plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 3), ...
+            axesTernTafelScatter, 30);
+        
+        %figure;    
+        %set(gcf, 'color', 'w');
+        if ishandle(fTernOnsetScatter) == 1
+            figure(fTernOnsetScatter);
+            clf;
+        else
+            fTernOnsetScatter = figure;
+            set(gcf, 'color', 'w');
+            set(fTernOnsetScatter, 'Name', 'Onset Potential - Scatter Plot');
+        end
+        axesTernOnsetScatter = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plotTernBase(axesTernOnsetScatter, sqrt3Half, sqrt3Inv);
+        plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4), ...
+            axesTernOnsetScatter, 30);
+        
         binPoints = sortrows(binPoints);
         figure;
+        set(gcf, 'color', 'w');
+        set(gcf, 'Name', 'Binary Region Plot');
         plot(binPoints(:, 1), binPoints(:, 2), 'r');
         hold on;
         plot(binPoints(:, 1), binPoints(:, 3), 'b');
+        xlabel('Fe composition');
+        ylabel('Tafel slope (red) / onset potential (blue)')
     end
 
     %% plotLobf
@@ -830,40 +858,18 @@ fTernDiagram.Visible = 'on';
 
         % remove multiple axes labels
         
-        %{
-        if axesSet ~= 0
-            set(sb.DataAxes, 'XTick', [], 'YTick', []);
-        end
-        axes(sb.DataAxes);
-
-
-        %}
-        
        % make plot look good
        shading('interp');
        axis('tight');
        view(2);
         
         axes(sb.DataAxes);
-         
-        %{
-        if axesSet == 0
-            xlabel('Angle'); 
-            ylabel('Composition');
-            axesSet = 1;
-        end
-        %}
-        
-        
-        %set(sb.DataAxes, 'XTick', [], 'YTick', []);
 
         xlabel('Angle');
         ylabel('Composition');
         set(sb.DataAxes, ...
             'XTickMode', 'auto', 'XTickLabelMode', 'auto', ...
             'YTickMode', 'auto', 'YTickLabelMode', 'auto');
-        
-       %hold on;
 
        set(sb.DataAxes,'XLim',Range.X);
        set(sb.DataAxes, 'YLim', Range.Y);
