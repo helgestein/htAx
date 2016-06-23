@@ -43,6 +43,7 @@ ECSelectedIndex = 0;
 dotSize = 30;
 offset = 1;
 numPointsTafel = 0;
+numPointsOnset = 0;
 
 % precalculate to save time
 sqrt3Half = sqrt(3) / 2;
@@ -460,11 +461,36 @@ fTernDiagram.Visible = 'on';
         ECPlotInfo(ECSelectedIndexUnsort, 3) = ...
             findClosestPot(onsetPot, selectPot);
         
-        onsetPlotData(numPointsTafel, 1) = A(ECSelectedIndexUnsort);
-        onsetPlotData(numPointsTafel, 2) = B(ECSelectedIndexUnsort);
-        onsetPlotData(numPointsTafel, 3) = C(ECSelectedIndexUnsort);
-        onsetPlotData(numPointsTafel, 4) = onsetPot;
-        onsetPlotData(numPointsTafel, 5) = findClosestPot(onsetPot, selectPot);
+        numPointsOnset = numPointsOnset + 1;
+        
+        onsetPlotData(numPointsOnset, 1) = A(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsOnset, 2) = B(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsOnset, 3) = C(ECSelectedIndexUnsort);
+        onsetPlotData(numPointsOnset, 4) = onsetPot;
+        onsetPlotData(numPointsOnset, 5) = findClosestPot(onsetPot, selectPot);
+    end
+
+    function buttonResetCallback(obj, evt)
+        numPointsTafel = numPointsTafel - 1;
+        numPointsOnset = numPointsOnset - 1;
+        
+        set(htextTafel, 'String', '0');
+        set(htextOnsetPot, 'String', '0');
+        
+        tafelDelete = ECPlotInfo(ECSelectedIndexUnsort, 1);
+        onsetDelete = ECPlotInfo(ECSelectedIndexUnsort, 2);
+        
+        [~, indexFound] = min(abs(tafelPlotData(:, 4) - tafelDelete));
+        tafelPlotData = removerows(tafelPlotData, 'ind', indexFound);
+        
+        [~, indexFound] = min(abs(onsetPlotData(:, 4) - onsetDelete));
+        onsetPlotData = removerows(onsetPlotData, 'ind', indexFound);
+        
+        ECPlotInfo(ECSelectedIndexUnsort, 1) = 0;
+        ECPlotInfo(ECSelectedIndexUnsort, 2) = 0;
+        ECPlotInfo(ECSelectedIndexUnsort, 3) = 0;
+        
+        
     end
 
     %% EC post-process tab
@@ -1067,6 +1093,7 @@ fTernDiagram.Visible = 'on';
 
         if isempty(ids) == 1
             errordlg('No points selected');
+            ECPlotFull = 0;
         else
             idsOrig = ids;
             ids = ids .* 2;
@@ -1080,12 +1107,13 @@ fTernDiagram.Visible = 'on';
                     hbuttonOnsetPot, htextOnsetPot, ...
                     hbuttonBoth, heditOffset, hbuttonPrint, ...
                     hbuttonPlotTern, ...
+                    hbuttonReset, ...
                     fECButtons, fECPlot] = openECFigs();
                 setECCallbacks(heditSelect, hbuttonIncrease, ...
                     hbuttonLowerSlope, hbuttonHigherSlope, ...
                     hbuttonTafel, hbuttonOnsetPot, ...
                     hbuttonDecrease, hbuttonBoth, heditOffset, ...
-                    hbuttonPrint, hbuttonPlotTern);
+                    hbuttonPrint, hbuttonPlotTern, hbuttonReset);
                 ECFigsOpen = 1;
             end
             idsEC = ids;
@@ -1093,6 +1121,7 @@ fTernDiagram.Visible = 'on';
                 ECData(:, idsEC - 1), ECData(:, idsEC), ...
                 ySpec, ECPlotInfo(idsOrig, 4));
         end
+       
     end
     %% plot EC data on waterfall plot
 
@@ -1432,7 +1461,7 @@ fTernDiagram.Visible = 'on';
             hbuttonLowerSlope, hbuttonHigherSlope, ...
             hbuttonTafel, hbuttonOnsetPot, ...
             hbuttonDecrease, hbuttonBoth, heditOffset, ...
-            hbuttonPrint, hbuttonPlotTern)
+            hbuttonPrint, hbuttonPlotTern, hbuttonReset)
         set(heditSelect, 'Callback', {@editSelectCallback});
         set(hbuttonIncrease, 'Callback', {@buttonIncreaseCallback});
         set(hbuttonDecrease, 'Callback', {@buttonDecreaseCallback});
@@ -1444,6 +1473,7 @@ fTernDiagram.Visible = 'on';
         set(heditOffset, 'Callback', {@editOffsetCallback});
         set(hbuttonPrint, 'Callback', {@buttonPrintCallback});
         set(hbuttonPlotTern, 'Callback', {@buttonPlotTernCallback});
+        set(hbuttonReset, 'Callback', {@buttonResetCallback});
     end
 
     %% error handling
