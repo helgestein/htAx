@@ -39,6 +39,7 @@ global fTernTafel;
 global fTernOnset;
 global fTernTafelScatter;
 global fTernOnsetScatter;
+global fBinaryPlot;
 ECSelectedIndex = 0;
 dotSize = 30;
 offset = 1;
@@ -258,6 +259,7 @@ fTernDiagram.Visible = 'on';
         %info.useDecrease = useDecrease;
         info.ECPlotInfo = ECPlotInfo;
         save(saveFile, '-struct', 'info');
+        msgbox('Analysis saved');
     end
 
     function buttonCloseCallback(obj, evt)
@@ -276,6 +278,21 @@ fTernDiagram.Visible = 'on';
         end
         if ishandle(fECPlot) ~= 0
             close(fECPlot);
+        end
+        if ishandle(fBinaryPlot) ~= 0
+            close(fBinaryPlot);
+        end
+        if ishandle(fTernTafel) ~= 0
+            close(fTernTafel);
+        end
+        if ishandle(fTernOnset) ~= 0
+            close(fTernOnset);
+        end
+        if ishandle(fTernTafelScatter) ~= 0
+            close(fTernTafelScatter);
+        end
+        if ishandle(fTernOnsetScatter) ~= 0
+            close(fTernOnsetScatter);
         end
     end
 
@@ -603,9 +620,14 @@ fTernDiagram.Visible = 'on';
             axesTernOnsetScatter, 30);
         
         binPoints = sortrows(binPoints);
-        figure;
-        set(gcf, 'color', 'w');
-        set(gcf, 'Name', 'Binary Region Plot');
+        if ishandle(fBinaryPlot) == 1
+            figure(fBinaryPlot);
+            clf;
+        else
+            fBinaryPlot = figure;
+            set(gcf, 'color', 'w');
+            set(gcf, 'Name', 'Binary Region Plot');
+        end
         plot(binPoints(:, 1), binPoints(:, 2), 'r');
         hold on;
         plot(binPoints(:, 1), binPoints(:, 3), 'b');

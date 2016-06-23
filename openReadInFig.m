@@ -186,7 +186,10 @@ fReadInFig.Visible = 'on';
             if EDXFile ~= 0
                 if saveFile ~= 0
                     close(fReadInFig);
-                    beginAnalysis(XRDFolder, EDXFile, saveFile)
+                    beginAnalysis(XRDFolder, EDXFile, saveFile, ...
+                        '/Users/sjiao/Documents/summer_2016/data/CoFeMnO/CoFeMn_OER_cond&CV_KOH1M', ...
+                        '/Users/sjiao/Documents/summer_2016/data/CoFeMnO/CoFeMn_OER_cond&CV_KOH1M_2', ...
+                        '/Users/sjiao/Documents/summer_2016/data/CoFeMnO/CoFeMn_OER_cond&CV_KOH1M_3');
                 else
                     errordlg('No save file selected');
                 end
