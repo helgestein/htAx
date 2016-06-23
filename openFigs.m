@@ -762,6 +762,7 @@ fTernDiagram.Visible = 'on';
 
         % setup; partially copied from CombiView
         figure(fSpecPlot);
+        clf;
         sb.SBFigure = fSpecPlot;
 
         % set up the axes
@@ -828,23 +829,41 @@ fTernDiagram.Visible = 'on';
         sb.DataPlots = surf(x, y, yAxis(:,ID).');
 
         % remove multiple axes labels
+        
+        %{
         if axesSet ~= 0
             set(sb.DataAxes, 'XTick', [], 'YTick', []);
         end
         axes(sb.DataAxes);
 
+
+        %}
+        
+       % make plot look good
+       shading('interp');
+       axis('tight');
+       view(2);
+        
+        axes(sb.DataAxes);
+         
+        %{
         if axesSet == 0
             xlabel('Angle'); 
             ylabel('Composition');
             axesSet = 1;
         end
+        %}
+        
+        
+        %set(sb.DataAxes, 'XTick', [], 'YTick', []);
 
-       % make plot look good
-       shading('interp');
-       axis('tight');
-       view(2);
-
-       hold on;
+        xlabel('Angle');
+        ylabel('Composition');
+        set(sb.DataAxes, ...
+            'XTickMode', 'auto', 'XTickLabelMode', 'auto', ...
+            'YTickMode', 'auto', 'YTickLabelMode', 'auto');
+        
+       %hold on;
 
        set(sb.DataAxes,'XLim',Range.X);
        set(sb.DataAxes, 'YLim', Range.Y);
