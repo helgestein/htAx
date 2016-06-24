@@ -40,6 +40,9 @@ global fTernOnset;
 global fTernTafelScatter;
 global fTernOnsetScatter;
 global fBinaryPlot;
+global fTernPhase;
+global fXRDPlot;
+global pointOutline;
 ECSelectedIndex = 0;
 dotSize = 30;
 offset = 1;
@@ -70,13 +73,16 @@ global onsetPlotData;
 hbuttonScatter, hbuttonSurf, hbuttonScatterEC, hbuttonSurfEC, ...
 heditSize, ...
 hbuttonPoint, hbuttonDelete, hbuttonSaveAll, hbuttonClose, ...
-hbuttonSaveClose, fTernButtons, fTernDiagram] = openTernFigs();
+hbuttonSaveClose, hbuttonPhase, hbuttonSelectPoint, ...
+hbuttonProcessAll, ...
+fTernButtons, fTernDiagram] = openTernFigs();
 setTernCallbacks(heditConst, heditWidth, ...
     hbuttonA, hbuttonB, hbuttonC, ...
     hbuttonScatter, hbuttonSurf, hbuttonScatterEC, hbuttonSurfEC, ...
     heditSize, ...
     hbuttonPoint, hbuttonDelete, hbuttonSaveAll, hbuttonClose, ...
-    hbuttonSaveClose);
+    hbuttonSaveClose, hbuttonPhase, hbuttonSelectPoint, ...
+    hbuttonProcessAll);
 
 %% process and plot data
 
@@ -104,6 +110,9 @@ hold on;
 figure(fTernDiagram);
 plotTernData(0);
 hold off;
+
+[collcodes, XRDDatabase] = ...
+    readXRDDatabase('/Users/sjiao/Documents/summer_2016/data/XRDDatabase_patterns');
 
 %% make GUI visible
 
@@ -317,6 +326,151 @@ fTernDiagram.Visible = 'on';
         pointInfo = removerows(pointInfo, [indexPoint, partnerIndex]);
 
         plotTernData(ternPlotType);
+    end
+
+    function buttonPhaseCallback(obj, evt)
+        
+        if ishandle(fTernPhase) == 1
+            figure(fTernPhase);
+            clf;
+        else
+            fTernPhase = figure;
+            set(gcf, 'color', 'w');
+            set(gcf, 'Name', 'Ternary Phase Plot');
+        end
+        
+        axesTernPhase = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plotTernBase(axesTernPhase, sqrt3Half, sqrt3Inv);
+        hold on;
+        scatter(pointInfo(:, 1), pointInfo(:, 2), 'k');
+        
+    end
+
+    %% tern select point tab
+    
+    function buttonSelectPointCallback(obj, evt)
+        figure(fTernDiagram);
+        [xSelect, ySelect] = ginput(1);
+        indexPoint = findNearestTernPoint(xSelect, ySelect);
+        %xTernCoordAll(indexPoint)
+        %yTernCoordAll(indexPoint)
+        hold on;
+        
+        % outline selected point
+        if ishandle(pointOutline)
+            delete(pointOutline)
+        end
+        pointOutline = scatter(xTernCoordAll(indexPoint), yTernCoordAll(indexPoint), 'k');
+        
+        if ishandle(fXRDPlot) == 1
+            figure(fXRDPlot);
+            clf;
+        else
+            fXRDPlot = figure;
+            set(gcf, 'color', 'w');
+            set(gcf, 'Name', 'XRD Plot for Selected Point');
+        end
+        
+        axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+        plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2));
+        xlabel('Angle');
+        ylabel('Intensity');
+        
+        displayString = sprintf('A: %f\nB: %f\nC: %f', ...
+            A(indexPoint), B(indexPoint), C(indexPoint));
+        displayString
+        
+        figure(fXRDPlot);
+        %figure;
+        %text(0.1, 0.1, displayString);
+        hold on;
+        %textComp = text(0.1, 0.1, 'hello', 'Fontsize', 30);
+        %uistack(textComp, 'top');
+        legend(displayString, 'location', 'EastOutside');
+        %uicontrol('Style', 'text', 'String', displayString, ...
+        %    'Position', [0.8 0.6 0.1 0.6]);
+        
+        % print angle values of top ten largest intensity values
+        XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
+        sortedIntensity = sortrows(XRDTemp, 2);
+        sortedIntensity = flipud(sortedIntensity);
+        anglesToCheck = sortedIntensity(1:10, 1);
+        intensityToCheck = sortedIntensity(1:10, 2);
+        %sortedIntensity(1:10, :)
+        
+        numFiles = length(XRDDatabase(1, :)) / 2;
+        tolerance = 0.1;
+        intensityTol = 5;
+        for indexAngle = 1:10
+            for indexDatabase = 1:numFiles
+                ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - anglesToCheck(indexAngle)) < tolerance;
+                ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
+                ids2 = find(ids1 .* ids2);
+                if isempty(ids2) ~= 1
+                    %'match'
+                    %origAngle = anglesToCheck(indexAngle)
+                    %origIntensity = intensityToCheck(indexAngle)
+                    collcode = collcodes(indexDatabase)
+                    %angleMatch = XRDDatabase(ids2, indexDatabase * 2 - 1) 
+                    %intensityMatch = XRDDatabase(ids2, indexDatabase * 2)
+                end
+            end
+        end
+    end
+
+    function indexPoint = findNearestTernPoint(xSelect, ySelect)
+        minDist = realmax;
+        indexPoint = 1;
+        for indexTern = 1:numTernPoints
+            distTemp = squareDistance(xSelect, ySelect, ...
+                    xTernCoordAll(indexTern), yTernCoordAll(indexTern));
+            if distTemp < minDist
+                indexPoint = indexTern;
+                minDist = distTemp;
+            end
+        end
+    end
+
+    function buttonProcessAllCallback(obj, evt)
+        threshIntensity = 500;
+        for indexTern = 1:numTernPoints
+            display = 0;
+            for indexXRD = 1:length(XRDData(:, 1))
+               if XRDData(indexXRD, indexTern * 2) >  threshIntensity
+                   display = 1;
+                   break;
+               end
+            end
+            if display == 1
+                figure;
+                
+                axes(...
+                    'Units', 'Normalized', ...
+                    'Position',[0.1, 0.1, 0.8, 0.8]);
+                plot(XRDData(:, indexTern * 2 - 1), XRDData(:, indexTern * 2));
+                xlabel('Angle');
+                ylabel('Intensity');
+
+                displayString = sprintf('A: %f\nB: %f\nC: %f', ...
+                    A(indexTern), B(indexTern), C(indexTern));
+                displayString
+
+                %figure(fXRDPlot);
+                %figure;
+                %text(0.1, 0.1, displayString);
+                %hold on;
+                %textComp = text(0.1, 0.1, 'hello', 'Fontsize', 30);
+                %uistack(textComp, 'top');
+                legend(displayString, 'location', 'EastOutside');
+                figure(fTernDiagram);
+                hold on;
+                scatter(xTernCoordAll(indexTern), yTernCoordAll(indexTern), 'k');
+            end
+        end
     end
 
     %% spec style tab
@@ -1450,7 +1604,8 @@ fTernDiagram.Visible = 'on';
             hbuttonScatter, hbuttonSurf, hbuttonScatterEC, hbuttonSurfEC, ...
             heditSize, ...
             hbuttonPoint, hbuttonDelete, hbuttonSaveAll, ...
-            hbuttonClose, hbuttonSaveClose)
+            hbuttonClose, hbuttonSaveClose, hbuttonPhase, ...
+            hbuttonSelectPoint, hbuttonProcessAll)
 
         set(heditConst, 'Callback', {@editConstCallback});
         set(heditWidth, 'Callback', {@editWidthCallback});
@@ -1467,6 +1622,9 @@ fTernDiagram.Visible = 'on';
         set(hbuttonSaveAll, 'Callback', {@buttonSaveAllCallback});
         set(hbuttonClose, 'Callback', {@buttonCloseCallback});
         set(hbuttonSaveClose, 'Callback', {@buttonSaveCloseCallback});
+        set(hbuttonPhase, 'Callback', {@buttonPhaseCallback});
+        set(hbuttonSelectPoint, 'Callback', {@buttonSelectPointCallback});
+        set(hbuttonProcessAll, 'Callback', {@buttonProcessAllCallback});
     end
 
     % spec. buttons
