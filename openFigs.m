@@ -116,8 +116,10 @@ hold off;
 
 %% make GUI visible
 
+%{
 fTernButtons.Visible = 'on';
 fTernDiagram.Visible = 'on';
+%}
 
 %% callbacks
 
@@ -354,29 +356,17 @@ fTernDiagram.Visible = 'on';
         
         XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
         
-        %{
-        sortedIntensity = sortrows(XRDTemp, 2);
-        sortedIntensity = flipud(sortedIntensity);
-        numAngles = 100;
-        anglesToCheck = sortedIntensity(1:numAngles, 1);
-        intensityToCheck = sortedIntensity(1:numAngles, 2);
-        %sortedIntensity(1:10, :)
-        %}
-        
         totalAngles = length(XRDTemp(:, 1));
         indexAngles = 1;
-        %numAngles = floor(totalAngles / 120);
         anglesToCheck = zeros(1, 1);
         numEntered = 0;
         intensityToCheck = zeros(1, 1);
         divide = 19;
         while (indexAngles + divide) < totalAngles
-            [maxVal, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
-            %indexMax
+            [~, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
             numEntered = numEntered + 1;
             anglesToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 1);
             intensityToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 2);
-            %maxVal
             indexAngles = indexAngles + divide + 1;
         end
         
@@ -384,8 +374,6 @@ fTernDiagram.Visible = 'on';
         matches = zeros(1, numFiles);
         tolerance = 0.1;
         intensityTol = 10;
-        numSaved = 0;
-        saveData = zeros(1, 1);
         numAngles = length(anglesToCheck);
         for indexAngle = 1:numAngles
             for indexDatabase = 1:numFiles
@@ -393,32 +381,7 @@ fTernDiagram.Visible = 'on';
                 ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
                 ids3 = find(ids1 .* ids2);
                 if isempty(ids3) ~= 1
-                    %'match'
-                    %origAngle = anglesToCheck(indexAngle)
-                    %origIntensity = intensityToCheck(indexAngle)
-                    %collcode = collcodes(indexDatabase);
                     matches(1, indexDatabase) = 1;
-                    %figure;
-                    %plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'r');
-                    %hold on;
-                    %plot(XRDDatabase(:, indexDatabase * 2 - 1), XRDDatabase(:, indexDatabase * 2), 'b');
-                    %for indexLines = 1:length(ids3)
-                        
-                    %    numSaved = numSaved + 1;
-                    %    saveData(numSaved, 1) = indexDatabase;
-                    %    saveData(numSaved, 2) = anglesToCheck(indexAngle);
-                    %    saveData(numSaved, 3) = intensityToCheck(indexAngle);
-                    %    saveData(numSaved, 4) = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
-                    %    saveData(numSaved, 5) = XRDDatabase(ids3(indexLines), indexDatabase * 2);
-                        %saveData(numSaved, 6) = indexDatabase;
-                        
-                        %xVal = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
-                        %plot([xVal xVal], [0 250], 'g');
-                    %end
-                    %collcodeString = sprintf('collcode: %d, XRD pattern angle: %f, XRD pattern intensity: %f\n', collcode);
-                    %legend(collcodeString, 'location', 'SouthOutside');
-                    %angleMatch = XRDDatabase(ids2, indexDatabase * 2 - 1) 
-                    %intensityMatch = XRDDatabase(ids2, indexDatabase * 2)
                 end
             end
         end
@@ -427,9 +390,7 @@ fTernDiagram.Visible = 'on';
     function buttonSelectPointCallback(obj, evt)
         figure(fTernDiagram);
         [xSelect, ySelect] = ginput(1);
-        indexPoint = findNearestTernPoint(xSelect, ySelect)
-        %xTernCoordAll(indexPoint)
-        %yTernCoordAll(indexPoint)
+        indexPoint = findNearestTernPoint(xSelect, ySelect);
         hold on;
         
         % outline selected point
@@ -459,47 +420,27 @@ fTernDiagram.Visible = 'on';
         displayString
         
         figure(fXRDPlot);
-        %figure;
-        %text(0.1, 0.1, displayString);
+
         hold on;
-        %textComp = text(0.1, 0.1, 'hello', 'Fontsize', 30);
-        %uistack(textComp, 'top');
+
         legend(displayString, 'location', 'EastOutside');
-        %uicontrol('Style', 'text', 'String', displayString, ...
-        %    'Position', [0.8 0.6 0.1 0.6]);
-        
-        
-        
+
         % print angle values of top ten largest intensity values
         XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
         
         totalAngles = length(XRDTemp(:, 1));
         indexAngles = 1;
-        %numAngles = floor(totalAngles / 120);
         anglesToCheck = zeros(1, 1);
         numEntered = 0;
         intensityToCheck = zeros(1, 1);
         divide = 19;
         while (indexAngles + divide) < totalAngles
-            [maxVal, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
-            %indexMax
+            [~, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
             numEntered = numEntered + 1;
             anglesToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 1);
             intensityToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 2);
-            %maxVal
             indexAngles = indexAngles + divide + 1;
         end
-        
-        anglesToCheck
-        %{
-        sortedIntensity = sortrows(XRDTemp, 2);
-        sortedIntensity = flipud(sortedIntensity);
-        numAngles = 50;
-        anglesToCheck = sortedIntensity(1:numAngles, 1);
-        intensityToCheck = sortedIntensity(1:numAngles, 2);
-        %}
-        %length(XRDData(:, 1))
-        %sortedIntensity(1:10, :)
         
         numFiles = length(XRDDatabase(1, :)) / 2;
         tolerance = 0.1;
@@ -514,32 +455,14 @@ fTernDiagram.Visible = 'on';
                 ids3 = find(ids1 .* ids2);
                 anglesToCheck(indexAngle);
                 if isempty(ids3) ~= 1
-                    %'match'
-                    %origAngle = anglesToCheck(indexAngle)
-                    %origIntensity = intensityToCheck(indexAngle)
-                    collcode = collcodes(indexDatabase);
-                    
-                    %figure;
-                    %plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'r');
-                    %hold on;
-                    %plot(XRDDatabase(:, indexDatabase * 2 - 1), XRDDatabase(:, indexDatabase * 2), 'b');
                     for indexLines = 1:length(ids3)
-                        
                         numSaved = numSaved + 1;
                         saveData(numSaved, 1) = indexDatabase;
                         saveData(numSaved, 2) = anglesToCheck(indexAngle);
                         saveData(numSaved, 3) = intensityToCheck(indexAngle);
                         saveData(numSaved, 4) = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
                         saveData(numSaved, 5) = XRDDatabase(ids3(indexLines), indexDatabase * 2);
-                        %saveData(numSaved, 6) = indexDatabase;
-                        
-                        %xVal = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
-                        %plot([xVal xVal], [0 250], 'g');
                     end
-                    %collcodeString = sprintf('collcode: %d, XRD pattern angle: %f, XRD pattern intensity: %f\n', collcode);
-                    %legend(collcodeString, 'location', 'SouthOutside');
-                    %angleMatch = XRDDatabase(ids2, indexDatabase * 2 - 1) 
-                    %intensityMatch = XRDDatabase(ids2, indexDatabase * 2)
                 end
             end
         end
@@ -565,17 +488,6 @@ fTernDiagram.Visible = 'on';
                 uistack(xrdplot, 'top');
             end
         end
-        
-        %{
-        figure;
-        plot(XRDTemp(:, 1), XRDTemp(:, 2), 'b');
-        hold on;
-        for indexAngles = 1:length(anglesToCheck)
-            plot([anglesToCheck(indexAngles) anglesToCheck(indexAngles)], ...
-                [0 250], 'r');
-        end
-        %}
-        
     end
 
     function indexPoint = findNearestTernPoint(xSelect, ySelect)
@@ -726,19 +638,16 @@ fTernDiagram.Visible = 'on';
     end
 
     function buttonIncreaseCallback(obj, evt)
-        %useDecrease(ECSelectedIndexUnsort) = 1;
         ECPlotInfo(ECSelectedIndexUnsort, 4) = 1;
         ECPlotFull = plotECData();
     end
 
     function buttonDecreaseCallback(obj, evt)
-        %useDecrease(ECSelectedIndexUnsort) = -1;
         ECPlotInfo(ECSelectedIndexUnsort, 4) = -1;
         ECPlotFull = plotECData();
     end
 
     function buttonBothCallback(obj, evt)
-        %useDecrease(ECSelectedIndexUnsort) = 0;
         ECPlotInfo(ECSelectedIndexUnsort, 4) = 0;
         ECPlotFull = plotECData();
     end

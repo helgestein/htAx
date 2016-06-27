@@ -207,4 +207,9 @@ hbuttonProcessAll = uicontrol('Parent', tabPoint, ...
     'Units', 'Normalized', ...
     'Position', [rightColOffset topRowOffset buttonWidth buttonHeight]);
 
+%% make windows visible
+
+fTernButtons.Visible = 'on';
+fTernDiagram.Visible = 'on';
+
 end
