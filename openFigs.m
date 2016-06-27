@@ -350,10 +350,84 @@ fTernDiagram.Visible = 'on';
 
     %% tern select point tab
     
+    function matches = processPoint(indexPoint)
+        
+        XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
+        
+        %{
+        sortedIntensity = sortrows(XRDTemp, 2);
+        sortedIntensity = flipud(sortedIntensity);
+        numAngles = 100;
+        anglesToCheck = sortedIntensity(1:numAngles, 1);
+        intensityToCheck = sortedIntensity(1:numAngles, 2);
+        %sortedIntensity(1:10, :)
+        %}
+        
+        totalAngles = length(XRDTemp(:, 1));
+        indexAngles = 1;
+        %numAngles = floor(totalAngles / 120);
+        anglesToCheck = zeros(1, 1);
+        numEntered = 0;
+        intensityToCheck = zeros(1, 1);
+        divide = 19;
+        while (indexAngles + divide) < totalAngles
+            [maxVal, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
+            %indexMax
+            numEntered = numEntered + 1;
+            anglesToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 1);
+            intensityToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 2);
+            %maxVal
+            indexAngles = indexAngles + divide + 1;
+        end
+        
+        numFiles = length(XRDDatabase(1, :)) / 2;
+        matches = zeros(1, numFiles);
+        tolerance = 0.1;
+        intensityTol = 10;
+        numSaved = 0;
+        saveData = zeros(1, 1);
+        numAngles = length(anglesToCheck);
+        for indexAngle = 1:numAngles
+            for indexDatabase = 1:numFiles
+                ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - anglesToCheck(indexAngle)) < tolerance;
+                ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
+                ids3 = find(ids1 .* ids2);
+                if isempty(ids3) ~= 1
+                    %'match'
+                    %origAngle = anglesToCheck(indexAngle)
+                    %origIntensity = intensityToCheck(indexAngle)
+                    %collcode = collcodes(indexDatabase);
+                    matches(1, indexDatabase) = 1;
+                    %figure;
+                    %plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'r');
+                    %hold on;
+                    %plot(XRDDatabase(:, indexDatabase * 2 - 1), XRDDatabase(:, indexDatabase * 2), 'b');
+                    %for indexLines = 1:length(ids3)
+                        
+                    %    numSaved = numSaved + 1;
+                    %    saveData(numSaved, 1) = indexDatabase;
+                    %    saveData(numSaved, 2) = anglesToCheck(indexAngle);
+                    %    saveData(numSaved, 3) = intensityToCheck(indexAngle);
+                    %    saveData(numSaved, 4) = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
+                    %    saveData(numSaved, 5) = XRDDatabase(ids3(indexLines), indexDatabase * 2);
+                        %saveData(numSaved, 6) = indexDatabase;
+                        
+                        %xVal = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
+                        %plot([xVal xVal], [0 250], 'g');
+                    %end
+                    %collcodeString = sprintf('collcode: %d, XRD pattern angle: %f, XRD pattern intensity: %f\n', collcode);
+                    %legend(collcodeString, 'location', 'SouthOutside');
+                    %angleMatch = XRDDatabase(ids2, indexDatabase * 2 - 1) 
+                    %intensityMatch = XRDDatabase(ids2, indexDatabase * 2)
+                end
+            end
+        end
+    end
+    
     function buttonSelectPointCallback(obj, evt)
         figure(fTernDiagram);
         [xSelect, ySelect] = ginput(1);
-        indexPoint = findNearestTernPoint(xSelect, ySelect);
+        indexPoint = findNearestTernPoint(xSelect, ySelect)
         %xTernCoordAll(indexPoint)
         %yTernCoordAll(indexPoint)
         hold on;
@@ -394,32 +468,114 @@ fTernDiagram.Visible = 'on';
         %uicontrol('Style', 'text', 'String', displayString, ...
         %    'Position', [0.8 0.6 0.1 0.6]);
         
+        
+        
         % print angle values of top ten largest intensity values
         XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
+        
+        totalAngles = length(XRDTemp(:, 1));
+        indexAngles = 1;
+        %numAngles = floor(totalAngles / 120);
+        anglesToCheck = zeros(1, 1);
+        numEntered = 0;
+        intensityToCheck = zeros(1, 1);
+        divide = 19;
+        while (indexAngles + divide) < totalAngles
+            [maxVal, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
+            %indexMax
+            numEntered = numEntered + 1;
+            anglesToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 1);
+            intensityToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 2);
+            %maxVal
+            indexAngles = indexAngles + divide + 1;
+        end
+        
+        anglesToCheck
+        %{
         sortedIntensity = sortrows(XRDTemp, 2);
         sortedIntensity = flipud(sortedIntensity);
-        anglesToCheck = sortedIntensity(1:10, 1);
-        intensityToCheck = sortedIntensity(1:10, 2);
+        numAngles = 50;
+        anglesToCheck = sortedIntensity(1:numAngles, 1);
+        intensityToCheck = sortedIntensity(1:numAngles, 2);
+        %}
+        %length(XRDData(:, 1))
         %sortedIntensity(1:10, :)
         
         numFiles = length(XRDDatabase(1, :)) / 2;
         tolerance = 0.1;
-        intensityTol = 5;
-        for indexAngle = 1:10
+        intensityTol = 10;
+        numSaved = 0;
+        saveData = zeros(1, 1);
+        numAngles = length(anglesToCheck);
+        for indexAngle = 1:numAngles
             for indexDatabase = 1:numFiles
                 ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - anglesToCheck(indexAngle)) < tolerance;
                 ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
-                ids2 = find(ids1 .* ids2);
-                if isempty(ids2) ~= 1
+                ids3 = find(ids1 .* ids2);
+                anglesToCheck(indexAngle);
+                if isempty(ids3) ~= 1
                     %'match'
                     %origAngle = anglesToCheck(indexAngle)
                     %origIntensity = intensityToCheck(indexAngle)
-                    collcode = collcodes(indexDatabase)
+                    collcode = collcodes(indexDatabase);
+                    
+                    %figure;
+                    %plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'r');
+                    %hold on;
+                    %plot(XRDDatabase(:, indexDatabase * 2 - 1), XRDDatabase(:, indexDatabase * 2), 'b');
+                    for indexLines = 1:length(ids3)
+                        
+                        numSaved = numSaved + 1;
+                        saveData(numSaved, 1) = indexDatabase;
+                        saveData(numSaved, 2) = anglesToCheck(indexAngle);
+                        saveData(numSaved, 3) = intensityToCheck(indexAngle);
+                        saveData(numSaved, 4) = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
+                        saveData(numSaved, 5) = XRDDatabase(ids3(indexLines), indexDatabase * 2);
+                        %saveData(numSaved, 6) = indexDatabase;
+                        
+                        %xVal = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
+                        %plot([xVal xVal], [0 250], 'g');
+                    end
+                    %collcodeString = sprintf('collcode: %d, XRD pattern angle: %f, XRD pattern intensity: %f\n', collcode);
+                    %legend(collcodeString, 'location', 'SouthOutside');
                     %angleMatch = XRDDatabase(ids2, indexDatabase * 2 - 1) 
                     %intensityMatch = XRDDatabase(ids2, indexDatabase * 2)
                 end
             end
         end
+        
+        if saveData(1, 1) ~= 0
+            saveData = sortrows(saveData)
+            databaseIndex = 0;
+            for indexData = 1:length(saveData(:, 1))
+                if saveData(indexData, 1) ~= databaseIndex
+                    databaseIndex = saveData(indexData, 1);
+                    figure;
+                    plot(XRDDatabase(:, databaseIndex * 2 - 1), XRDDatabase(:, databaseIndex * 2), 'b');
+                    hold on;
+                    xrdplot = plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'g');
+                    collcodeString = sprintf('collcode: (%d, %d), composition(%f, %f, %f)', databaseIndex, collcodes(databaseIndex), A(indexPoint), B(indexPoint), C(indexPoint));
+                    legend(collcodeString, 'location', 'SouthOutside');
+                end
+                hold on;
+                xOrigVal = saveData(indexData, 2);
+                xDBVal = saveData(indexData, 4);
+                plot([xOrigVal xOrigVal], [0 250], 'r');
+                plot([xDBVal xDBVal], [0 250], 'm');
+                uistack(xrdplot, 'top');
+            end
+        end
+        
+        %{
+        figure;
+        plot(XRDTemp(:, 1), XRDTemp(:, 2), 'b');
+        hold on;
+        for indexAngles = 1:length(anglesToCheck)
+            plot([anglesToCheck(indexAngles) anglesToCheck(indexAngles)], ...
+                [0 250], 'r');
+        end
+        %}
+        
     end
 
     function indexPoint = findNearestTernPoint(xSelect, ySelect)
@@ -436,6 +592,27 @@ fTernDiagram.Visible = 'on';
     end
 
     function buttonProcessAllCallback(obj, evt)
+        
+        numDatabaseFiles = length(XRDDatabase(1, :)) / 2;
+        matchData = zeros(numTernPoints, numDatabaseFiles);
+        for indexTern = 1:numTernPoints
+            matchData(indexTern, :) = processPoint(indexTern);
+        end
+        
+        for indexFiles =  1:numDatabaseFiles
+            figure;
+            axesFig = axes(...
+            'Units', 'Normalized', ...
+            'Position',[0.1, 0.1, 0.8, 0.8]);
+            plotTernBase(axesFig, sqrt3Half, sqrt3Inv);
+            hold on;
+            plotTernSurf(xTernCoordAll, yTernCoordAll, matchData(:, indexFiles));
+            colorbar;
+            legendString = sprintf('collcode: %d', collcodes(indexFiles));
+            legend(legendString, 'location', 'SouthOutside');
+        end
+        
+        %{
         threshIntensity = 500;
         for indexTern = 1:numTernPoints
             display = 0;
@@ -458,19 +635,22 @@ fTernDiagram.Visible = 'on';
                 displayString = sprintf('A: %f\nB: %f\nC: %f', ...
                     A(indexTern), B(indexTern), C(indexTern));
                 displayString
-
+%}
                 %figure(fXRDPlot);
                 %figure;
                 %text(0.1, 0.1, displayString);
                 %hold on;
                 %textComp = text(0.1, 0.1, 'hello', 'Fontsize', 30);
                 %uistack(textComp, 'top');
+                %{
                 legend(displayString, 'location', 'EastOutside');
                 figure(fTernDiagram);
                 hold on;
                 scatter(xTernCoordAll(indexTern), yTernCoordAll(indexTern), 'k');
+               
             end
         end
+                %}
     end
 
     %% spec style tab
