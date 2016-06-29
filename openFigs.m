@@ -111,8 +111,10 @@ figure(fTernDiagram);
 plotTernData(0);
 hold off;
 
-[collcodes, XRDDatabase] = ...
-    readXRDDatabase('/Users/sjiao/Documents/summer_2016/data/XRDDatabase_patterns');
+if ECData ~= 1
+    [collcodes, XRDDatabase] = ...
+        readXRDDatabase('/Users/sjiao/Documents/summer_2016/data/XRDDatabase_patterns');
+end
 
 %% make GUI visible
 
@@ -141,7 +143,9 @@ fTernDiagram.Visible = 'on';
             resetWidth();
         else
             plotSpecData(scaleType);
-            ECPlotFull = plotECData();
+            if ECData ~= 1
+                ECPlotFull = plotECData();
+            end
         end
     end
 
@@ -153,7 +157,9 @@ fTernDiagram.Visible = 'on';
             resetWidth();
         else
             plotSpecData(scaleType);
-            ECPlotFull = plotECData();
+            if ECData ~= 1
+                ECPlotFull = plotECData();
+            end
         end
     end
 
@@ -165,7 +171,9 @@ fTernDiagram.Visible = 'on';
             resetWidth();
         else
             plotSpecData(scaleType);
-            ECPlotFull = plotECData();
+            if ECData ~= 1
+                ECPlotFull = plotECData();
+            end
         end
     end
 
@@ -219,7 +227,9 @@ fTernDiagram.Visible = 'on';
         % plot with restored settings
         plotTernData(ternPlotType);
         plotSpecData(scaleType);
-        ECPlotFull = plotECData();
+        if ECData ~= 1
+            ECPlotFull = plotECData();
+        end
 
         set(heditConst, 'String', constPercent * 100);
         set(heditWidth, 'String', width * 100);

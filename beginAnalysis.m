@@ -37,7 +37,11 @@ C = CTemp;
 
 % read in EC data
 
-ECData = readECData(ECFolder1, ECFolder2, ECFolder3, xCoord, yCoord);
+if ECFolder1 ~= 1
+    ECData = readECData(ECFolder1, ECFolder2, ECFolder3, xCoord, yCoord);
+else
+    ECData = 1;
+end
 
 pointInfo = zeros(1, 11);
 numSelected = 0;
