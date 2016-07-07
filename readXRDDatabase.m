@@ -1,6 +1,6 @@
 function [collcodes, XRDDatabase] = readXRDDatabase(folder)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+%READXRDDATABASE reads in all the ICSD database files (translated to .txt
+%files using VESTA) from the given folder
 
 % navigate to folder
 fileEnding = '*.txt';

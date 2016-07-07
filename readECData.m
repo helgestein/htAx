@@ -1,6 +1,5 @@
-function [ECData, dataTaken] = readECData(folder1, folder2, folder3, wdmX, wdmY)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+function [ECData, dataTaken] = readECData(folder, wdmX, wdmY)
+%READECDATA reads in all the EC data files from a given folder
 
 maxPoints = 342;
 maxPotentials = 2000;
@@ -21,7 +20,7 @@ dataTaken = zeros(maxPoints, 1);
 
 % navigate to folder1
 codeDir = pwd;
-cd(folder1);
+cd(folder);
 fileNames = dir(fileEnding);
 cd(codeDir);
 
@@ -48,7 +47,7 @@ for k = 1:length(fileNames)
         dataTaken(wdmIndex) = 1;
 
         % get data
-        imported = importECFile(strcat(folder1, '/', fileNames(k).name));
+        imported = importECFile(strcat(folder, '/', fileNames(k).name));
         imported = ...
             removerows(imported, 'ind', find(imported(:, 1) < -200));
         potential = imported(:, 1);
@@ -60,6 +59,7 @@ for k = 1:length(fileNames)
 
 end
 
+%{
 %% read in folder2 data
 
 % navigate to folder2
@@ -163,6 +163,8 @@ end
 %zVals2 = 2 * ones(1, length(wdmX));
 %scatter3(wdmX, wdmY, zVals2, 'r');
 
+%}
+
 %% helper functions
 
     %% transform coordinates used in taking EC data to WDM coordinate system coordinates
@@ -184,6 +186,7 @@ end
             foundIndex = found;
         end
     end
+
 
 end
 

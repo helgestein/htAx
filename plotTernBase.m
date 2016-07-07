@@ -1,8 +1,13 @@
-function [ output_args ] = plotTernBase(axesHandle, sqrt3Half, sqrt3Inv)
+function plotTernBase(axesHandle)
 %PLOTTERNBASE plots the base features of a ternary plot (e.g. guidelines)
 % plot settings
+
+% CHANGE MATERIALS LABELS
+
 numTicks = 5;
 zMax = [1000 1000]; % so that guidelines are shown above the plot
+global sqrt3Half;
+global sqrt3Inv;
 
 % plot triangle
 plot(axesHandle, [0 1 0.5 0], [0 0 sqrt3Half 0], 'k');
@@ -14,10 +19,9 @@ hold on;
 tickBottom = linspace(0, 1, numTicks + 1);
 tickBottom = tickBottom(1:numTicks);
 for i = 1:numTicks
-    [xTickLeft(i), yTickLeft(i)] = getTernCoord(0, 1 - tickBottom(i), ...
-        sqrt3Half, sqrt3Inv);
+    [xTickLeft(i), yTickLeft(i)] = getTernCoord(0, 1 - tickBottom(i));
     [xTickRight(i), yTickRight(i)] = getTernCoord(1 - tickBottom(i), ...
-        tickBottom(i), sqrt3Half, sqrt3Inv);
+        tickBottom(i));
 end
 for i = 2:numTicks
     partnerTick = numTicks - i + 2;
@@ -39,9 +43,9 @@ for i = 2:numTicks
 
 end
 
-text(-0.03, -0.01, 'C', 'FontSize', 12, 'Rotation', 300);
-text(0.49, sqrt3Half + 0.02, 'B', 'FontSize', 12);
-text(1.03, -0.02, 'A', 'FontSize', 12, 'Rotation', 60);
+text(-0.03, -0.01, 'Co', 'FontSize', 12, 'Rotation', 300);
+text(0.49, sqrt3Half + 0.02, 'Fe', 'FontSize', 12);
+text(0.99, -0.05, 'Mn', 'FontSize', 12, 'Rotation', 60);
 
 for i = 2:numTicks
     text(xTickRight(i) + 0.02, yTickRight(i), num2str((i - 1) * 100 / numTicks), 'FontSize', 12);

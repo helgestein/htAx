@@ -1,5 +1,5 @@
 function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
-    ECFolder1, ECFolder2, ECFolder3)
+    ECFolder, XRDDatabaseFolder)
 %BEGINANALYSIS takes in the name of a folder that contains XRD data, the
 %name of a file with EDX data, and the name of a file to which the analysis
 %can be saved and begins a new analysis session with the data
@@ -18,8 +18,6 @@ A = A ./ 100;
 B = B ./ 100;
 C = C ./ 100;
 
-
-
 % FOR TEST FILE ONLY remove first five rows of EDX data
 rowsToRemove = 5;
 lengthNew = length(A) - rowsToRemove;
@@ -36,11 +34,17 @@ B = BTemp;
 C = CTemp;
 
 % read in EC data
-
-if ECFolder1 ~= 1
-    ECData = readECData(ECFolder1, ECFolder2, ECFolder3, xCoord, yCoord);
+if ECFolder ~= 1
+    ECData = readECData(ECFolder, xCoord, yCoord);
 else
     ECData = 1;
+end
+
+if XRDDatabaseFolder ~= 1
+    [collcodes, XRDDatabase] = readXRDDatabase(XRDDatabaseFolder);
+else
+    collcodes = 1;
+    XRDDatabase = 1;
 end
 
 pointInfo = zeros(1, 11);
@@ -48,7 +52,7 @@ numSelected = 0;
 ECPlotInfo = zeros(342, 4);
 
 openFigs(saveFile, XRDData, A, B, C, numSelected, pointInfo, ECData, ...
-    ECPlotInfo);
+    ECPlotInfo, collcodes, XRDDatabase);
 
 end
 
