@@ -2,31 +2,6 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
 %FINDXRDMATCHES identifies peaks in the given XRD pattern using the wavelet
 %transform, compares those peaks with peaks in patterns from the XRD
 %database folder, and returns any matching peaks
-
-    %XRDTemp = [XRDData(:, indexPoint * 2 - 1) XRDData(:, indexPoint * 2)];
-    
-    %totalAngles = length(XRDTemp(:, 1));
-    %indexAngles = 1;
-    %anglesToCheck = zeros(1, 1);
-    %numEntered = 0;
-    %intensityToCheck = zeros(1, 1);
-    %divide = 19;
-    
-    % find the peaks in the XRD data for this point
-    % replace with better algorithm??
-    %{
-    while (indexAngles + divide) <= totalAngles
-        
-        % find index of maximum intensity in the given range
-        [~, indexMax] = max(XRDTemp((indexAngles:indexAngles + divide), 2));
-        
-        % save data for this maximum
-        numEntered = numEntered + 1;
-        anglesToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 1);
-        intensityToCheck(numEntered) = XRDTemp(indexMax + indexAngles - 1, 2);
-        indexAngles = indexAngles + divide + 1;
-    end
-    %}
     
     angles = XRDData(:, indexPoint * 2 - 1);
     intensity = XRDData(:, indexPoint * 2);
