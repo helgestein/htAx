@@ -6,6 +6,12 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     angles = XRDData(:, indexPoint * 2 - 1);
     intensity = XRDData(:, indexPoint * 2);
     
+    if angles(1) == 0
+        matches = zeros(1, length(XRDDatabase(1, :)) / 2);
+        matchData = zeros(1, 1);
+        return;
+    end
+    
     % denoise
 
     dnIntensity = wden(intensity, 'sqtwolog', 's', 'mln', 3, 'sym6');

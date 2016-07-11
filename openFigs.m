@@ -26,6 +26,8 @@ end
 
 % get rectangular coordinates for ternary diagram
 numTernPoints = length(A);
+length(A)
+%numTernPoints = 342;
 xTernCoordAll = zeros(numTernPoints, 1);
 yTernCoordAll = zeros(numTernPoints, 1);
 for index = 1:numTernPoints

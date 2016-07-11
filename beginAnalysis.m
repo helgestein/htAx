@@ -19,6 +19,7 @@ B = B ./ 100;
 C = C ./ 100;
 
 % FOR TEST FILE ONLY remove first five rows of EDX data
+%{
 rowsToRemove = 5;
 lengthNew = length(A) - rowsToRemove;
 ATemp = zeros(lengthNew, 1);
@@ -32,6 +33,7 @@ end
 A = ATemp;
 B = BTemp;
 C = CTemp;
+%}
 
 % read in EC data
 if ECFolder ~= 1
