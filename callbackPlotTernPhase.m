@@ -24,11 +24,14 @@ function callbackPlotTernPhase(obj, evt, ternHandles)
     
     xTernCoords = ternInfo.xCoords;
     yTernCoords = ternInfo.yCoords;
+    
+    %{
     hold on;
     index1 = 183;
     index2 = 224;
     scatter(xTernCoords(index1), yTernCoords(index1), 30, 'r', 'filled');
     scatter(xTernCoords(index2), yTernCoords(index2), 30, 'r', 'filled');
+    %}
 
 end
 

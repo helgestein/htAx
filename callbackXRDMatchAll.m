@@ -12,6 +12,7 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     numTernPoints = ternInfo.numPoints;
     xTernCoords = ternInfo.xCoords;
     yTernCoords = ternInfo.yCoords;
+    pointInfo = ternInfo.pointInfo;
     XRDData = specInfo.XRDData;
     XRDDatabase = specInfo.XRDDatabase;
     collcodes = specInfo.collcodes;
@@ -33,6 +34,8 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
             axesFig, 30);
         legendString = sprintf('collcode: %d', collcodes(indexFiles));
         legend(legendString, 'location', 'SouthOutside');
+        hold on;
+        scatter(pointInfo(:, 1), pointInfo(:, 2), 'r');
     end
 
 end

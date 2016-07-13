@@ -26,18 +26,14 @@ end
 
 % get rectangular coordinates for ternary diagram
 numTernPoints = length(A);
-length(A)
+%length(A)
 %numTernPoints = 342;
 xTernCoordAll = zeros(numTernPoints, 1);
 yTernCoordAll = zeros(numTernPoints, 1);
 for index = 1:numTernPoints
-    [xTernCoordAll(index), yTernCoordAll(index)] = getTernCoord(A(index), B(index));
+    [xTernCoordAll(index), yTernCoordAll(index)] = ...
+        getTernCoord(A(index), B(index));
 end
-
-%{
-[collcodes, XRDDatabase] = ...
-    readXRDDatabase('/Users/sjiao/Documents/summer_2016/data/XRDDatabase_patterns');
-%}
 
 % initial spec. state
 figSpec = specHandles.fSpecPlot;
@@ -56,7 +52,8 @@ figSpec.UserData = specInfo;
 % initial ternary state
 figTern = ternHandles.fTernDiagram;
 figure(figTern);
-ternInfo.axesTernary = axes('Units', 'Normalized', 'Position', [0.1, 0.1, 0.8, 0.8]);
+ternInfo.axesTernary = axes('Units', 'Normalized', ...
+    'Position', [0.1, 0.1, 0.8, 0.8]);
 ternInfo.textAngle = uicontrol(ternHandles.fTernDiagram, ...
     'Style', 'text', ...
     'String', strcat({'Angle: '}, ...
@@ -109,47 +106,82 @@ plotTernData(ternHandles, specHandles, ECHandles);
 
         set(ternHandles.editConst, 'Callback', {@callbackEdit});
         set(ternHandles.editWidth, 'Callback', {@callbackEdit});
-        set(ternHandles.buttonA, 'Callback', {@callbackButtonConst, 0, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonB, 'Callback', {@callbackButtonConst, 1, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonC, 'Callback', {@callbackButtonConst, 2, ternHandles, specHandles, ECHandles});      
-        set(ternHandles.buttonScatter, 'Callback', {@callbackButtonTernPlotType, 0, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonSurf, 'Callback', {@callbackButtonTernPlotType, 1, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonScatterEC, 'Callback', {@callbackButtonTernPlotType, 2, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonSurfEC, 'Callback', {@callbackButtonTernPlotType, 3, ternHandles, specHandles, ECHandles});
-        set(ternHandles.editSize, 'Callback', {@callbackEditDotSize, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonPoint, 'Callback', {@callbackButtonRestoreSetting, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonDelete, 'Callback', {@callbackButtonDeleteSelection, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonSaveAll, 'Callback', {@callbackSaveAnalysis, saveFile, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonClose, 'Callback', {@callbackButtonClose, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonSaveClose, 'Callback', {@callbackButtonSaveClose, saveFile, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonPhase, 'Callback', {@callbackPlotTernPhase, ternHandles});
-        set(ternHandles.buttonSelectPoint, 'Callback', {@callbackXRDMatchPoint, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonProcessAll, 'Callback', {@callbackXRDMatchAll, ternHandles, specHandles});
-        set(ternHandles.buttonXRDPlot, 'Callback', {@callbackXRDPlot, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonCVPlot, 'Callback', {@callbackCVPlot, 1, ternHandles, specHandles, ECHandles});
-        set(ternHandles.buttonCVPlotNormal, 'Callback', {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonA, 'Callback', ...
+            {@callbackButtonConst, 0, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonB, 'Callback', ...
+            {@callbackButtonConst, 1, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonC, 'Callback', ...
+            {@callbackButtonConst, 2, ternHandles, specHandles, ECHandles});      
+        set(ternHandles.buttonScatter, 'Callback', ...
+            {@callbackButtonTernPlotType, 0, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonSurf, 'Callback', ...
+            {@callbackButtonTernPlotType, 1, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonScatterEC, 'Callback', ...
+            {@callbackButtonTernPlotType, 2, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonSurfEC, 'Callback', ...
+            {@callbackButtonTernPlotType, 3, ternHandles, specHandles, ECHandles});
+        set(ternHandles.editSize, 'Callback', ...
+            {@callbackEditDotSize, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonPoint, 'Callback', ...
+            {@callbackButtonRestoreSetting, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonDelete, 'Callback', ...
+            {@callbackButtonDeleteSelection, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonSaveAll, 'Callback', ...
+            {@callbackSaveAnalysis, saveFile, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonClose, 'Callback', ...
+            {@callbackButtonClose, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonSaveClose, 'Callback', ...
+            {@callbackButtonSaveClose, saveFile, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonPhase, 'Callback', ...
+            {@callbackPlotTernPhase, ternHandles});
+        set(ternHandles.buttonSelectPoint, 'Callback', ...
+            {@callbackXRDMatchPoint, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonProcessAll, 'Callback', ...
+            {@callbackXRDMatchAll, ternHandles, specHandles});
+        set(ternHandles.buttonXRDPlot, 'Callback', ...
+            {@callbackXRDPlot, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonCVPlot, 'Callback', ...
+            {@callbackCVPlot, 1, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonCVPlotNormal, 'Callback', ...
+            {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
     end
     
     function setSpecCallbacks(ternHandles, specHandles, ECHandles)     
-        set(specHandles.buttonScaleSqrt, 'Callback', {@callbackSpecPlotScale, 2, ternHandles, specHandles, ECHandles});
-        set(specHandles.buttonScaleLog, 'Callback', {@callbackSpecPlotScale, 3, ternHandles, specHandles, ECHandles});
-        set(specHandles.buttonScaleNone, 'Callback', {@callbackSpecPlotScale, 1, ternHandles, specHandles, ECHandles});
-        set(specHandles.buttonSave, 'Callback', {@callbackSaveTernPoints, ternHandles, specHandles});
+        set(specHandles.buttonScaleSqrt, 'Callback', ...
+            {@callbackSpecPlotScale, 2, ternHandles, specHandles, ECHandles});
+        set(specHandles.buttonScaleLog, 'Callback', ...
+            {@callbackSpecPlotScale, 3, ternHandles, specHandles, ECHandles});
+        set(specHandles.buttonScaleNone, 'Callback', ...
+            {@callbackSpecPlotScale, 1, ternHandles, specHandles, ECHandles});
+        set(specHandles.buttonSave, 'Callback', ...
+            {@callbackSaveTernPoints, ternHandles, specHandles});
     end
     
     function setECCallbacks(ternHandles, specHandles, ECHandles)        
-        set(ECHandles.editSelect, 'Callback', {@callbackECPlotSelect, ternHandles, specHandles, ECHandles});
-        set(ECHandles.buttonIncrease, 'Callback', {@callbackECPlotData, 1, ternHandles, specHandles, ECHandles});
-        set(ECHandles.buttonDecrease, 'Callback', {@callbackECPlotData, -1, ternHandles, specHandles, ECHandles});
-        set(ECHandles.buttonBoth, 'Callback', {@callbackECPlotData, 0, ternHandles, specHandles, ECHandles});
-        set(ECHandles.buttonLowerSlope, 'Callback', {@callbackSlopeFit, 1, ECHandles});
-        set(ECHandles.buttonHigherSlope, 'Callback', {@callbackSlopeFit, 0, ECHandles});
-        set(ECHandles.buttonTafel, 'Callback', {@callbackTafel, ECHandles});
-        set(ECHandles.buttonOnsetPot, 'Callback', {@callbackOnset, ECHandles});
-        set(ECHandles.editOffset, 'Callback', {@callbackOffset, ternHandles, specHandles, ECHandles});
-        set(ECHandles.buttonReset, 'Callback', {@callbackResetECCalcs, ECHandles});
-        set(ECHandles.buttonPrint, 'Callback', {@callbackPrintEC, ternHandles, ECHandles});
-        set(ECHandles.buttonPlotTern, 'Callback', {@callbackECPlotTern, ternHandles, ECHandles});
+        set(ECHandles.editSelect, 'Callback', ...
+            {@callbackECPlotSelect, ternHandles, specHandles, ECHandles});
+        set(ECHandles.buttonIncrease, 'Callback', ...
+            {@callbackECPlotData, 1, ternHandles, specHandles, ECHandles});
+        set(ECHandles.buttonDecrease, 'Callback', ...
+            {@callbackECPlotData, -1, ternHandles, specHandles, ECHandles});
+        set(ECHandles.buttonBoth, 'Callback', ...
+            {@callbackECPlotData, 0, ternHandles, specHandles, ECHandles});
+        set(ECHandles.buttonLowerSlope, 'Callback', ...
+            {@callbackSlopeFit, 1, ECHandles});
+        set(ECHandles.buttonHigherSlope, 'Callback', ...
+            {@callbackSlopeFit, 0, ECHandles});
+        set(ECHandles.buttonTafel, 'Callback', ...
+            {@callbackTafel, ECHandles});
+        set(ECHandles.buttonOnsetPot, 'Callback', ...
+            {@callbackOnset, ECHandles});
+        set(ECHandles.editOffset, 'Callback', ...
+            {@callbackOffset, ternHandles, specHandles, ECHandles});
+        set(ECHandles.buttonReset, 'Callback', ...
+            {@callbackResetECCalcs, ECHandles});
+        set(ECHandles.buttonPrint, 'Callback', ...
+            {@callbackPrintEC, ternHandles, ECHandles});
+        set(ECHandles.buttonPlotTern, 'Callback', ...
+            {@callbackECPlotTern, ternHandles, ECHandles});
     end
 end
 

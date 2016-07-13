@@ -67,7 +67,8 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
             if matchData(indexData, 1) ~= databaseIndex
                 databaseIndex = matchData(indexData, 1);
                 figure;
-                plot(XRDDatabase(:, databaseIndex * 2 - 1), XRDDatabase(:, databaseIndex * 2), 'b');
+                %plot(XRDDatabase(:, databaseIndex * 2 - 1), XRDDatabase(:, databaseIndex * 2), 'b');
+                plotXRDDatabaseFile(XRDDatabase, databaseIndex);
                 hold on;
                 XRDDataPlot = plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'g');
                 collcodeString = sprintf('collcode: (%d, %d), composition(%f, %f, %f)', ...
@@ -88,5 +89,51 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
     
     set(ternHandles.buttonSelectPoint, 'Callback', {@callbackXRDMatchPoint, ternHandles, specHandles, ECHandles});
 
+    function plotXRDDatabaseFile(database, index)
+        
+        dbAngle = database(:, index * 2 - 1);
+        dbIntensity = database(:, index * 2);
+        
+        hold on;
+        
+        %dbAngle
+        
+        ids = find(isnan(dbAngle));
+        dbAngle = removerows(dbAngle, ids);
+        dbIntensity = removerows(dbIntensity, ids);
+        ids = find(dbAngle == 0);
+        dbAngle = removerows(dbAngle, ids);
+        dbIntensity = removerows(dbIntensity, ids);
+        
+        [dbAngle, dbIntensity] = aggregate(dbAngle, dbIntensity);
+        
+        bar(dbAngle, dbIntensity);
+        
+        %{
+        for i = 1:length(dbAngle)
+            %dbAngle(i)
+            hold on;
+            plot([dbAngle(i) dbAngle(i)], [0 dbIntensity(i)], 'b');
+        end
+        %}
+    end
+
+    function [angle, intensity] = aggregate(dbAngle, dbIntensity)
+        prev = -1;
+        prevIndex = 0;
+        for i = 1:length(dbAngle)
+            if dbAngle(i) == prev
+                dbIntensity(prevIndex) = dbIntensity(prevIndex) + dbIntensity(i);
+                dbAngle(i) = -1;
+            else
+                prev = dbAngle(i);
+                prevIndex = i;
+            end
+        end
+        
+        ids = find(dbAngle == -1);
+        angle = removerows(dbAngle, ids);
+        intensity = removerows(dbIntensity, ids);
+    end
 end
 

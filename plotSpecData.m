@@ -48,6 +48,9 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
     fSpecPlot.UserData = specInfo;
     figTern.UserData = ternInfo;
     
+    % find all points for which XRD data was taken
+    %ids2 = find(XRDData(1, 2*(1:342) - 1) + XRDData(2, 2*(1:342) - 1) ~= 0);
+    
     if isempty(ids) == 1
         errordlg('No points selected');
     else

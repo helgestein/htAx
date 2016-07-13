@@ -1,11 +1,12 @@
-    function [xCoord, yCoord, xrdData] = readXRDData(folder)
+    function [xCoord, yCoord, xrdData] = readXRDData(folder, filenameInfo)
     %READXRDDATA reads in all the XRD data files from the folder
 
     maxPoints = 342;
     maxAngles = 2300;
 
     % navigate to folder
-    fileEnding = '*.xy'; 
+    %fileEnding = '*.xy'; 
+    fileEnding = filenameInfo.xrdEnd;
     codeDir = pwd;
     cd(folder);
     fileNames = dir(fileEnding);
@@ -20,13 +21,22 @@
     xrdData = zeros(maxAngles, length(fileNames));
     numAngles = zeros(1, maxPoints);
 
+    %length(fileNames)
+    
     numPoints = 0;
+    
+    xCoordIndex = filenameInfo.xrdX;
+    yCoordIndex = filenameInfo.xrdY;
+    delim = filenameInfo.xrdDelim;
+    
     for k = 1:length(fileNames)
+        
+        %fileNames(k).name
 
         % get x and y coordinates
-        nameComponents = strsplit(fileNames(k).name, '_');
-        xCoordTemp = str2double(nameComponents(5));
-        yCoordTemp = str2double(nameComponents(4));
+        nameComponents = strsplit(fileNames(k).name, delim);
+        xCoordTemp = str2double(nameComponents(xCoordIndex));
+        yCoordTemp = str2double(nameComponents(yCoordIndex));
 
         % check if duplicate
         duplicate = 0;
@@ -64,12 +74,13 @@
             numAngles(index) = numAnglesTemp;
             numPoints = index;
         end
+        
     end
 
     % match XRD data
     xrdDataNew = zeros(length(xrdData(:, 1)), 342 * 2);
     for i = 1:length(xCoord)
-        wdmIndex = findWDMIndex(xCoord(i), yCoord(i));
+        wdmIndex = findWDMIndex(yCoord(i), -1 * xCoord(i));
         if wdmIndex ~= 0
             xrdDataNew(:, wdmIndex * 2 - 1) = xrdData(:, i * 2 - 1);
             xrdDataNew(:, wdmIndex * 2) = xrdData(:, i * 2);
@@ -79,11 +90,26 @@
     xrdData = xrdDataNew;
     xCoord = wdmX;
     yCoord = wdmY;
+    %xCoord = wdmX;
+    %yCoord = wdmY;
 
     function foundIndex = findWDMIndex(xCoord, yCoord)
-        [~, found] = max((abs(wdmX - xCoord) + abs(wdmY - yCoord)) == 0);
-        if isempty(found)
+        %[~, found] = max((abs(wdmX - xCoord) + abs(wdmY - yCoord)) == 0);
+        found = 0;
+        for j = 1:length(wdmX)
+            if wdmX(j) == xCoord
+                if wdmY(j) == yCoord
+                    if found == 0
+                        found = j;
+                    else
+                        found = [found j];
+                    end
+                end
+            end
+        end
+        if found == 0
             foundIndex = 0;
+            'error: failed to match wdm coordinate';
         elseif length(found) > 1
             'error: more than one found index'
             foundIndex = found(1);

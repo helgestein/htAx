@@ -1,4 +1,5 @@
-function callbackButtonDeleteSelection(obj, evt, ternHandles, specHandles, ECHandles)
+function callbackButtonDeleteSelection(obj, evt, ...
+    ternHandles, specHandles, ECHandles)
 %UNTITLED13 Summary of this function goes here
 %   Detailed explanation goes here
 
@@ -29,6 +30,7 @@ function callbackButtonDeleteSelection(obj, evt, ternHandles, specHandles, ECHan
     
     plotTernData(ternHandles, specHandles, ECHandles);
     
-    set(ternHandles.buttonDelete, 'Callback', {@callbackButtonDeleteSelection, ternHandles, specHandles, ECHandles});
+    set(ternHandles.buttonDelete, 'Callback', ...
+        {@callbackButtonDeleteSelection, ternHandles, specHandles, ECHandles});
 end
 

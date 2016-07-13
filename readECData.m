@@ -1,9 +1,10 @@
-function [ECData, dataTaken] = readECData(folder, wdmX, wdmY)
+function [ECData, dataTaken] = readECData(folder, wdmX, wdmY, filenameInfo)
 %READECDATA reads in all the EC data files from a given folder
 
 maxPoints = 342;
 maxPotentials = 2000;
-fileEnding = '*OER.dat';
+fileEnding = filenameInfo.ecEnd;
+%fileEnding = '*OER.dat';
 
 % initialize arrays
 ECData = zeros(maxPotentials, maxPoints * 2);
@@ -24,14 +25,18 @@ cd(folder);
 fileNames = dir(fileEnding);
 cd(codeDir);
 
+xCoordIndex = filenameInfo.ecX;
+yCoordIndex = filenameInfo.ecY;
+delim = filenameInfo.ecDelim;
+
 for k = 1:length(fileNames)
 
     %numChemPoints = numChemPoints + 1;
     
     % get x and y coordinates
-    nameComponents = strsplit(fileNames(k).name, 'x');
-    xCoord = str2double(nameComponents(1));
-    yCoord = str2double(nameComponents(2));
+    nameComponents = strsplit(fileNames(k).name, delim);
+    xCoord = str2double(nameComponents(xCoordIndex));
+    yCoord = str2double(nameComponents(yCoordIndex));
     
     %chemXPoints(numChemPoints) = xCoord;
     %chemYPoints(numChemPoints) = yCoord;
@@ -48,6 +53,8 @@ for k = 1:length(fileNames)
 
         % get data
         imported = importECFile(strcat(folder, '/', fileNames(k).name));
+        
+        % remove potentials less than -200
         imported = ...
             removerows(imported, 'ind', find(imported(:, 1) < -200));
         potential = imported(:, 1);
@@ -176,7 +183,7 @@ end
 
     %% given coordinates in WDM coordinate system, find corresponding index
     function foundIndex = findWDMIndex(xCoord, yCoord)
-        [maxNum, found] = max((abs(wdmX - xCoord) + abs(wdmY - yCoord)) == 0);
+        [~, found] = max((abs(wdmX - xCoord) + abs(wdmY - yCoord)) == 0);
         if isempty(found)
             foundIndex = 0;
         elseif length(found) > 1
