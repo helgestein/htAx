@@ -5,6 +5,7 @@ function [highlighted] = plotTernHighlight(fTernDiagram, zMax, ...
 
     upper = constPercent + width;
     lower = constPercent - width;
+    ternInfo = fTernDiagram.UserData;
 
     if constType == 0
         [x(1), y(1)] = getTernCoord(upper, 1 - upper);
@@ -22,10 +23,20 @@ function [highlighted] = plotTernHighlight(fTernDiagram, zMax, ...
         [x(3), y(3)] = getTernCoord(0, 1 - lower);
         [x(4), y(4)] = getTernCoord(0, 1 - upper);
     end
+    
     z = [zMax zMax zMax zMax];
     figure(fTernDiagram);
     hold on;
-    highlighted = fill3(x, y, z, [0.3 0.3 0.3]);
+    
+    if constType ~= 3
+        highlighted = fill3(x, y, z, [0.3 0.3 0.3]);
+    else
+        xPoly = ternInfo.xPoly;
+        yPoly = ternInfo.yPoly;
+        z = zMax * ones(length(xPoly));
+        
+        highlighted = fill3(xPoly, yPoly, z, [0.3 0.3 0.3]);
+    end
     set(highlighted, 'EdgeColor', 'none');
     alpha(highlighted, 0.1);
     view(2);

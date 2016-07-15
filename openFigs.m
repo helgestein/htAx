@@ -12,9 +12,7 @@ sqrt3Inv = 1 / sqrt(3);
 
 ternHandles = openTernFigs();
 specHandles = openSpecFigs();
-if ECData ~= 1
-    ECHandles = openECFigs();
-end
+ECHandles = openECFigs();
 
 setTernCallbacks(ternHandles, specHandles, ECHandles);
 setSpecCallbacks(ternHandles, specHandles, ECHandles);
@@ -75,6 +73,8 @@ ternInfo.fTernPhase = '';
 ternInfo.pointOutline = '';
 ternInfo.fXRDPlot = '';
 ternInfo.fCVPlot = '';
+ternInfo.xPoly = '';
+ternInfo.yPoly = '';
 figTern.UserData = ternInfo;
 
 % initial EC state
@@ -144,6 +144,8 @@ plotTernData(ternHandles, specHandles, ECHandles);
             {@callbackCVPlot, 1, ternHandles, specHandles, ECHandles});
         set(ternHandles.buttonCVPlotNormal, 'Callback', ...
             {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonSelectPoly, 'Callback', ...
+            {@callbackSelectPoly, ternHandles, specHandles, ECHandles});
     end
     
     function setSpecCallbacks(ternHandles, specHandles, ECHandles)     

@@ -59,10 +59,14 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
             compB = selectedCompPartner(closestIndex);
             compC = selectedComp(closestIndex);
             compA = 1 - compB - compC;
-        else
+        elseif constType == 2
             compC = selectedCompPartner(closestIndex);
             compA = selectedComp(closestIndex);
             compB = 1 - compC - compA;
+        else
+            compA = selectedCompPartner(closestIndex);
+            compB = selectedComp(closestIndex);
+            compC = 1 - compA - compB;
         end
     end
 

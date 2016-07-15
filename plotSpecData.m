@@ -17,6 +17,11 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
     constPercent = hEditConst.UserData;
     width = hEditWidth.UserData;
     ternPlotType = ternInfo.ternPlotType;
+    numTernPoints = ternInfo.numPoints;
+    xTernCoord = ternInfo.xCoords;
+    yTernCoord = ternInfo.yCoords;
+    xPoly = ternInfo.xPoly;
+    yPoly = ternInfo.yPoly;
     
     % highlight appropriate region on ternary diagram
     
@@ -39,11 +44,43 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
         ids = find(abs(compB - constPercent) < width);
         specInfo.selectedComp = compC(ids);
         specInfo.selectedCompPartner = compB(ids);
-    else
+    elseif constType == 2
         ids = find(abs(compC - constPercent) < width);
         specInfo.selectedComp = compA(ids);
         specInfo.selectedCompPartner = compC(ids);
+    else
+        found = 0;
+        ids = 0;
+        for i = 1:numTernPoints
+            if inpolygon(xTernCoord(i), yTernCoord(i), xPoly, yPoly) == 1
+                found = found + 1;
+                ids(found) = i;
+            end
+        end
+        spreads(1) = range(compA(ids));
+        spreads(2) = range(compB(ids));
+        spreads(3) = range(compC(ids));
+        [~, indexMaxSpread] = max(spreads);
+        if indexMaxSpread == 1
+            specInfo.selectedComp = compA(ids);
+            specInfo.selectedCompPartner = compC(ids);
+            'A'
+        elseif indexMaxSpread == 2
+            specInfo.selectedComp = compB(ids);
+            specInfo.selectedCompPartner = compA(ids);
+            'B'
+        else
+            specInfo.selectedComp = compC(ids);
+            specInfo.selectedCompPartner = compB(ids);
+            'C'
+        end
     end
+    
+    %{
+    figure(figTern);
+    hold on;
+    scatter(xTernCoord(ids), yTernCoord(ids), 'c');
+    %}
     
     fSpecPlot.UserData = specInfo;
     figTern.UserData = ternInfo;

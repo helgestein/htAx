@@ -18,7 +18,7 @@
     % initialize arrays
     %xCoord = zeros(1, maxPoints);
     %yCoord = zeros(1, maxPoints);
-    xrdData = zeros(maxAngles, length(fileNames));
+    %xrdData = zeros(maxAngles, length(fileNames));
     numAngles = zeros(1, maxPoints);
 
     %length(fileNames)
@@ -31,12 +31,25 @@
     
     for k = 1:length(fileNames)
         
-        %fileNames(k).name
-
-        % get x and y coordinates
-        nameComponents = strsplit(fileNames(k).name, delim);
-        xCoordTemp = str2double(nameComponents(xCoordIndex));
-        yCoordTemp = str2double(nameComponents(yCoordIndex));
+        if xCoordIndex ~= 0
+            file = fileNames(k).name;
+            [~, name, ~] = fileparts(file);
+            nameComponents = strsplit(name, delim);
+            xCoordTemp = str2double(nameComponents(xCoordIndex));
+            yCoordTemp = str2double(nameComponents(yCoordIndex));
+        else
+            %{
+            fileNames(k).name
+            delim
+            nameComponents = strsplit(fileNames(k).name, delim);
+            nameComponents(1)
+            nameComponents(2)
+            indexCoord = str2double(nameComponents(2))
+            %}
+            indexCoord = k;
+            xCoordTemp = wdmX(indexCoord);
+            yCoordTemp = wdmY(indexCoord);
+        end
 
         % check if duplicate
         duplicate = 0;
@@ -78,9 +91,9 @@
     end
 
     % match XRD data
-    xrdDataNew = zeros(length(xrdData(:, 1)), 342 * 2);
+    %xrdDataNew = zeros(length(xrdData(:, 1)), 342 * 2);
     for i = 1:length(xCoord)
-        wdmIndex = findWDMIndex(yCoord(i), -1 * xCoord(i));
+        wdmIndex = findWDMIndex(xCoord(i), yCoord(i));
         if wdmIndex ~= 0
             xrdDataNew(:, wdmIndex * 2 - 1) = xrdData(:, i * 2 - 1);
             xrdDataNew(:, wdmIndex * 2) = xrdData(:, i * 2);

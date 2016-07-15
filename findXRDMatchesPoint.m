@@ -20,30 +20,58 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
 
     scales = 10:0.1:20;
     coefs = cwt(dnIntensity, scales, 'mexh');
+    
+    %size(coefs, 1)
+    %figure;
+    %plot(angles, coefs(50, :));
+    %coefs(50, :)
 
     % take one plot out of transform and find its peaks
 
-    coefsSet = coefs(50, :);
-    [peaks, peakIndex] = findpeaks(coefsSet, angles);
+    coefsSet = coefs(80, :);
+    
+    ids = find(abs(coefsSet) > 0.0001);
+    %length(coefsSet)
+    %length(angles)
+    coefsSet = coefsSet(ids);
+    angles = angles(ids);
+    intensity = intensity(ids);
+    %length(coefsSet)
+    %length(angles)
+    
+    ids = find(angles ~= 0);
+    coefsSet = coefsSet(ids);
+    angles = angles(ids);
+    intensity = intensity(ids);
+    %length(coefsSet)
+    %length(angles)
+    %figure;
+    %plot(angles, coefsSet);
+    %angles
+    
+    %ids = find(abs(angles - 43) < 13);
+    %angles = angles(ids);
+    %coefsSet = coefsSet(ids);
+    %intensity = intensity(ids);
+    
+    %figure;
+    %findpeaks(coefsSet, angles);
+    
+    [peaks, peakIndex] = findpeaks(coefsSet, angles, 'MinPeakDistance', 5);
 
     % choose 10 highest peaks
 
+    if isempty(peaks) == 1
+        matches = 0;
+        matchData = 0;
+        return
+    end
+    numpeaks = min([5 length(peaks)]);
     peaks = transpose(peaks);
     peakInfo = [peaks peakIndex];
     peakInfo = flipud(sortrows(peakInfo));
-    anglesToCheck = peakInfo(1:10, 2);
-    intensityToCheck = peakInfo(1:10, 1);
-
-    % plot peak choices on original plot
-
-    %{
-    figure
-    plot(angles, intensity);
-    hold on;
-    for i = 1:10
-        plot([peakInfo(i, 2) peakInfo(i, 2)], [0 180], 'r');
-    end
-    %}
+    anglesToCheck = peakInfo(1:numpeaks, 2);
+    intensityToCheck = peakInfo(1:numpeaks, 1);
 
     
     numFiles = length(XRDDatabase(1, :)) / 2;

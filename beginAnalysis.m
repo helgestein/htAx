@@ -13,15 +13,30 @@ function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
     [A, B, C] = importEDXFile(EDXFile);
 
     % convert EDX data to percents
-    A = A ./ 100;
-    B = B ./ 100;
-    C = C ./ 100;
+    ids = find(A < 0);
+    A(ids) = 0;
+    ids = find(B < 0);
+    B(ids) = 0;
+    ids = find(C < 0);
+    C(ids) = 0;
+    % normalize
+    sums = A + B + C;
+    A = A ./ sums;
+    B = B ./ sums;
+    C = C ./ sums;
 
     % read in EC data
     if ECFolder ~= 1
         ECData = readECData(ECFolder, xCoord, yCoord, filenameInfo);
     else
-        ECData = 1;
+        %ECData = 1;
+        % fill in dummy EC data
+        numPoints = size(XRDData, 2) / 2;
+        numPots = size(XRDData, 1);
+        ECData = zeros(size(XRDData, 1), size(XRDData, 2));
+        for i = 1:numPoints
+            ECData(:, i * 2 - 1) = 1:numPots;
+        end
     end
 
     % read in XRD database folder
@@ -35,7 +50,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
     %[XRDData(:, 459), XRDData(:, 460)]
     
     %find all points for which XRD data was not taken
-    ids = find(XRDData(1, :) == 0);
+    ids = find(XRDData(1, :) + XRDData(2, :) == 0);
     %testids = find(XRDData(1, 2* (1:(size(XRDData, 2)/2))) == 0)
     %XRDData(10, ids)
     %XRDData(12, ids)
