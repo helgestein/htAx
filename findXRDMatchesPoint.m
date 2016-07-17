@@ -5,6 +5,7 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     
     angles = XRDData(:, indexPoint * 2 - 1);
     intensity = XRDData(:, indexPoint * 2);
+    confidenceFactor = 0.5;
     
     if angles(1) == 0
         matches = zeros(1, length(XRDDatabase(1, :)) / 2);
@@ -12,6 +13,7 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
         return;
     end
     
+    %{
     % denoise
 
     dnIntensity = wden(intensity, 'sqtwolog', 's', 'mln', 3, 'sym6');
@@ -72,7 +74,12 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     peakInfo = flipud(sortrows(peakInfo));
     anglesToCheck = peakInfo(1:numpeaks, 2);
     intensityToCheck = peakInfo(1:numpeaks, 1);
-
+    
+    %}
+    
+    [pks, ~, peakLocs, ~, ~, ~, ~] = findPeakXRD(angles, intensity, confidenceFactor);
+    anglesToCheck = peakLocs;
+    intensityToCheck = pks;
     
     numFiles = length(XRDDatabase(1, :)) / 2;
     matches = zeros(1, numFiles);
