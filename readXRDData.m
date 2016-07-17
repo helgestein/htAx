@@ -1,4 +1,4 @@
-    function [xCoord, yCoord, xrdData] = readXRDData(folder, filenameInfo)
+    function [xCoord, yCoord, xrdData] = readXRDData(folder, filenameInfo, xEDX, yEDX)
     %READXRDDATA reads in all the XRD data files from the folder
 
     maxPoints = 342;
@@ -13,8 +13,10 @@
     cd(codeDir);
     
     % get the wdm coordinates
-    [wdmX, wdmY] = getCoords();
-
+    %[wdmX, wdmY] = getCoords();
+    wdmX = xEDX;
+    wdmY = yEDX;
+    
     % initialize arrays
     %xCoord = zeros(1, maxPoints);
     %yCoord = zeros(1, maxPoints);

@@ -1,4 +1,4 @@
-function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
+function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
     ECFolder, XRDDatabaseFolder, filenameInfo)
 %BEGINANALYSIS takes in the name of a folder that contains XRD data, the
 %name of a file with EDX data, and the name of a file to which the analysis
@@ -9,7 +9,8 @@ function [] = beginAnalysis(XRDFolder, EDXFile, saveFile, ...
 %   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
 
     % read in XRD and EDX data
-    [xCoord, yCoord, XRDData] = readXRDData(XRDFolder, filenameInfo);
+    [xEDX, yEDX] = importEDXCoordFile(EDXCoordFile);
+    [xCoord, yCoord, XRDData] = readXRDData(XRDFolder, filenameInfo, xEDX, yEDX);
     [A, B, C] = importEDXFile(EDXFile);
 
     % convert EDX data to percents
