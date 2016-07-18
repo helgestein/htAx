@@ -1,4 +1,4 @@
-function callbackSaveAnalysis(obj, evt, saveFile, ternHandles, specHandles, ECHandles)
+function callbackSaveAnalysis(obj, evt, ternHandles, specHandles, ECHandles)
 %CALLBACKSAVEANALYSIS saves the analysis
 
     figTern = ternHandles.fTernDiagram;
@@ -10,6 +10,9 @@ function callbackSaveAnalysis(obj, evt, saveFile, ternHandles, specHandles, ECHa
     figEC = ECHandles.fECPlot;
     ECInfo = figEC.UserData;
     
+    [saveFile, savePath] = uigetfile;
+    saveFile = strcat(savePath, saveFile);
+     
     analysis.XRDData = specInfo.XRDData;
     analysis.A = ternInfo.valsCompA;
     analysis.B = ternInfo.valsCompB;
