@@ -6,6 +6,9 @@ function plotECWaterfall(potential, current, composition, decrease, ...
     fECPlot = ECHandles.fECPlot;
     ECInfo = fECPlot.UserData;
     
+    fTernDiagram = ternHandles.fTernDiagram;
+    ternInfoOut = fTernDiagram.UserData;
+    
     waterfallPlot = ECInfo.waterfallPlot;
     hEditOffset = ECHandles.editOffset;
     offset = hEditOffset.UserData;
@@ -97,15 +100,24 @@ function plotECWaterfall(potential, current, composition, decrease, ...
         end
         
         % plot label
+        constType = ternInfoOut.constType;
+        labels = ternInfoOut.labels;
+        if constType == 0
+            compLabel = labels.B;
+        elseif constType == 1
+            compLabel = labels.C;
+        else
+            compLabel = labels.A;
+        end
         text(potential(1, sID(plotIndex)), ...
             log10(abs(current(1, sID(plotIndex)))) + offset * (plotIndex - 1), ...
-            strcat({'Composition: '}, num2str(composition(sID(plotIndex)))));
+            strcat({'Fraction of '}, compLabel, {': '}, num2str(composition(sID(plotIndex)))));
         
     end
     
     % axes labels
     axes(waterfallPlot.dataAxes);
-    xlabel('Position');
+    xlabel('Potential');
     ylabel('log(Current)');
     limits = axis;
     set(waterfallPlot.dataAxes, ...

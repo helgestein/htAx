@@ -49,6 +49,8 @@ specInfo.collcodes = collcodes;
 specInfo.XRDDatabase = XRDDatabase;
 specInfo.selectedComp = '';
 specInfo.selectedCompPartner = '';
+specInfo.minAngle = min(XRDData(:, 1));
+specInfo.maxAngle = max(XRDData(:, 1));
 figSpec.UserData = specInfo;
 
 % initial ternary state

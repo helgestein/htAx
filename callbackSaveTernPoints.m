@@ -39,12 +39,32 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
     
     figure(figTern);
     hold on;
+    angle = specInfo.XRDData(specInfo.angleIndex, 1);
+    %{
+    angleFrac = (angle - specInfo.minAngle) / ...
+        (specInfo.maxAngle - specInfo.minAngle);
+    origColor = [255 102 102];
+    endColor = [102 178 255];
+    colorSelection = origColor * (1 - angleFrac) + endColor * angleFrac;
+    %colorSelection = [255 0 127 * angleFrac];
+    colorSelection = colorSelection / 255;
+    %}
+    colorSelection = getColorSelection(angle, ...
+        specInfo.minAngle, specInfo.maxAngle);
+    
+    %{
+    % testing colors
+    figure;
+    fill([0 1 1 0 0], [0 0 1 1 0], colorSelection);
+    %}
+    
+    figure(figTern);
     scatter3(ternInfo.axesTernary, xTernCoord1, yTernCoord1, 1000, ...
-        30, 'r', 'filled');
+        30, colorSelection, 'filled');
     scatter3(ternInfo.axesTernary, xTernCoord2, yTernCoord2, 1000, ...
-        30, 'r', 'filled');
+        30, colorSelection, 'filled');
     plot3(ternInfo.axesTernary, [xTernCoord1 xTernCoord2], ...
-        [yTernCoord1 yTernCoord2], [1000 1000], 'r');
+        [yTernCoord1 yTernCoord2], [1000 1000], 'Color', colorSelection);
     hold off;
     
     function [compA, compB, compC] = getComp(composition, selectedComp, ...

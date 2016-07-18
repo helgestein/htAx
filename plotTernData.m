@@ -79,6 +79,30 @@ end
 
 if numSelected ~= 0
     zVals = 1000 * ones(numSelected, 1);
+    zVal = 1000;
+    for i = 2:2:numSelected
+        
+        angle = XRDData(pointInfo(i, 6), 1);
+        colorSelection = getColorSelection(angle, specInfo.minAngle, ...
+            specInfo.maxAngle);
+        
+        hold on;
+        
+        scatter3(ternInfo.axesTernary, ...
+            pointInfo(i - 1, 1), pointInfo(i - 1, 2), ...
+            zVal, 30, colorSelection, 'filled');
+        scatter3(ternInfo.axesTernary, ...
+            pointInfo(i, 1), pointInfo(i, 2), ...
+            zVal, 30, colorSelection, 'filled');
+        
+        plot3(ternInfo.axesTernary, ...
+            [pointInfo(i - 1, 1) pointInfo(i, 1)], ...
+            [pointInfo(i - 1, 2) pointInfo(i, 2)], ...
+            [zVal zVal], 'Color', colorSelection);
+        
+    end
+    
+    %{
     scatter3(ternInfo.axesTernary, pointInfo(:, 1), pointInfo(:, 2), ...
         zVals, 30, 'r', 'filled');
     i = 1;
@@ -92,6 +116,7 @@ if numSelected ~= 0
         i = i + 2;
         hold on;
     end
+    %}
 end
 
 end
