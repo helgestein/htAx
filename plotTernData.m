@@ -27,7 +27,7 @@ valSliderECPot = ECInfo.valSliderECPot;
 % plot gridlines
 figure(figTern);
 hold off;
-plotTernBase(ternInfo.axesTernary);
+plotTernBase(ternInfo.axesTernary, ternInfo.labels);
 hold on;
 
 % highlight the appropriate region

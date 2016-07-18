@@ -64,15 +64,15 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
         if indexMaxSpread == 1
             specInfo.selectedComp = compA(ids);
             specInfo.selectedCompPartner = compC(ids);
-            'A'
+            ternInfo.constType = 2;
         elseif indexMaxSpread == 2
             specInfo.selectedComp = compB(ids);
             specInfo.selectedCompPartner = compA(ids);
-            'B'
+            ternInfo.constType = 0;
         else
             specInfo.selectedComp = compC(ids);
             specInfo.selectedCompPartner = compB(ids);
-            'C'
+            ternInfo.constType = 1;
         end
     end
     

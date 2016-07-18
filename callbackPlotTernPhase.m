@@ -18,7 +18,7 @@ function callbackPlotTernPhase(obj, evt, ternHandles)
         'Units', 'Normalized', ...
         'Position', [0.1 0.1 0.8 0.8]);
     
-    plotTernBase(axesTernPhase);
+    plotTernBase(axesTernPhase, ternInfo.labels);
     hold on;
     scatter(pointInfo(:, 1), pointInfo(:, 2), 'k');
     

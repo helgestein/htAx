@@ -1,4 +1,5 @@
-    function [xCoord, yCoord, xrdData] = readXRDData(folder, filenameInfo, xEDX, yEDX)
+    function [xCoord, yCoord, xrdData] = readXRDData(folder, ...
+        filenameInfo, xEDX, yEDX)
     %READXRDDATA reads in all the XRD data files from the folder
 
     maxPoints = 342;
@@ -95,7 +96,12 @@
     % match XRD data
     %xrdDataNew = zeros(length(xrdData(:, 1)), 342 * 2);
     for i = 1:length(xCoord)
+        
         wdmIndex = findWDMIndex(xCoord(i), yCoord(i));
+        
+        %MnFeCoO dataset ONLY
+        %wdmIndex = findWDMIndex(yCoord(i), -1 * xCoord(i));
+        
         if wdmIndex ~= 0
             xrdDataNew(:, wdmIndex * 2 - 1) = xrdData(:, i * 2 - 1);
             xrdDataNew(:, wdmIndex * 2) = xrdData(:, i * 2);

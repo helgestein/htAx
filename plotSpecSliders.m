@@ -2,8 +2,8 @@ function plotSpecSliders(fig, ...
     xAxis, yAxis, composition, scaling, ternHandles, specHandles, ECHandles)
 %PLOTSPECSLIDERS plots the spec. data with sliders
     
-    %figTern = ternHandles.fTernDiagram;
-    %ternInfo = figTern.UserData;
+    fTernDiagram = ternHandles.fTernDiagram;
+    ternInfoOut = fTernDiagram.UserData;
    
     fSpecPlot = specHandles.fSpecPlot;
     specInfo = fSpecPlot.UserData;
@@ -68,7 +68,17 @@ function plotSpecSliders(fig, ...
     axes(sliderPlot.dataAxes);
     
     xlabel('Angle');
-    ylabel('Composition');
+    constType = ternInfoOut.constType;
+    labels = ternInfoOut.labels;
+    if constType == 0
+        yCompLabel = labels.B;
+    elseif constType == 1
+        yCompLabel = labels.C;
+    else
+        yCompLabel = labels.A;
+    end
+    yCompLabel = strcat({'Fraction of '}, yCompLabel);
+    ylabel(yCompLabel);
     set(sliderPlot.dataAxes, ...
         'XTickMode', 'auto', 'XTickLabelMode', 'auto', ...
         'YTickMode', 'auto', 'YTickLabelMode', 'auto');

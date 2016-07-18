@@ -47,8 +47,23 @@ function plotECData(ternHandles, specHandles, ECHandles)
                 ids(found) = i;
             end
         end
-        specInfo.selectedComp = compB(ids);
-        specInfo.selectedCompPartner = compA(ids);
+        spreads(1) = range(compA(ids));
+        spreads(2) = range(compB(ids));
+        spreads(3) = range(compC(ids));
+        [~, indexMaxSpread] = max(spreads);
+        if indexMaxSpread == 1
+            specInfo.selectedComp = compA(ids);
+            specInfo.selectedCompPartner = compC(ids);
+            ternInfo.constType = 2;
+        elseif indexMaxSpread == 2
+            specInfo.selectedComp = compB(ids);
+            specInfo.selectedCompPartner = compA(ids);
+            ternInfo.constType = 0;
+        else
+            specInfo.selectedComp = compC(ids);
+            specInfo.selectedCompPartner = compB(ids);
+            ternInfo.constType = 1;
+        end
     end
     
     fSpecPlot.UserData = specInfo;

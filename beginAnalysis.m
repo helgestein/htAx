@@ -8,6 +8,11 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
 %   '/Users/sjiao/Documents/summer_2016/data/MnFeCoO-EDX',
 %   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
 
+    % labels
+    labels.A = filenameInfo.labelA;
+    labels.B = filenameInfo.labelB;
+    labels.C = filenameInfo.labelC;
+
     % read in XRD and EDX data
     [xEDX, yEDX] = importEDXCoordFile(EDXCoordFile);
     [xCoord, yCoord, XRDData] = readXRDData(XRDFolder, filenameInfo, xEDX, yEDX);
@@ -75,6 +80,6 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
     ECPlotInfo = zeros(342, 4);
 
     openFigs(saveFile, XRDData, A, B, C, numSelected, pointInfo, ECData, ...
-        ECPlotInfo, collcodes, XRDDatabase);
+        ECPlotInfo, collcodes, XRDDatabase, labels);
 end
 

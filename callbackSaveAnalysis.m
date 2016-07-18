@@ -20,6 +20,7 @@ function callbackSaveAnalysis(obj, evt, saveFile, ternHandles, specHandles, ECHa
     analysis.ECPlotInfo = ECInfo.ECPlotInfo;
     analysis.collcodes = specInfo.collcodes;
     analysis.XRDDatabase = specInfo.XRDDatabase;
+    analysis.labels = ternInfo.labels;
     save(saveFile, '-struct', 'analysis');
     msgbox('Analysis saved');
 

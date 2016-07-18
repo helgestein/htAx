@@ -1,5 +1,6 @@
 function [] = openFigs(saveFile, XRDData, A, B, C, ...
-    numSelected, pointInfo, ECData, ECPlotInfo, collcodes, XRDDatabase)
+    numSelected, pointInfo, ECData, ECPlotInfo, collcodes, XRDDatabase, ...
+    labels)
 %OPENFIGS opens the figures needed to begin the analysis
 
 %% precalculate to save time
@@ -11,6 +12,9 @@ sqrt3Inv = 1 / sqrt(3);
 %% open figures and set callbacks
 
 ternHandles = openTernFigs();
+ternHandles.buttonA.String = labels.A;
+ternHandles.buttonB.String = labels.B;
+ternHandles.buttonC.String = labels.C;
 specHandles = openSpecFigs();
 ECHandles = openECFigs();
 
@@ -75,6 +79,7 @@ ternInfo.fXRDPlot = '';
 ternInfo.fCVPlot = '';
 ternInfo.xPoly = '';
 ternInfo.yPoly = '';
+ternInfo.labels = labels;
 figTern.UserData = ternInfo;
 
 % initial EC state

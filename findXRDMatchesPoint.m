@@ -77,9 +77,26 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     
     %}
     
-    [pks, ~, peakLocs, ~, ~, ~, ~] = findPeakXRD(angles, intensity, confidenceFactor);
+    [pks, proms, peakLocs, widths, ~, ~, ~] = findPeakXRD(angles, intensity, confidenceFactor);
     anglesToCheck = peakLocs;
+    widthsToCheck = widths;
     intensityToCheck = pks;
+    promsToCheck = proms;
+    
+    %{
+    figure;
+    plot(angles, intensity);
+    hold on;
+    for i = 1:length(anglesToCheck)
+        left = anglesToCheck(i) - widthsToCheck(i) / 2;
+        right = anglesToCheck(i) + widthsToCheck(i) / 2;
+        x = [left right right left left];
+        y = [0 0 intensity(i) intensity(i) 0];
+        peak = fill(x, y, 'r');
+        alpha(peak, 0.1);
+    end
+    %}
+    
     
     numFiles = length(XRDDatabase(1, :)) / 2;
     matches = zeros(1, numFiles);
@@ -91,13 +108,33 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     for indexAngle = 1:numAngles
         for indexDatabase = 1:numFiles
             ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - ...
-                anglesToCheck(indexAngle)) < tolerance;
+                anglesToCheck(indexAngle)) < (widthsToCheck(indexAngle) * 0.25);
             ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
             ids3 = find(ids1 .* ids2);
             if isempty(ids3) ~= 1
-                matches(1, indexDatabase) = 1;
+                %matches(1, indexDatabase) = 1;
                 for indexLines = 1:length(ids3)
                     numSaved = numSaved + 1;
+                    
+                    matchVal = ...
+                        promsToCheck(indexAngle) / ...
+                        (widthsToCheck(indexAngle) * widthsToCheck(indexAngle)) / ...
+                        abs(XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1) - anglesToCheck(indexAngle));
+                    matchVal = log10(matchVal);
+                    %matchVal = sqrt(matchVal);
+                    
+                    %matchValData(numSaved, 1) = promsToCheck(indexAngle);
+                    %matchValData(numSaved, 2) = widthsToCheck(indexAngle);
+                    %matchValData(numSaved, 3) = XRDDatabase(ids3(indexLines), indexDatabase * 2 - 1);
+                    %matchValData(numSaved, 4) = anglesToCheck(indexAngle);
+                    
+                    %matchValData(numSaved, 5) = matchVal;
+                    %anglesToCheck(indexAngle)
+                    %matchVal = XRDDatabase(ids3(indexLines), indexDatabase * 2) / abs(XRDDatabase(index3(indexLines), indexDatabase * 2 - 1) - anglesToCheck(indexAngle));
+                    if matches(1, indexDatabase) < matchVal
+                        matches(1, indexDatabase) = matchVal;
+                    end
+                    
                     matchData(numSaved, 1) = indexDatabase;
                     matchData(numSaved, 2) = anglesToCheck(indexAngle);
                     matchData(numSaved, 3) = intensityToCheck(indexAngle);
@@ -107,6 +144,7 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
             end
         end
     end
+    %matchValData
     
 end
 
