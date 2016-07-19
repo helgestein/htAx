@@ -78,8 +78,8 @@ end
 % plot the selected points
 
 if numSelected ~= 0
-    zVals = 1000 * ones(numSelected, 1);
-    zVal = 1000;
+    zVals = 100000 * ones(numSelected, 1);
+    zVal = 100000;
     for i = 2:2:numSelected
         
         angle = XRDData(pointInfo(i, 6), 1);

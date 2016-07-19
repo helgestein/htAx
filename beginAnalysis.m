@@ -1,4 +1,4 @@
-function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
+function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     ECFolder, XRDDatabaseFolder, filenameInfo)
 %BEGINANALYSIS takes in the name of a folder that contains XRD data, the
 %name of a file with EDX data, and the name of a file to which the analysis
@@ -8,14 +8,22 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
 %   '/Users/sjiao/Documents/summer_2016/data/MnFeCoO-EDX',
 %   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
 
+    %XRDFolder
+    %filenameInfo.xrdFile
+
     % labels
     labels.A = filenameInfo.labelA;
     labels.B = filenameInfo.labelB;
     labels.C = filenameInfo.labelC;
 
     % read in XRD and EDX data
-    [xEDX, yEDX] = importEDXCoordFile(EDXCoordFile);
-    [xCoord, yCoord, XRDData] = readXRDData(XRDFolder, filenameInfo, xEDX, yEDX);
+    
+    if filenameInfo.xrdFile == 0
+        [xEDX, yEDX] = importEDXCoordFile(EDXCoordFile);
+        [xCoord, yCoord, XRDData] = readXRDData(XRDFolder, filenameInfo, xEDX, yEDX);
+    else
+        XRDData = readXRDFileAll(XRDFolder);
+    end
     [A, B, C] = importEDXFile(EDXFile);
 
     % convert EDX data to percents
@@ -79,7 +87,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, saveFile, ...
     numSelected = 0;
     ECPlotInfo = zeros(342, 4);
 
-    openFigs(saveFile, XRDData, A, B, C, numSelected, pointInfo, ECData, ...
+    openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...
         ECPlotInfo, collcodes, XRDDatabase, labels);
 end
 
