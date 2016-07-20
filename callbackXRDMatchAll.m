@@ -27,7 +27,7 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     for indexFiles = 1:numDatabaseFiles
         figure;
         axesFig = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
-        plotTernBase(axesFig);
+        plotTernBase(axesFig, ternInfo.labels);
         hold on;
         %plotTernSurf(xTernCoords, yTernCoords, matchAll(:, indexFiles));
         %colorbar;

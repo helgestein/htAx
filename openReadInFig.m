@@ -396,6 +396,7 @@ fReadInFig.Visible = 'on';
     function buttonXRDCallback(obj, evt)
         XRDFolder = uigetdir;
         set(htextXRDFolder, 'String', XRDFolder);
+        filenameInfo.xrdFile = 0;
     end
 
     function buttonXRDFileCallback(obj, evt)
