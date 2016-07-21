@@ -28,6 +28,9 @@ valSliderECPot = ECInfo.valSliderECPot;
 figure(figTern);
 hold off;
 plotTernBase(ternInfo.axesTernary, ternInfo.labels);
+%hold off;
+%axis image;
+%axis off;
 hold on;
 
 % highlight the appropriate region

@@ -2,7 +2,8 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
 %CALLBACKXRDMATCHALL compares each ternary point's XRD pattern to patterns
 %from the XRD database folder and then for each pattern in the database
 %folder, plots a ternary diagram indicating which points had peak matches
-    tic
+    
+    %tic
 
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
@@ -26,11 +27,10 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     
     for indexFiles = 1:numDatabaseFiles
         figure;
+        set(gcf, 'color', 'w');
         axesFig = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
         plotTernBase(axesFig, ternInfo.labels);
         hold on;
-        %plotTernSurf(xTernCoords, yTernCoords, matchAll(:, indexFiles));
-        %colorbar;
         
         plotTernScatter(xTernCoords, yTernCoords, matchAll(:, indexFiles), ...
             axesFig, 30);
@@ -39,10 +39,14 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
         legendString = sprintf('collcode: %d', collcodes(indexFiles));
         legend(legendString, 'location', 'SouthOutside');
         hold on;
-        scatter(pointInfo(:, 1), pointInfo(:, 2), 'r');
+        
+        % overlays points selected using binary cuts
+        if ternInfo.numSelected ~= 0
+            scatter(pointInfo(:, 1), pointInfo(:, 2), 'r');
+        end
     end
     
-    toc
+    %toc
 
 end
 
