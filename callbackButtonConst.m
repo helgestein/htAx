@@ -7,6 +7,7 @@ function callbackButtonConst(obj, evt, constComp, ternHandles, ...
     ternInfo = figTern.UserData;
     
     ternInfo.constType = constComp;
+    ternInfo.polySelected = 0;
     
     figTern.UserData = ternInfo;
     

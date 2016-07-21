@@ -88,6 +88,7 @@ ternInfo.fCVPlot = '';
 ternInfo.xPoly = '';
 ternInfo.yPoly = '';
 ternInfo.labels = labels;
+ternInfo.polySelected = 0;
 figTern.UserData = ternInfo;
 
 % initial EC state

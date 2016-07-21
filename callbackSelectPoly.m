@@ -5,6 +5,7 @@ function callbackSelectPoly(obj, evt, ternHandles, specHandles, ECHandles)
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
 
+    ternInfo.polySelected = 1;
     figure(figTern);
     polyHandle = impoly;
     polyCoords = getPosition(polyHandle);
@@ -19,7 +20,7 @@ function callbackSelectPoly(obj, evt, ternHandles, specHandles, ECHandles)
     ternInfo.yPoly = y;
     
     figTern.UserData = ternInfo;
-    
+       
     plotSpecData(ternHandles, specHandles, ECHandles);
     plotECData(ternHandles, specHandles, ECHandles);
 end

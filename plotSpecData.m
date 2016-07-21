@@ -36,21 +36,9 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
     end
     
     % get the correct set of composition data
-    if constType == 0
-        ids = find(abs(compA - constPercent) < width);
-        specInfo.selectedComp = compB(ids);
-        specInfo.selectedCompPartner = compA(ids);
-    elseif constType == 1
-        ids = find(abs(compB - constPercent) < width);
-        specInfo.selectedComp = compC(ids);
-        specInfo.selectedCompPartner = compB(ids);
-    elseif constType == 2
-        ids = find(abs(compC - constPercent) < width);
-        specInfo.selectedComp = compA(ids);
-        specInfo.selectedCompPartner = compC(ids);
-    else
+    if ternInfo.polySelected == 1
         found = 0;
-        ids = '';
+        ids = 0;
         for i = 1:numTernPoints
             if inpolygon(xTernCoord(i), yTernCoord(i), xPoly, yPoly) == 1
                 found = found + 1;
@@ -74,7 +62,23 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
             specInfo.selectedCompPartner = compB(ids);
             ternInfo.constType = 1;
         end
+    else
+    
+        if constType == 0
+            ids = find(abs(compA - constPercent) < width);
+            specInfo.selectedComp = compB(ids);
+            specInfo.selectedCompPartner = compA(ids);
+        elseif constType == 1
+            ids = find(abs(compB - constPercent) < width);
+            specInfo.selectedComp = compC(ids);
+            specInfo.selectedCompPartner = compB(ids);
+        else
+            ids = find(abs(compC - constPercent) < width);
+            specInfo.selectedComp = compA(ids);
+            specInfo.selectedCompPartner = compC(ids);
+        end
     end
+    
     
     %{
     figure(figTern);
@@ -87,7 +91,7 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
     
     % find all points for which XRD data was taken
     %ids2 = find(XRDData(1, 2*(1:342) - 1) + XRDData(2, 2*(1:342) - 1) ~= 0);
-    
+    %ids
     if isempty(ids) == 1
         errordlg('No points selected');
     else
