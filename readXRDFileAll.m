@@ -2,7 +2,8 @@ function XRDData = readXRDFileAll(XRDFile)
 %UNTITLED2 Summary of this function goes here
 %   Detailed explanation goes here
 
-    data = importXRDFileAll(XRDFile);
+    data = importdata(XRDFile);
+    %data = importXRDFileAll(XRDFile);
     numAngles = size(data, 2);
     numPoints = size(data, 1) - 1;
     XRDData = zeros(numAngles, numPoints * 2);

@@ -40,7 +40,7 @@ function plotECData(ternHandles, specHandles, ECHandles)
         specInfo.selectedCompPartner = compC(ids);
     else
         found = 0;
-        ids = 0;
+        ids = '';
         for i = 1:numTernPoints
             if inpolygon(xTernCoord(i), yTernCoord(i), xPoly, yPoly) == 1
                 found = found + 1;
