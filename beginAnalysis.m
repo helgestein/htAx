@@ -88,6 +88,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     pointInfo = zeros(1, 12);
     numSelected = 0;
     ECPlotInfo = zeros(342, 4);
+    %ECPlotInfo = importsaved;
     savedPoly = zeros(1, 6);
 
     openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...

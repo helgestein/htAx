@@ -118,7 +118,7 @@ ECInfo.lowLobf = '';
 ECInfo.highLobf = '';
 ECInfo.valSliderFit1 = 0;
 ECInfo.valSliderFit2 = 0;
-ECInfo.dataReal = 0;
+ECInfo.dataReal = ECDataReal;
 figEC.UserData = ECInfo;
 
 plotTernData(ternHandles, specHandles, ECHandles);
