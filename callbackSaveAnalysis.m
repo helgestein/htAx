@@ -25,6 +25,7 @@ function callbackSaveAnalysis(obj, evt, ternHandles, specHandles, ECHandles)
     analysis.XRDDatabase = specInfo.XRDDatabase;
     analysis.labels = ternInfo.labels;
     analysis.savedPoly = ternInfo.savedPoly;
+    analysis.ECDataReal = ECInfo.dataReal;
     save(saveFile, '-struct', 'analysis');
     msgbox('Analysis saved');
 

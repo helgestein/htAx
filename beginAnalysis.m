@@ -42,6 +42,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     % read in EC data
     if ECFolder ~= 1
         ECData = readECData(ECFolder, xCoord, yCoord, filenameInfo);
+        ECDataReal = 1;
     else
         %ECData = 1;
         % fill in dummy EC data
@@ -51,6 +52,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
         for i = 1:numPoints
             ECData(:, i * 2 - 1) = 1:numPots;
         end
+        ECDataReal = 0;
     end
 
     % read in XRD database folder
@@ -89,6 +91,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     savedPoly = zeros(1, 6);
 
     openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...
-        ECPlotInfo, collcodes, XRDDatabase, labels, savedPoly);
+        ECPlotInfo, collcodes, XRDDatabase, labels, savedPoly, ...
+        ECDataReal);
 end
 

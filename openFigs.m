@@ -1,6 +1,6 @@
 function [] = openFigs(XRDData, A, B, C, ...
     numSelected, pointInfo, ECData, ECPlotInfo, collcodes, XRDDatabase, ...
-    labels, savedPoly)
+    labels, savedPoly, ECDataReal)
 %OPENFIGS opens the figures needed to begin the analysis
 
 %% precalculate to save time
@@ -17,6 +17,11 @@ ternHandles.buttonB.String = labels.B;
 ternHandles.buttonC.String = labels.C;
 specHandles = openSpecFigs();
 ECHandles = openECFigs();
+
+if ECDataReal == 0
+    ECHandles.fECPlot.Visible = 'off';
+    ECHandles.fECButtons.Visible = 'off';
+end
 
 setTernCallbacks(ternHandles, specHandles, ECHandles);
 setSpecCallbacks(ternHandles, specHandles, ECHandles);
@@ -113,6 +118,7 @@ ECInfo.lowLobf = '';
 ECInfo.highLobf = '';
 ECInfo.valSliderFit1 = 0;
 ECInfo.valSliderFit2 = 0;
+ECInfo.dataReal = 0;
 figEC.UserData = ECInfo;
 
 plotTernData(ternHandles, specHandles, ECHandles);
