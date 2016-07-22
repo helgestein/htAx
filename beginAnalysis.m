@@ -83,11 +83,12 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     %size(XRDData, 2) / 2
     %size(ECData, 2) / 2
 
-    pointInfo = zeros(1, 11);
+    pointInfo = zeros(1, 12);
     numSelected = 0;
     ECPlotInfo = zeros(342, 4);
+    savedPoly = zeros(1, 6);
 
     openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...
-        ECPlotInfo, collcodes, XRDDatabase, labels);
+        ECPlotInfo, collcodes, XRDDatabase, labels, savedPoly);
 end
 

@@ -28,7 +28,7 @@ function [highlighted] = plotTernHighlight(fTernDiagram, zMax, ...
     figure(fTernDiagram);
     hold on;
     
-    if constType ~= 3
+    if ternInfo.polySelected ~= 1
         highlighted = fill3(x, y, z, [0.3 0.3 0.3]);
     else
         xPoly = ternInfo.xPoly;

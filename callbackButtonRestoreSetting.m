@@ -9,6 +9,7 @@ function callbackButtonRestoreSetting(obj, evt, ternHandles, specHandles, ECHand
     ternInfo = figTern.UserData;
     
     pointInfo = ternInfo.pointInfo;
+    savedPoly = ternInfo.savedPoly;
     hEditConst = ternHandles.editConst;
     hEditWidth = ternHandles.editWidth;
     
@@ -28,6 +29,18 @@ function callbackButtonRestoreSetting(obj, evt, ternHandles, specHandles, ECHand
     ternInfo.constType = pointInfo(indexPoint, 9);
     ternInfo.ternPlotType = pointInfo(indexPoint, 10);
     specInfo.scaleType = pointInfo(indexPoint, 11);
+    ternInfo.polySelected = pointInfo(indexPoint, 12);
+    if ternInfo.polySelected == 1
+        if mod(indexPoint, 2) == 0
+            ternInfo.yPoly = savedPoly(indexPoint, 2:(savedPoly(indexPoint, 1) + 1));
+            ternInfo.xPoly = savedPoly(indexPoint - 1, ...
+                2:(savedPoly(indexPoint - 1, 1) + 1));
+        else
+            ternInfo.xPoly = savedPoly(indexPoint, 2:(savedPoly(indexPoint, 1) + 1));
+            ternInfo.yPoly = savedPoly(indexPoint + 1, ...
+                2:(savedPoly(indexPoint + 1, 1) + 1));
+        end
+    end
     
     figTern.UserData = ternInfo;
     figSpec.UserData = specInfo;

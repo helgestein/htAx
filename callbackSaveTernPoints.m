@@ -16,6 +16,7 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
     selectedComp = specInfo.selectedComp;
     selectedCompPartner = specInfo.selectedCompPartner;
     constType = ternInfo.constType;
+    savedPoly = ternInfo.savedPoly;
     
     [compA1, compB1, compC1] = getComp(specInfo.valSliderVert1, ...
         selectedComp, selectedCompPartner, constType);
@@ -26,12 +27,27 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
     pointInfo(numSelected - 1, :) = ...
         [xTernCoord1 yTernCoord1 compA1 compB1 compC1 ...
         specInfo.angleIndex hEditConst.UserData hEditWidth.UserData ...
-        ternInfo.constType ternInfo.ternPlotType specInfo.scaleType];
+        ternInfo.constType ternInfo.ternPlotType specInfo.scaleType, ...
+        ternInfo.polySelected];
     pointInfo(numSelected, :) = ...
         [xTernCoord2 yTernCoord2 compA2 compB2 compC2 ...
         specInfo.angleIndex hEditConst.UserData hEditWidth.UserData ...
-        ternInfo.constType ternInfo.ternPlotType specInfo.scaleType];
+        ternInfo.constType ternInfo.ternPlotType specInfo.scaleType, ...
+        ternInfo.polySelected];
     
+    if ternInfo.polySelected == 1
+        savedPoly = adjustSize(ternInfo.xPoly, savedPoly);
+        numX = length(ternInfo.xPoly);
+        numY = length(ternInfo.yPoly);
+        savedPoly(numSelected - 1, 1) = numX;
+        savedPoly(numSelected, 1) = numY;
+        savedPoly(numSelected - 1, 2:(numX + 1)) = ...
+            ternInfo.xPoly;
+        savedPoly(numSelected, 2:(numY + 1)) = ...
+            ternInfo.yPoly;
+    end
+    
+    ternInfo.savedPoly = savedPoly;
     ternInfo.pointInfo = pointInfo;    
     figTern.UserData = ternInfo;
     
@@ -89,6 +105,19 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
             compB = selectedComp(closestIndex);
             compC = 1 - compA - compB;
         end
+    end
+
+    function newMat = adjustSize(newX, oldMat)
+        reqDim = length(newX) + 1;
+        if size(oldMat, 2) < reqDim
+            newMat = zeros(size(oldMat, 1), reqDim);
+            for i = 1:size(oldMat, 1)
+                newMat(i, 1:length(oldMat(i, :))) = oldMat(i, :);
+            end
+        else
+            newMat = oldMat;
+        end
+            
     end
 
 end

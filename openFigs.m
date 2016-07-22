@@ -1,6 +1,6 @@
 function [] = openFigs(XRDData, A, B, C, ...
     numSelected, pointInfo, ECData, ECPlotInfo, collcodes, XRDDatabase, ...
-    labels)
+    labels, savedPoly)
 %OPENFIGS opens the figures needed to begin the analysis
 
 %% precalculate to save time
@@ -20,9 +20,9 @@ ECHandles = openECFigs();
 
 setTernCallbacks(ternHandles, specHandles, ECHandles);
 setSpecCallbacks(ternHandles, specHandles, ECHandles);
-if ECData ~= 1
+%if ECData ~= 1
     setECCallbacks(ternHandles, specHandles, ECHandles);
-end
+%end
 
 %% process and plot data
 
@@ -82,6 +82,7 @@ ternInfo.ternPlotType = 0;
 ternInfo.highlight = '';
 ternInfo.numSelected = numSelected;
 ternInfo.pointInfo = pointInfo;
+ternInfo.savedPoly = savedPoly;
 ternInfo.constType = 0;
 ternInfo.fTernPhase = '';
 ternInfo.pointOutline = '';
