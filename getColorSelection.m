@@ -8,8 +8,8 @@ function colorSelection = getColorSelection(angle, minAngle, maxAngle)
     %origColor = [255 102 102];
     %endColor = [102 178 255];
     
-    origColor = [204 0 0];
-    endColor = [0 0 204];
+    endColor = [204 0 0]; % red
+    origColor = [0 0 204]; % blue
     
     colorSelection = origColor * (1 - angleFrac) + endColor * angleFrac;
     colorSelection = colorSelection / 255;
