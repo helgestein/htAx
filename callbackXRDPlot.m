@@ -40,7 +40,7 @@ function callbackXRDPlot(obj, evt, ternHandles, specHandles, ECHandles)
     
     axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
     plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2));
-    xlabel('Angle');
+    xlabel('Angle (2\theta)');
     ylabel('Intensity');
     
     displayString = sprintf('A: %f\nB: %f\nC: %f', ...

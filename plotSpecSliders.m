@@ -67,7 +67,7 @@ function plotSpecSliders(fig, ...
     
     axes(sliderPlot.dataAxes);
     
-    xlabel('Angle');
+    xlabel('Angle (2\theta)');
     constType = ternInfoOut.constType;
     labels = ternInfoOut.labels;
     if constType == 0

@@ -56,7 +56,7 @@ function callbackPlotPeaks(obj, evt, ternHandles, specHandles)
             'Position', [0.1 0.1 0.8 0.8]);
         subplot(2, 1, 2, reconPlotAxes);
         plot(angles, signal);
-        xlabel('Angle');
+        xlabel('Angle (2\theta)');
         ylabel('Intensity');
         %{
         anglesToCheck = peakLocs;
