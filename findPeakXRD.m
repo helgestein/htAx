@@ -41,6 +41,9 @@ for i=1:length(pks)
     signal=signal+gauss(x,proms(i),locs(i),widths(i));
 end
 
+%figure;
+%plot(x, signal);
+
 score=sum(signal/max(signal))/sum((yDen/max(yDen)-signal/max(signal)).^2);
 
 scoreVec2=yDen-signal;

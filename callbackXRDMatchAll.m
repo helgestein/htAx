@@ -5,6 +5,8 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     
     %tic
 
+    msgbox('Matching peaks. Please wait');
+    
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
     
@@ -18,12 +20,16 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     XRDData = specInfo.XRDData;
     XRDDatabase = specInfo.XRDDatabase;
     collcodes = specInfo.collcodes;
+    confidenceFactor = ternHandles.editConfFactor.UserData;
+    tol = ternHandles.editTol.UserData;
     
     numDatabaseFiles = length(XRDDatabase(1, :)) / 2;
     matchAll = zeros(numTernPoints, numDatabaseFiles);
     for i = 1:numTernPoints
-        [matchAll(i, :), ~] = findXRDMatchesPoint(i, XRDData, XRDDatabase);
+        [matchAll(i, :), ~] = findXRDMatchesPoint(i, XRDData, XRDDatabase, confidenceFactor, tol);
     end
+    specInfo.matchInfo = matchAll;
+    fSpecPlot.UserData = specInfo;
     
     for indexFiles = 1:numDatabaseFiles
         figure;

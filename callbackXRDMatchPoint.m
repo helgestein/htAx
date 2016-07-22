@@ -20,6 +20,8 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
     XRDData = specInfo.XRDData;
     XRDDatabase = specInfo.XRDDatabase;
     collcodes = specInfo.collcodes;
+    confidenceFactor = ternHandles.editConfFactor.UserData;
+    tol = ternHandles.editTol.UserData;
 
     figure(ternHandles.fTernDiagram);
     [xSelect, ySelect] = ginput(1);
@@ -58,7 +60,7 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
     hold on;
     legend(displayString, 'location', 'EastOutside');
     
-    [~, matchData] = findXRDMatchesPoint(indexPoint, XRDData, specInfo.XRDDatabase);
+    [~, matchData] = findXRDMatchesPoint(indexPoint, XRDData, specInfo.XRDDatabase, confidenceFactor, tol);
     
     if matchData(1, 1) ~= 0
         matchData = sortrows(matchData);

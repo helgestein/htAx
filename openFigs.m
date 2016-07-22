@@ -51,7 +51,9 @@ specInfo.selectedComp = '';
 specInfo.selectedCompPartner = '';
 specInfo.minAngle = min(XRDData(:, 1));
 specInfo.maxAngle = max(XRDData(:, 1));
+specInfo.matchInfo = '';
 figSpec.UserData = specInfo;
+
 
 % initial ternary state
 figTern = ternHandles.fTernDiagram;
@@ -160,6 +162,19 @@ plotTernData(ternHandles, specHandles, ECHandles);
             {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
         set(ternHandles.buttonSelectPoly, 'Callback', ...
             {@callbackSelectPoly, ternHandles, specHandles, ECHandles});
+        set(ternHandles.editConfFactor, 'Callback', ...
+            {@callbackEditNum});
+        set(ternHandles.buttonExportMatchAll, 'Callback', ...
+            {@callbackExportMatchAll, ternHandles, specHandles});
+        set(ternHandles.buttonChangeDatabaseFd, 'Callback', ...
+            {@callbackChangeDB, 0, specHandles});
+        set(ternHandles.buttonChangeDatabaseFile, 'Callback', ...
+            {@callbackChangeDB, 1, specHandles});
+        set(ternHandles.buttonSaveDatabase, 'Callback', ...
+            {@callbackSaveDB, specHandles});
+        set(ternHandles.buttonPlotPeaks, 'Callback', ...
+            {@callbackPlotPeaks, ternHandles, specHandles});
+        set(ternHandles.editTol, 'Callback', {@callbackEditNum});
     end
     
     function setSpecCallbacks(ternHandles, specHandles, ECHandles)     

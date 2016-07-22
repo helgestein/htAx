@@ -1,11 +1,11 @@
-function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDDatabase)
+function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDDatabase, confidenceFactor, tol)
 %FINDXRDMATCHES identifies peaks in the given XRD pattern using the wavelet
 %transform, compares those peaks with peaks in patterns from the XRD
 %database folder, and returns any matching peaks
     
     angles = XRDData(:, indexPoint * 2 - 1);
     intensity = XRDData(:, indexPoint * 2);
-    confidenceFactor = 0.5;
+    %confidenceFactor = 0.5;
     
     if angles(1) == 0
         matches = zeros(1, length(XRDDatabase(1, :)) / 2);
@@ -107,8 +107,10 @@ function [matches, matchData] = findXRDMatchesPoint(indexPoint, XRDData, XRDData
     numAngles = length(anglesToCheck);
     for indexAngle = 1:numAngles
         for indexDatabase = 1:numFiles
+            %ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - ...
+            %    anglesToCheck(indexAngle)) < (widthsToCheck(indexAngle) * 0.25);
             ids1 = abs(XRDDatabase(:, indexDatabase * 2 - 1) - ...
-                anglesToCheck(indexAngle)) < (widthsToCheck(indexAngle) * 0.25);
+                anglesToCheck(indexAngle)) < (widthsToCheck(indexAngle) * tol);
             ids2 = XRDDatabase(:, indexDatabase * 2) > intensityTol;
             ids3 = find(ids1 .* ids2);
             if isempty(ids3) ~= 1
