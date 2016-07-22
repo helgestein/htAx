@@ -65,10 +65,13 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
     if matchData(1, 1) ~= 0
         matchData = sortrows(matchData);
         databaseIndex = 0;
+        set(0, 'DefaultFigureWindowStyle', 'docked');
         for indexData = 1:length(matchData(:, 1))
             if matchData(indexData, 1) ~= databaseIndex
                 databaseIndex = matchData(indexData, 1);
                 figure;
+                set(gcf, 'color', 'w');
+                
                 %plot(XRDDatabase(:, databaseIndex * 2 - 1), XRDDatabase(:, databaseIndex * 2), 'b');
                 plotXRDDatabaseFile(XRDDatabase, databaseIndex);
                 hold on;
@@ -77,6 +80,8 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
                     databaseIndex, collcodes(databaseIndex), ...
                     compA(indexPoint), compB(indexPoint), compC(indexPoint));
                 legend(collcodeString, 'location', 'SouthOutside');
+                xlabel('Angle');
+                ylabel('Intensity');
             end
             hold on;
             xOrigVal = matchData(indexData, 2);
@@ -85,6 +90,7 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
             plot([xDBVal xDBVal], [0 250], 'm');
             uistack(XRDDataPlot, 'top');
         end
+        set(0, 'DefaultFigureWindowStyle', 'normal');
     end
     
     figTern.UserData = ternInfo;

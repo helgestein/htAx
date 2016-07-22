@@ -31,6 +31,8 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     specInfo.matchInfo = matchAll;
     fSpecPlot.UserData = specInfo;
     
+    set(0, 'DefaultFigureWindowStyle', 'docked');
+    
     for indexFiles = 1:numDatabaseFiles
         figure;
         set(gcf, 'color', 'w');
@@ -51,6 +53,8 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
             scatter(pointInfo(:, 1), pointInfo(:, 2), 'r');
         end
     end
+    
+    set(0, 'DefaultFigureWindowStyle', 'normal');
     
     %toc
 
