@@ -129,6 +129,10 @@ function plotECData(ternHandles, specHandles, ECHandles)
             specInfo.selectedComp, ECPlotInfo(idsOrig, 4), ...
             ternHandles, specHandles, ECHandles);
     end
+    
+    if ECInfo.dataReal == 0
+        fECPlot.Visible = 'off';
+    end
 
 end
 

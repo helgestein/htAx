@@ -1,9 +1,12 @@
-function callbackPlotTernPhase(obj, evt, ternHandles)
+function callbackPlotTernPhase(obj, evt, ternHandles, specHandles)
 %CALLBACKPLOTTERNPHASE plots the user-selected points on a ternary diagram
 
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
     pointInfo = ternInfo.pointInfo;
+    
+    fSpecPlot = specHandles.fSpecPlot;
+    specInfo = fSpecPlot.UserData;
     
     if ishandle(ternInfo.fTernPhase) == 1
         figure(ternInfo.fTernPhase);
@@ -20,7 +23,17 @@ function callbackPlotTernPhase(obj, evt, ternHandles)
     
     plotTernBase(axesTernPhase, ternInfo.labels);
     hold on;
-    scatter(pointInfo(:, 1), pointInfo(:, 2), 'k');
+    
+    for i = 1:ternInfo.numSelected
+        angle = specInfo.XRDData(pointInfo(i, 6), 1);
+        colorSelection = getColorSelection(angle, specInfo.minAngle, ...
+            specInfo.maxAngle);
+        hold on;
+        scatter(axesTernPhase, pointInfo(i, 1), pointInfo(i, 2), ...
+            30, colorSelection, 'filled');
+    end
+    
+    %scatter(pointInfo(:, 1), pointInfo(:, 2), 'k');
     
     xTernCoords = ternInfo.xCoords;
     yTernCoords = ternInfo.yCoords;
