@@ -10,7 +10,10 @@ function plotTernBase(axesHandle, labels)
     
     % precalculated to save time
     global sqrt3Half;
-    global sqrt3Inv;
+    
+    if isempty(sqrt3Half) == 1
+        sqrt3Half = sqrt(3) / 2;
+    end
 
     % plot triangle
     plot(axesHandle, [0 1 0.5 0], [0 0 sqrt3Half 0], 'k', 'linewidth', 2);
