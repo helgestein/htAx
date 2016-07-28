@@ -20,7 +20,7 @@ function callbackXRDPlot(obj, evt, ternHandles, specHandles, ECHandles)
     figure(ternHandles.fTernDiagram);
     [xSelect, ySelect] = ginput(1);
     indexPoint = findNearestPoint(xSelect, ySelect, ...
-        ternInfo.numPoints, xTernPoints, yTernPoints)
+        ternInfo.numPoints, xTernPoints, yTernPoints);
     
     if ishandle(ternInfo.pointOutline) == 1
         delete(ternInfo.pointOutline);
@@ -51,7 +51,9 @@ function callbackXRDPlot(obj, evt, ternHandles, specHandles, ECHandles)
     
     figTern.UserData = ternInfo;
     
-    set(ternHandles.buttonXRDPlot, 'Callback', {@callbackXRDPlot, ternHandles, specHandles, ECHandles});
+    set(ternHandles.buttonXRDPlot, ...
+        'Callback', ...
+        {@callbackXRDPlot, ternHandles, specHandles, ECHandles});
 
 end
 
