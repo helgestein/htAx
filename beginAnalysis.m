@@ -28,9 +28,11 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     C(ids) = 0;
     % normalize
     sums = A + B + C;
-    A = A ./ sums;
-    B = B ./ sums;
-    C = C ./ sums;
+    if sums ~= 0
+        A = A ./ sums;
+        B = B ./ sums;
+        C = C ./ sums;
+    end
 
     % read in EC data
     if ECFolder ~= 1
