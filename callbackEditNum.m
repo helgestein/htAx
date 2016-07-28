@@ -1,6 +1,5 @@
 function callbackEditNum(hObj, evt)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKEDITNUM updates a value
     
     hObj.UserData = str2double(hObj.String);
 

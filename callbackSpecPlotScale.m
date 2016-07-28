@@ -1,4 +1,5 @@
-function [ output_args ] = callbackSpecPlotScale(obj, evt, plotScale, ternHandles, specHandles, ECHandles)
+function callbackSpecPlotScale(obj, evt, ...
+    plotScale, ternHandles, specHandles, ECHandles)
 %CALLBACKSPECPLOTSCALE changes the scale for the z-values on the spec. plot
     
     fSpecPlot = specHandles.fSpecPlot;

@@ -3,7 +3,7 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
 %from the XRD database folder and then for each pattern in the database
 %folder, plots a ternary diagram indicating which points had peak matches
     
-    %tic
+    tic
 
     msgbox('Matching peaks. Please wait');
     
@@ -56,7 +56,7 @@ function callbackXRDMatchAll(obj, evt, ternHandles, specHandles)
     
     set(0, 'DefaultFigureWindowStyle', 'normal');
     
-    %toc
+    toc
 
 end
 

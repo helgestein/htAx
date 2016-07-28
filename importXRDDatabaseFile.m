@@ -1,13 +1,13 @@
 function EntryWithCollCode393 = importXRDDatabaseFile(filename, startRow, endRow)
 %IMPORTFILE Import numeric data from a text file as a matrix.
-%   ENTRYWITHCOLLCODE393 = IMPORTFILE(FILENAME) Reads data from text file
+%   ENTRYWITHCOLLCODE393 = IMPORTXRDDATABASEFILE(FILENAME) Reads data from text file
 %   FILENAME for the default selection.
 %
-%   ENTRYWITHCOLLCODE393 = IMPORTFILE(FILENAME, STARTROW, ENDROW) Reads
+%   ENTRYWITHCOLLCODE393 = IMPORTXRDDATABASEFILE(FILENAME, STARTROW, ENDROW) Reads
 %   data from rows STARTROW through ENDROW of text file FILENAME.
 %
 % Example:
-%   EntryWithCollCode393 = importfile('EntryWithCollCode393.txt', 2, 59);
+%   EntryWithCollCode393 = importXRDDatabaseFile('EntryWithCollCode393.txt', 2, 59);
 %
 %    See also TEXTSCAN.
 

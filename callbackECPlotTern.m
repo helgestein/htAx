@@ -61,9 +61,11 @@ function callbackECPlotTern(obj, evt, ternHandles, ECHandles)
         set(gcf, 'color', 'w');
         set(ECInfo.fTernTafelSurf, 'Name', 'Tafel Slope - Surf Plot');
     end    
-    axesTernTafel = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    axesTernTafel = axes('Units', 'Normalized', ...
+        'Position', [0.1 0.1 0.8 0.8]);
     plotTernBase(axesTernTafel, ternInfo.labels);    
-    plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 3));
+    plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), ...
+        pointsToPlot(:, 3));
     colorbar;
     hold on;
     scatter3(axesTernTafel, pointsToPlot(:, 1), pointsToPlot(:, 2), ...
@@ -79,9 +81,11 @@ function callbackECPlotTern(obj, evt, ternHandles, ECHandles)
         set(gcf, 'color', 'w');
         set(ECInfo.fTernOnsetSurf, 'Name', 'Onset Potential - Surf Plot');
     end
-    axesTernOnset = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    axesTernOnset = axes('Units', 'Normalized', ...
+        'Position', [0.1 0.1 0.8 0.8]);
     plotTernBase(axesTernOnset, ternInfo.labels);
-    plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4));
+    plotTernSurf(pointsToPlot(:, 1), pointsToPlot(:, 2), ...
+        pointsToPlot(:, 4));
     colorbar;
     hold on;
     scatter3(axesTernOnset, pointsToPlot(:, 1), pointsToPlot(:, 2), ...
@@ -97,9 +101,11 @@ function callbackECPlotTern(obj, evt, ternHandles, ECHandles)
         set(gcf, 'color', 'w');
         set(ECInfo.fTernTafelScatter, 'Name', 'Tafel Slope - Scatter Plot');
     end
-    axesTernTafelScatter = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    axesTernTafelScatter = axes('Units', 'Normalized', ...
+        'Position', [0.1 0.1 0.8 0.8]);
     plotTernBase(axesTernTafelScatter, ternInfo.labels);
-    plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 3), ...
+    plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), ...
+        pointsToPlot(:, 3), ...
         axesTernTafelScatter, 30);
     
     % scatter plot of onset potential
@@ -110,73 +116,15 @@ function callbackECPlotTern(obj, evt, ternHandles, ECHandles)
     else
         ECInfo.fTernOnsetScatter = figure;
         set(gcf, 'color', 'w');
-        set(ECInfo.fTernOnsetScatter, 'Name', 'Onset Potential - Scatter Plot');
+        set(ECInfo.fTernOnsetScatter, ...
+            'Name', 'Onset Potential - Scatter Plot');
     end
-    axesTernOnsetScatter = axes('Units', 'Normalized', 'Position', [0.1 0.1 0.8 0.8]);
+    axesTernOnsetScatter = axes('Units', 'Normalized', ...
+        'Position', [0.1 0.1 0.8 0.8]);
     plotTernBase(axesTernOnsetScatter, ternInfo.labels);
-    plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), pointsToPlot(:, 4), ...
+    plotTernScatter(pointsToPlot(:, 1), pointsToPlot(:, 2), ...
+        pointsToPlot(:, 4), ...
         axesTernOnsetScatter, 30);
-    
-    
-    % binary plot of tafel slope and onset potential for B-C binary region
-    %{
-    binPoints = sortrows(binPoints);
-    if ishandle(ECInfo.fBinaryPlot) == 1
-        figure(ECInfo.fBinaryPlot);
-        clf;
-    else
-        ECInfo.fBinaryPlot = figure;
-        set(gcf, 'color', 'w');
-        set(gcf, 'Name', 'Binary Region Plot (B & C)');
-    end
-    
-    [hAx, ~, ~] = plotyy(binPoints(:, 1), binPoints(:, 2), ...
-        binPoints(:, 1), binPoints(:, 3));
-    
-    xlabel('Fe composition');
-    ylabel(hAx(1), 'Tafel slope');
-    ylabel(hAx(2), 'Onset potential');
-    
-    binPoints2 = sortrows(binPoints2);
-    figure;
-    set(gcf, 'color', 'w');
-    %}
-    
-    %{
-    scatter(binPoints2(:, 1), binPoints2(:, 3), 'b');
-    %plot(binPoints2(:, 1), binPoints2(:, 3));
-    xlabel('Mn composition');
-    ylabel('Onset potential');
-    %ylim([0 650]);
-    %}
-    
-    %{
-    scatter(binPoints2(:, 1), binPoints2(:, 2), 'b');
-    %plot(binPoints2(:, 1), binPoints2(:, 2));
-    xlabel('Mn composition');
-    ylabel('Tafel slope');
-    %}
-    
-    %{
-    [hAx2, ~, ~] = plotyy(binPoints2(:, 1), binPoints2(:, 2), ...
-        binPoints2(:, 1), binPoints2(:, 3));
-    
-    xlabel('Mn composition');
-    ylabel(hAx2(1), 'Tafel slope');
-    ylabel(hAx2(2), 'Onset potential');
-    %}
-    
-    
-    %{
-    yyaxis left;
-    plot(binPoints(:, 1), binPoints(:, 2));
-    ylabel('Tafel slope');
-    hold on;
-    yyaxis right;
-    plot(binPoints(:, 1), binPoints(:, 3));
-    xlabel('Fe composition');
-    ylabel('Onset potential');
-    %}
          
     fECPlot.UserData = ECInfo;
 end

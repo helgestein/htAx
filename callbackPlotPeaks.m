@@ -1,6 +1,7 @@
 function callbackPlotPeaks(obj, evt, ternHandles, specHandles)
-%UNTITLED6 Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKPLOTPEAKS plots the experimental XRD pattern and the reconstructed
+%pattern from the peak identification algorithm. The user can use this to
+%determine a good confidence factor.
 
     set(ternHandles.buttonPlotPeaks, 'Callback', []);
     
@@ -51,30 +52,12 @@ function callbackPlotPeaks(obj, evt, ternHandles, specHandles)
         plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2));
         xlabel('Angle');
         ylabel('Intensity');
-        %hold on;
         reconPlotAxes = axes('Units', 'Normalized', ...
             'Position', [0.1 0.1 0.8 0.8]);
         subplot(2, 1, 2, reconPlotAxes);
         plot(angles, signal);
         xlabel('Angle (2\theta)');
         ylabel('Intensity');
-        %{
-        anglesToCheck = peakLocs;
-        widthsToCheck = widths;
-        intensityToCheck = pks;
-        promsToCheck = proms;
-        figure;
-        plot(angles, intensity);
-        hold on;
-        for i = 1:length(anglesToCheck)
-            left = anglesToCheck(i) - widthsToCheck(i) / 2;
-            right = anglesToCheck(i) + widthsToCheck(i) / 2;
-            x = [left right right left left];
-            y = [0 0 intensity(i) intensity(i) 0];
-            peak = fill(x, y, 'r');
-            alpha(peak, 0.1);
-        end
-            %}
     end
     
     figTern.UserData = ternInfo;

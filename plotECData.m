@@ -71,54 +71,10 @@ function plotECData(ternHandles, specHandles, ECHandles)
         end
     end
     
-    %{
-    if constType == 0
-        ids = find(abs(compA - constPercent) < width);
-        specInfo.selectedComp = compB(ids);
-        specInfo.selectedCompPartner = compA(ids);
-    elseif constType == 1
-        ids = find(abs(compB - constPercent) < width);
-        specInfo.selectedComp = compC(ids);
-        specInfo.selectedCompPartner = compB(ids);
-    elseif constType == 2
-        ids = find(abs(compC - constPercent) < width);
-        specInfo.selectedComp = compA(ids);
-        specInfo.selectedCompPartner = compC(ids);
-    else
-        found = 0;
-        ids = 0;
-        for i = 1:numTernPoints
-            if inpolygon(xTernCoord(i), yTernCoord(i), xPoly, yPoly) == 1
-                found = found + 1;
-                ids(found) = i;
-            end
-        end
-        ids
-        spreads(1) = range(compA(ids));
-        spreads(2) = range(compB(ids));
-        spreads(3) = range(compC(ids));
-        [~, indexMaxSpread] = max(spreads);
-        if indexMaxSpread == 1
-            specInfo.selectedComp = compA(ids);
-            specInfo.selectedCompPartner = compC(ids);
-            ternInfo.constType = 2;
-        elseif indexMaxSpread == 2
-            specInfo.selectedComp = compB(ids);
-            specInfo.selectedCompPartner = compA(ids);
-            ternInfo.constType = 0;
-        else
-            specInfo.selectedComp = compC(ids);
-            specInfo.selectedCompPartner = compB(ids);
-            ternInfo.constType = 1;
-        end
-    end
-    %}
-    
     fSpecPlot.UserData = specInfo;
     figTern.UserData = ternInfo;
     fECPlot.UserData = ECInfo;
     
-    %ids
     if isempty(ids) == 1
         errordlg('No points selected');
         

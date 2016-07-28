@@ -1,6 +1,6 @@
 function colorSelection = getColorSelection(angle, minAngle, maxAngle)
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+%GETCOLORSELECTION returns a color value based on the value of the angle in
+%comparison to minAngle and maxAngle
 
     angleFrac = (angle - minAngle) / (maxAngle - minAngle);
     

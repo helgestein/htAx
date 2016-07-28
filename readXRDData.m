@@ -6,25 +6,18 @@
     maxAngles = 2300;
 
     % navigate to folder
-    %fileEnding = '*.xy'; 
     fileEnding = filenameInfo.xrdEnd;
     codeDir = pwd;
     cd(folder);
     fileNames = dir(fileEnding);
     cd(codeDir);
     
-    % get the wdm coordinates
-    %[wdmX, wdmY] = getCoords();
+    % get the coordinates
     wdmX = xEDX;
     wdmY = yEDX;
     
     % initialize arrays
-    %xCoord = zeros(1, maxPoints);
-    %yCoord = zeros(1, maxPoints);
-    %xrdData = zeros(maxAngles, length(fileNames));
     numAngles = zeros(1, maxPoints);
-
-    %length(fileNames)
     
     numPoints = 0;
     
@@ -41,14 +34,6 @@
             xCoordTemp = str2double(nameComponents(xCoordIndex));
             yCoordTemp = str2double(nameComponents(yCoordIndex));
         else
-            %{
-            fileNames(k).name
-            delim
-            nameComponents = strsplit(fileNames(k).name, delim);
-            nameComponents(1)
-            nameComponents(2)
-            indexCoord = str2double(nameComponents(2))
-            %}
             indexCoord = k;
             xCoordTemp = wdmX(indexCoord);
             yCoordTemp = wdmY(indexCoord);
@@ -70,10 +55,6 @@
         % get data
         [angle, intensity] = ...
             importXRDFile(strcat(folder, '/', fileNames(k).name));
-        %if k == 10
-        %    angle
-        %    intensity
-        %end
 
         % merge data if duplicate; if not, make new data point
         if duplicate == 1
@@ -94,7 +75,6 @@
     end
 
     % match XRD data
-    %xrdDataNew = zeros(length(xrdData(:, 1)), 342 * 2);
     for i = 1:length(xCoord)
         
         wdmIndex = findWDMIndex(xCoord(i), yCoord(i));
@@ -111,8 +91,6 @@
     xrdData = xrdDataNew;
     xCoord = wdmX;
     yCoord = wdmY;
-    %xCoord = wdmX;
-    %yCoord = wdmY;
 
     function foundIndex = findWDMIndex(xCoord, yCoord)
         %[~, found] = max((abs(wdmX - xCoord) + abs(wdmY - yCoord)) == 0);

@@ -50,7 +50,6 @@ function callbackCVPlot(obj, evt, type, ternHandles, specHandles, ECHandles)
         xlabel('Potential');
         ylabel('log(Current)');
     else
-        %ECData(size(ECData, 1), [indexPoint * 2 - 1 indexPoint * 2])
         ids = (ECData(:, indexPoint * 2 - 1) == 0);
         ECData(ids, indexPoint * 2 - 1) = NaN;
         ECData(ids, indexPoint * 2) = NaN;
@@ -69,9 +68,11 @@ function callbackCVPlot(obj, evt, type, ternHandles, specHandles, ECHandles)
     figTern.UserData = ternInfo;
     
     if type == 1
-        set(ternHandles.buttonCVPlot, 'Callback', {@callbackCVPlot, 1, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonCVPlot, 'Callback', ...
+            {@callbackCVPlot, 1, ternHandles, specHandles, ECHandles});
     else
-        set(ternHandles.buttonCVPlotNormal, 'Callback', {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
+        set(ternHandles.buttonCVPlotNormal, 'Callback', ...
+            {@callbackCVPlot, 0, ternHandles, specHandles, ECHandles});
     end
 
 end

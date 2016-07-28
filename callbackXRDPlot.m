@@ -20,7 +20,7 @@ function callbackXRDPlot(obj, evt, ternHandles, specHandles, ECHandles)
     figure(ternHandles.fTernDiagram);
     [xSelect, ySelect] = ginput(1);
     indexPoint = findNearestPoint(xSelect, ySelect, ...
-        ternInfo.numPoints, xTernPoints, yTernPoints);
+        ternInfo.numPoints, xTernPoints, yTernPoints)
     
     if ishandle(ternInfo.pointOutline) == 1
         delete(ternInfo.pointOutline);

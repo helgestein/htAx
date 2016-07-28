@@ -1,6 +1,6 @@
 function callbackChangeDB(obj, evt, file, specHandles)
-%UNTITLED4 Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKCHANGEDB allows the user to select a new set of database patterns
+%to be compared with the experimental patterns
 
     fSpecPlot = specHandles.fSpecPlot;
     specInfo = fSpecPlot.UserData;

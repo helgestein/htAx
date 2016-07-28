@@ -3,13 +3,6 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
 %BEGINANALYSIS takes in the name of a folder that contains XRD data, the
 %name of a file with EDX data, and the name of a file to which the analysis
 %can be saved and begins a new analysis session with the data
-%   example call:
-%   beginAnalysis('/Users/sjiao/Documents/summer_2016/data/CoFeMnO-mapcorr',
-%   '/Users/sjiao/Documents/summer_2016/data/MnFeCoO-EDX',
-%   '/Users/sjiao/Documents/summer_2016/code/testFiles/testSave.txt')
-
-    %XRDFolder
-    %filenameInfo.xrdFile
 
     % labels
     labels.A = filenameInfo.labelA;
@@ -44,7 +37,6 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
         ECData = readECData(ECFolder, xCoord, yCoord, filenameInfo);
         ECDataReal = 1;
     else
-        %ECData = 1;
         % fill in dummy EC data
         numPoints = size(XRDData, 2) / 2;
         numPots = size(XRDData, 1);
@@ -62,33 +54,22 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
         collcodes = 1;
         XRDDatabase = 1;
     end
-    
-    %[XRDData(:, 459), XRDData(:, 460)]
-    
-    %find all points for which XRD data was not taken
+       
+    %find all points for which XRD data was not taken and remove those
+    %columns
     ids = find(XRDData(1, :) + XRDData(2, :) == 0);
-    %testids = find(XRDData(1, 2* (1:(size(XRDData, 2)/2))) == 0)
-    %XRDData(10, ids)
-    %XRDData(12, ids)
-    %ids
-    %XRDData(1, 658)
     numToRemove = length(ids);
     edxToRemove = ids(2 * (1:(numToRemove / 2))) / 2;
     A = removerows(A, edxToRemove);
     B = removerows(B, edxToRemove);
     C = removerows(C, edxToRemove);
-    %length(A)
-    %colsToRemove = [ids * 2 - 1 ids * 2];
     colsToRemove = ids;
     XRDData = transpose(removerows(transpose(XRDData), colsToRemove));
     ECData = transpose(removerows(transpose(ECData), colsToRemove));
-    %size(XRDData, 2) / 2
-    %size(ECData, 2) / 2
 
     pointInfo = zeros(1, 12);
     numSelected = 0;
     ECPlotInfo = zeros(342, 4);
-    %ECPlotInfo = importsaved;
     savedPoly = zeros(1, 6);
 
     openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...

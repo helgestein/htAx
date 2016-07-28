@@ -1,7 +1,8 @@
 function callbackButtonDeleteSelection(obj, evt, ...
     ternHandles, specHandles, ECHandles)
-%UNTITLED13 Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKBUTTONDELETESELECTION executes the callback for the "Delete
+%selection" button, used to delete a user-selected point on the ternary
+%plot
 
     set(ternHandles.buttonDelete, 'Callback', []);
 

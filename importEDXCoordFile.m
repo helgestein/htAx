@@ -1,13 +1,13 @@
 function [VarName1,VarName2] = importEDXCoordFile(filename, startRow, endRow)
-%IMPORTFILE Import numeric data from a text file as column vectors.
-%   [VARNAME1,VARNAME2] = IMPORTFILE(FILENAME) Reads data from text file
+%IMPORTEDXCOORDFILE Import numeric data from a text file as column vectors.
+%   [VARNAME1,VARNAME2] = IMPORTEDXCOORDFILE(FILENAME) Reads data from text file
 %   FILENAME for the default selection.
 %
-%   [VARNAME1,VARNAME2] = IMPORTFILE(FILENAME, STARTROW, ENDROW) Reads data
+%   [VARNAME1,VARNAME2] = IMPORTEDXCOORDFILE(FILENAME, STARTROW, ENDROW) Reads data
 %   from rows STARTROW through ENDROW of text file FILENAME.
 %
 % Example:
-%   [VarName1,VarName2] = importfile('AlCrFeO_xyEDX.txt',1, 277);
+%   [VarName1,VarName2] = importEDXCoordFile('AlCrFeO_xyEDX.txt',1, 277);
 %
 %    See also TEXTSCAN.
 

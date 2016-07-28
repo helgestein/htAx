@@ -1,4 +1,7 @@
 function [pks, proms,locs,widths,signal, score,score2] = findPeakXRD(x,y,confidenceFactor)
+%FINDPEAKXRD denoises a signal and identifies the peaks by modeling the
+%noise in order to automate thresholding
+
 %good values for confidence facto seem to be around 0.25 and 0.5
 
 %very basic background substraction

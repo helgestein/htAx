@@ -104,22 +104,6 @@ if numSelected ~= 0
             [zVal zVal], 'Color', colorSelection);
         
     end
-    
-    %{
-    scatter3(ternInfo.axesTernary, pointInfo(:, 1), pointInfo(:, 2), ...
-        zVals, 30, 'r', 'filled');
-    i = 1;
-    hold on;
-    while i <= numSelected - 1
-        hold on;
-        plot3(ternInfo.axesTernary, ...
-            [pointInfo(i, 1) pointInfo(i + 1, 1)], ...
-            [pointInfo(i, 2) pointInfo(i + 1, 2)], ...
-            [1000 1000], 'r');
-        i = i + 2;
-        hold on;
-    end
-    %}
 end
 
 end

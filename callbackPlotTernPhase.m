@@ -32,19 +32,6 @@ function callbackPlotTernPhase(obj, evt, ternHandles, specHandles)
         scatter(axesTernPhase, pointInfo(i, 1), pointInfo(i, 2), ...
             30, colorSelection, 'filled');
     end
-    
-    %scatter(pointInfo(:, 1), pointInfo(:, 2), 'k');
-    
-    xTernCoords = ternInfo.xCoords;
-    yTernCoords = ternInfo.yCoords;
-    
-    %{
-    hold on;
-    index1 = 183;
-    index2 = 224;
-    scatter(xTernCoords(index1), yTernCoords(index1), 30, 'r', 'filled');
-    scatter(xTernCoords(index2), yTernCoords(index2), 30, 'r', 'filled');
-    %}
 
 end
 

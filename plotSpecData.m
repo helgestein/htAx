@@ -79,19 +79,9 @@ function [] = plotSpecData(ternHandles, specHandles, ECHandles)
         end
     end
     
-    
-    %{
-    figure(figTern);
-    hold on;
-    scatter(xTernCoord(ids), yTernCoord(ids), 'c');
-    %}
-    
     fSpecPlot.UserData = specInfo;
     figTern.UserData = ternInfo;
     
-    % find all points for which XRD data was taken
-    %ids2 = find(XRDData(1, 2*(1:342) - 1) + XRDData(2, 2*(1:342) - 1) ~= 0);
-    %ids
     if isempty(ids) == 1
         errordlg('No points selected');
     else

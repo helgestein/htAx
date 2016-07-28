@@ -1,6 +1,7 @@
 function callbackSaveDB(obj, evt, specHandles)
-%UNTITLED5 Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKSAVEDB saves the database patterns currently being used to a 
+%single file in a format that can be read in by htAxe for another analysis 
+%session
 
     fSpecPlot = specHandles.fSpecPlot;
     specInfo = fSpecPlot.UserData;

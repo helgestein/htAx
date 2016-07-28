@@ -72,11 +72,13 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
                 figure;
                 set(gcf, 'color', 'w');
                 
-                %plot(XRDDatabase(:, databaseIndex * 2 - 1), XRDDatabase(:, databaseIndex * 2), 'b');
                 plotXRDDatabaseFile(XRDDatabase, databaseIndex);
                 hold on;
-                XRDDataPlot = plot(XRDData(:, indexPoint * 2 - 1), XRDData(:, indexPoint * 2), 'g');
-                collcodeString = sprintf('collcode: (%d, %d), composition(%f, %f, %f)', ...
+                XRDDataPlot = ...
+                    plot(XRDData(:, indexPoint * 2 - 1), ...
+                    XRDData(:, indexPoint * 2), 'g');
+                collcodeString = ...
+                    sprintf('collcode: (%d, %d), composition(%f, %f, %f)', ...
                     databaseIndex, collcodes(databaseIndex), ...
                     compA(indexPoint), compB(indexPoint), compC(indexPoint));
                 legend(collcodeString, 'location', 'SouthOutside');
@@ -95,7 +97,9 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
     
     figTern.UserData = ternInfo;
     
-    set(ternHandles.buttonSelectPoint, 'Callback', {@callbackXRDMatchPoint, ternHandles, specHandles, ECHandles});
+    set(ternHandles.buttonSelectPoint, ...
+        'Callback', {@callbackXRDMatchPoint, ...
+        ternHandles, specHandles, ECHandles});
 
     function plotXRDDatabaseFile(database, index)
         
@@ -103,9 +107,7 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
         dbIntensity = database(:, index * 2);
         
         hold on;
-        
-        %dbAngle
-        
+               
         ids = find(isnan(dbAngle));
         dbAngle = removerows(dbAngle, ids);
         dbIntensity = removerows(dbIntensity, ids);
@@ -131,7 +133,8 @@ function callbackXRDMatchPoint(obj, evt, ternHandles, specHandles, ECHandles)
         prevIndex = 0;
         for i = 1:length(dbAngle)
             if dbAngle(i) == prev
-                dbIntensity(prevIndex) = dbIntensity(prevIndex) + dbIntensity(i);
+                dbIntensity(prevIndex) = ...
+                    dbIntensity(prevIndex) + dbIntensity(i);
                 dbAngle(i) = -1;
             else
                 prev = dbAngle(i);

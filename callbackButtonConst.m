@@ -1,7 +1,7 @@
 function callbackButtonConst(obj, evt, constComp, ternHandles, ...
     specHandles, ECHandles)
-%CALLBACKBUTTONCONST plots the spec. and EC data according to the
-%user-selected ternary region
+%CALLBACKBUTTONCONST plots the XRD and EC data according to the
+%user-selected cut
 
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;

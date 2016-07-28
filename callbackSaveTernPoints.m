@@ -1,5 +1,6 @@
 function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
-%CALLBACKSAVETERNPOINTS saves user-selected points from the spec. plot
+%CALLBACKSAVETERNPOINTS saves the user-selected points according to the
+%positions of the sliders on the binary plot
 
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
@@ -56,23 +57,8 @@ function callbackSaveTernPoints(obj, evt, ternHandles, specHandles)
     figure(figTern);
     hold on;
     angle = specInfo.XRDData(specInfo.angleIndex, 1);
-    %{
-    angleFrac = (angle - specInfo.minAngle) / ...
-        (specInfo.maxAngle - specInfo.minAngle);
-    origColor = [255 102 102];
-    endColor = [102 178 255];
-    colorSelection = origColor * (1 - angleFrac) + endColor * angleFrac;
-    %colorSelection = [255 0 127 * angleFrac];
-    colorSelection = colorSelection / 255;
-    %}
     colorSelection = getColorSelection(angle, ...
         specInfo.minAngle, specInfo.maxAngle);
-    
-    %{
-    % testing colors
-    figure;
-    fill([0 1 1 0 0], [0 0 1 1 0], colorSelection);
-    %}
     
     zMax = 100000;
     figure(figTern);

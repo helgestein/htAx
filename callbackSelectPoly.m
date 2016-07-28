@@ -1,6 +1,6 @@
 function callbackSelectPoly(obj, evt, ternHandles, specHandles, ECHandles)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%CALLBACKSELECTPOLY allows the user to select an arbitrary cut of the XRD
+%data
 
     figTern = ternHandles.fTernDiagram;
     ternInfo = figTern.UserData;
