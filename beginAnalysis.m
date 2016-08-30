@@ -1,5 +1,5 @@
 function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
-    ECFolder, XRDDatabaseFolder, filenameInfo)
+    ECFolder, XRDDatabaseFolder, filenameInfo, dataFolder)
 %BEGINANALYSIS takes in the name of a folder that contains XRD data, the
 %name of a file with EDX data, and the name of a file to which the analysis
 %can be saved and begins a new analysis session with the data
@@ -8,6 +8,9 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     labels.A = filenameInfo.labelA;
     labels.B = filenameInfo.labelB;
     labels.C = filenameInfo.labelC;
+    
+    filenameInfo.dataDelim
+    filenameInfo.dataEnd
 
     % read in XRD and EDX data
     
@@ -38,7 +41,7 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
     if ECFolder ~= 1
         ECData = readECData(ECFolder, xCoord, yCoord, filenameInfo);
         ECDataReal = 1;
-    else
+    else 
         % fill in dummy EC data
         numPoints = size(XRDData, 2) / 2;
         numPots = size(XRDData, 1);
@@ -47,6 +50,11 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
             ECData(:, i * 2 - 1) = 1:numPots;
         end
         ECDataReal = 0;
+    end
+    
+    % read in other dataset
+    if isempty(filenameInfo.dataDelim) ~= 1
+        otherData = readOtherData(dataFolder, filenameInfo, xCoord, yCoord);
     end
 
     % read in XRD database folder
@@ -76,6 +84,6 @@ function [] = beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
 
     openFigs(XRDData, A, B, C, numSelected, pointInfo, ECData, ...
         ECPlotInfo, collcodes, XRDDatabase, labels, savedPoly, ...
-        ECDataReal);
+        ECDataReal, otherData);
 end
 

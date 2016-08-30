@@ -1,6 +1,6 @@
 function [] = openFigs(XRDData, A, B, C, ...
     numSelected, pointInfo, ECData, ECPlotInfo, collcodes, XRDDatabase, ...
-    labels, savedPoly, ECDataReal)
+    labels, savedPoly, ECDataReal, otherData)
 %OPENFIGS opens the figures needed to begin the analysis
 
 %{
@@ -154,6 +154,8 @@ ECInfo.valSliderFit1 = 0;
 ECInfo.valSliderFit2 = 0;
 ECInfo.dataReal = ECDataReal;
 figEC.UserData = ECInfo;
+
+% DO SOMETHING WITH OTHERDATA HERE
 
 plotTernData(ternHandles, specHandles, ECHandles);
    

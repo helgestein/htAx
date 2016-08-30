@@ -45,7 +45,8 @@ XRDDatabaseFolder = '';
 EDXCoordFile = '';
 XRDFile = '';
 filenameInfo = '';
-isEC = 0;
+%isEC = 0;
+dataFolder = '';
 
 fReadInFig = figure(...
     'Visible', 'off', ...
@@ -67,6 +68,10 @@ ECEnd = '';
 labelA = '';
 labelB = '';
 labelC = '';
+dataXCoord = 0;
+dataYCoord = 0;
+dataDelim = '';
+dataEnd = '';
 
 leftColOffset = 0.05;
 topRowOffset = 0.8;
@@ -268,22 +273,26 @@ heditDataXCoord = uicontrol(fReadInFig, ...
     'Style', 'edit', ...
     'Units', 'Normalized', ...
     'Position', [xCoordCol (topRowOffset - 3 * textSpacingVert) ...
-    0.08 textHeight]);
+    0.08 textHeight], ...
+    'Callback', {@editCoordCallback, 4});
 heditDataYCoord = uicontrol(fReadInFig, ...
     'Style', 'edit', ...
     'Units', 'Normalized', ...
     'Position', [yCoordCol (topRowOffset - 3 * textSpacingVert) ...
-    0.08 textHeight]);
+    0.08 textHeight], ...
+    'Callback', {@editCoordCallback, 5});
 heditDataDelim = uicontrol(fReadInFig, ...
     'Style', 'edit', ...
     'Units', 'Normalized', ...
     'Position', [delimCol (topRowOffset - 3 * textSpacingVert) ...
-    0.08 textHeight]);
+    0.08 textHeight], ...
+    'Callback', {@editDelimCallback, 4});
 heditDataEnd = uicontrol(fReadInFig, ...
     'Style', 'edit', ...
     'Units', 'Normalized', ...
     'Position', [endCol (topRowOffset - 3 * textSpacingVert) ...
-    0.08 textHeight]);
+    0.08 textHeight], ...
+    'Callback', {@editDelimCallback, 5});
 htextXCoord = uicontrol(fReadInFig, ...
     'Style', 'text', ...
     'String', 'x-coord', ...
@@ -371,9 +380,12 @@ fReadInFig.Visible = 'on';
             XRDYCoord = str2double(obj.String);
         elseif type == 2
             ECXCoord = str2double(obj.String);
-        else
+        elseif type == 3
             ECYCoord = str2double(obj.String);
+        elseif type == 4
+            dataXCoord = str2double(obj.String);
         end
+            dataYCoord = str2double(obj.String);
     end
 
     function editDelimCallback(obj, evt, type)
@@ -383,9 +395,12 @@ fReadInFig.Visible = 'on';
             ECDelim = obj.String;
         elseif type == 2
             XRDEnd = obj.String;
-        else
+        elseif type == 3
             ECEnd = obj.String;
+        elseif type == 4
+            dataDelim = obj.String;
         end
+            dataEnd = obj.String;
     end
 
     function buttonXRDCallback(obj, evt)
@@ -423,6 +438,11 @@ fReadInFig.Visible = 'on';
         set(htextXRDDatabaseFolder, 'String', XRDDatabaseFolder);
     end
 
+    function buttonDataCallback(obj, evt)
+        dataFolder = uigetdir;
+        set(htextDataFolder, 'String', dataFolder);
+    end
+
     function buttonImportCallback(obj, evt)
         
         filenameInfo.xrdX = XRDXCoord;
@@ -436,7 +456,11 @@ fReadInFig.Visible = 'on';
         filenameInfo.labelA = labelA;
         filenameInfo.labelB = labelB;
         filenameInfo.labelC = labelC;
-        filenameInfo.isEC = isEC;
+        %filenameInfo.isEC = isEC;
+        filenameInfo.dataX = dataXCoord;
+        filenameInfo.dataY = dataYCoord;
+        filenameInfo.dataDelim = dataDelim;
+        filenameInfo.dataEnd = dataEnd;
         
         if EDXFile ~= 0
             if XRDDatabaseFolder ~= 0
@@ -445,20 +469,24 @@ fReadInFig.Visible = 'on';
                     close(fReadInFig);
                     if filenameInfo.xrdFile == 1
                         beginAnalysis(XRDFile, EDXFile, EDXCoordFile, ...
-                            ECFolder, XRDDatabaseFolder, filenameInfo);
+                            ECFolder, XRDDatabaseFolder, filenameInfo, ...
+                            dataFolder);
                     else
                         beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
-                            ECFolder, XRDDatabaseFolder, filenameInfo);
+                            ECFolder, XRDDatabaseFolder, filenameInfo, ...
+                            dataFolder);
                     end
                 else
                     % XRD database but no EC folder                             
                     close(fReadInFig);
                     if filenameInfo.xrdFile == 1
                         beginAnalysis(XRDFile, EDXFile, EDXCoordFile, ...
-                            1, XRDDatabaseFolder, filenameInfo);
+                            1, XRDDatabaseFolder, filenameInfo, ...
+                            dataFolder);
                     else
                         beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
-                            1, XRDDatabaseFolder, filenameInfo);
+                            1, XRDDatabaseFolder, filenameInfo, ...
+                            dataFolder);
                     end
                 end
             elseif ECFolder ~= 0                        
@@ -466,20 +494,20 @@ fReadInFig.Visible = 'on';
                 close(fReadInFig);
                 if filenameInfo.xrdFile == 1
                     beginAnalysis(XRDFile, EDXFile, EDXCoordFile, ...
-                        ECFolder, 1, filenameInfo);
+                        ECFolder, 1, filenameInfo, dataFolder);
                 else
                     beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
-                        ECFolder, 1, filenameInfo);
+                        ECFolder, 1, filenameInfo, dataFolder);
                 end
             else                          
                 % neither EC folder nor XRD database                       
                 close(fReadInFig);                       
                 if filenameInfo.xrdFile == 1
                     beginAnalysis(XRDFile, EDXFile, EDXCoordFile, ...
-                        1, 1, filenameInfo);
+                        1, 1, filenameInfo, dataFolder);
                 else
                     beginAnalysis(XRDFolder, EDXFile, EDXCoordFile, ...
-                        1, 1, filenameInfo);
+                        1, 1, filenameInfo, dataFolder);
                 end
             end
         else
@@ -503,9 +531,7 @@ fReadInFig.Visible = 'on';
         end
     end
 
-    function buttonDataCallback(obj, evt)
-        'callback set'
-    end
+
 
 end
 
